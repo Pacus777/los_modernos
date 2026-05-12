@@ -1,58 +1,161 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Los ModernOS
 
-## About Laravel
+### Sistema web para la gestión de aportes económicos a emprendedores bolivianos asociados a Wayna
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Laravel](https://img.shields.io/badge/Laravel-Backend-red?logo=laravel&logoColor=white)
+![React](https://img.shields.io/badge/React-Frontend-blue?logo=react&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?logo=postgresql&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-Language-777BB4?logo=php&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Language-F7DF1E?logo=javascript&logoColor=black)
+![GitHub](https://img.shields.io/badge/GitHub-Version_Control-181717?logo=github&logoColor=white)
+![Trello](https://img.shields.io/badge/Trello-Task_Management-0052CC?logo=trello&logoColor=white)
+![Figma](https://img.shields.io/badge/Figma-UI%2FUX-F24E1E?logo=figma&logoColor=white)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Descripción del proyecto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+El proyecto consiste en el desarrollo de un sistema web responsive orientado a la gestión de aportes económicos para emprendedores bolivianos asociados a Wayna.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+La solución busca mejorar la conversión del flujo turístico y de visitantes mediante códigos QR, métodos de pago digitales, registro de aportes económicos y una experiencia de usuario simple, accesible y visualmente clara.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Información del equipo
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Dato | Descripción |
+|---|---|
+| Nombre del grupo | **Los ModernOS** |
+| Rubro asignado | **Rubro 2** |
+| Proyecto | **Sistema web de gestión de aportes económicos para emprendedores bolivianos asociados a Wayna** |
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
-```
+## Integrantes del equipo
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+| Integrante | Rol designado |
+|---|---|
+| Dilan Paco | Scrum Master |
+| Nazareth Padilla | Product Owner |
+| Brenda Vargas | Desarrolladora Backend / Base de Datos |
+| Kathlen Escalante | Diseñadora UI/UX / Frontend |
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Stack tecnológico
 
-## Code of Conduct
+### Lenguajes de programación
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Lenguaje | Uso dentro del proyecto |
+|---|---|
+| PHP | Desarrollo backend con Laravel |
+| JavaScript / TypeScript | Desarrollo frontend con React |
+| HTML5 | Estructura de la interfaz web |
+| CSS3 | Estilos visuales |
+| SQL | Consultas y gestión de datos |
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Frameworks y librerías
 
-## License
+| Tecnología | Uso |
+|---|---|
+| Laravel | Backend, rutas, controladores, modelos y lógica del sistema |
+| React | Frontend dinámico y responsive |
+| Tailwind CSS / Bootstrap | Diseño visual adaptable a dispositivos móviles |
+| phpqrcode | Generación de códigos QR personalizados |
+| Laravel Sanctum | Autenticación del panel administrativo |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Herramientas de desarrollo
+
+| Herramienta | Uso |
+|---|---|
+| Visual Studio Code | Editor de código |
+| Git | Control de versiones |
+| GitHub | Repositorio colaborativo |
+| Composer | Gestión de dependencias PHP |
+| Node.js / npm | Gestión de dependencias frontend |
+| Postman / Insomnia | Pruebas de API |
+| Stitch | Apoyo en diseño y prototipado de interfaz |
+| Figma | Diseño UI/UX y prototipos visuales |
+| Draw.io | Diagramas UML, entidad-relación y arquitectura |
+| Trello | Organización de tareas del equipo |
+| pgAdmin | Administración de PostgreSQL |
+
+---
+
+## Base de datos
+
+| Elemento | Descripción |
+|---|---|
+| Motor seleccionado | **PostgreSQL** |
+| Tipo | Base de datos relacional |
+| Uso principal | Almacenamiento de aportes económicos, usuarios administrativos, códigos QR, métodos de pago, metas y reportes |
+
+---
+
+## Arquitectura del sistema
+
+### Tipo de sistema
+
+**Sistema web responsive de gestión de aportes económicos.**
+
+### Arquitectura seleccionada
+
+El sistema utilizará una **arquitectura cliente-servidor en tres capas**.
+
+| Capa | Tecnología | Descripción |
+|---|---|---|
+| Presentación | React | Interfaz web responsive para usuarios y administradores |
+| Lógica de negocio | Laravel | Gestión de rutas, controladores, módulos y reglas del sistema |
+| Datos | PostgreSQL | Almacenamiento estructurado de la información del sistema |
+
+---
+
+## Patrón arquitectónico
+
+El sistema utilizará el patrón **MVC - Modelo Vista Controlador**, propio de Laravel.
+
+Este patrón permitirá separar la lógica de negocio, la presentación y el acceso a datos, facilitando el mantenimiento, la organización del código y la escalabilidad del sistema.
+
+---
+
+## Módulos principales previstos
+
+| Módulo | Descripción |
+|---|---|
+| Códigos QR personalizados | Generación y lectura de códigos QR asociados al proceso de aporte |
+| Gestión de aportes económicos | Registro de aportes mediante métodos digitales |
+| Confirmación de pagos presenciales | Validación de aportes realizados en efectivo |
+| Metas de apoyo económico | Visualización del avance de apoyo por campaña o emprendedor |
+| Reportes de impacto | Consulta de aportes realizados y resultados generados |
+| Agente conversacional | Apoyo al turista durante el proceso de aporte económico |
+
+---
+
+## Metodología de trabajo
+
+El proyecto utilizará la metodología ágil **Scrum**, permitiendo organizar el desarrollo mediante planificación, asignación de tareas, revisión de avances y validación progresiva de funcionalidades.
+
+| Elemento Scrum | Uso dentro del proyecto |
+|---|---|
+| Product Backlog | Lista general de funcionalidades |
+| Sprint Backlog | Tareas seleccionadas por etapa de desarrollo |
+| Revisión de avances | Control del progreso del sistema |
+| Trello | Organización visual de tareas |
+
+---
+
+<div align="center">
+
+### Proyecto en desarrollo
+
+**Los ModernOS — Rubro 2**
+
+</div>
