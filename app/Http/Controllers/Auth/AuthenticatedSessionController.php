@@ -33,7 +33,29 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        $rol = $user->rol?->nombre;
+
+        return match ($rol) {
+            'admin' => redirect()->intended(route('admin.dashboard')),
+            'cajero' => redirect()->intended(route('cajero.efectivo')),
+            default => $this->logoutUserWithoutRole($request),
+        };
+    }
+
+    private function logoutUserWithoutRole(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()
+            ->route('login')
+            ->withErrors([
+                'email' => 'Tu usuario no tiene un rol asignado. Contacta al administrador.',
+            ]);
     }
 
     /**
