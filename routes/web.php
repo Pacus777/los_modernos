@@ -24,4 +24,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Rutas separadas del sistema WAYNA
+|--------------------------------------------------------------------------
+|
+| Mantenemos las rutas administrativas y de cajero en archivos separados
+| para que web.php no crezca demasiado.
+|
+*/
+
+require __DIR__.'/admin.php';
+require __DIR__.'/cajero.php';
+
 require __DIR__.'/auth.php';
