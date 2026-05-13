@@ -23,7 +23,7 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <GuestLayout>
-            <Head title="Log in" />
+            <Head title="Iniciar Sesión" />
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">
@@ -31,9 +31,21 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             )}
 
-            <form onSubmit={submit}>
+            <form
+                onSubmit={submit}
+                className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md border border-gray-100"
+            >
+                <div className="text-center mb-6">
+                   <h1 className="text-3xl font-bold text-gray-800">
+                    Bienvenido
+                   </h1>
+
+                   <p className="text-gray-500 mt-2">
+                    Ingresa para continuar al sistema
+                   </p>
+                </div>
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                    <InputLabel htmlFor="email" value="Correo electrónico" />
 
                     <TextInput
                         id="email"
@@ -50,14 +62,14 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <InputLabel htmlFor="password" value="Contraseña" />
 
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
@@ -75,7 +87,7 @@ export default function Login({ status, canResetPassword }) {
                             }
                         />
                         <span className="ms-2 text-sm text-gray-600">
-                            Remember me
+                            Recordame
                         </span>
                     </label>
                 </div>
@@ -86,12 +98,15 @@ export default function Login({ status, canResetPassword }) {
                             href={route('password.request')}
                             className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
-                            Forgot your password?
+                            ¿Olvidaste tu contraseña?
                         </Link>
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
+                    <PrimaryButton
+                        className="ms-4 px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition"
+                        disabled={processing}
+                    > 
+                        Ingresar
                     </PrimaryButton>
                 </div>
             </form>
