@@ -11,6 +11,7 @@ use Inertia\Response;
 use App\Http\Requests\Admin\StoreEmprendedorRequest;
 use App\Http\Requests\Admin\UpdateEmprendedorRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Services\QrCodeService;
 class EmprendedorController extends Controller
 {
     /*
@@ -86,17 +87,16 @@ class EmprendedorController extends Controller
     }
 
     /**
- * Guarda un nuevo emprendedor en la base de datos.
- */
-    public function store(StoreEmprendedorRequest $request): RedirectResponse
+     * Guarda un nuevo emprendedor en la base de datos.
+     */
+    public function store(StoreEmprendedorRequest $request, QrCodeService $qrCodeService): RedirectResponse
     {
         /*
         |--------------------------------------------------------------------------
         | 1. Obtener datos validados
         |--------------------------------------------------------------------------
         |
-        | El FormRequest ya verificó que los campos sean correctos.
-        | Aquí el controller no repite validaciones.
+        | El FormRequest ya validó todos los campos, incluida la fotografía.
         |
         */
 
@@ -107,11 +107,8 @@ class EmprendedorController extends Controller
         | 2. Guardar fotografía si fue enviada
         |--------------------------------------------------------------------------
         |
-        | La imagen se guarda en el disco public, dentro de:
-        |
-        | storage/app/public/emprendedores/fotografias
-        |
-        | En la base de datos solo guardamos la ruta relativa.
+        | La imagen se guarda en el disco public y en la base de datos
+        | se almacena solo la ruta relativa.
         |
         */
 
@@ -126,12 +123,37 @@ class EmprendedorController extends Controller
         | 3. Crear emprendedor
         |--------------------------------------------------------------------------
         |
-        | qr_url queda vacío por ahora.
-        | Se llenará en T-13 cuando se integre QrCodeService.
+        | Primero necesitamos crear el emprendedor para obtener su id.
+        | Ese id se usa para construir la URL pública del QR.
         |
         */
 
-        Emprendedor::create($data);
+        $emprendedor = Emprendedor::create($data);
+
+        /*
+        |--------------------------------------------------------------------------
+        | 4. Generar QR automático
+        |--------------------------------------------------------------------------
+        |
+        | El admin no genera el QR manualmente.
+        | El sistema lo crea al registrar el emprendedor.
+        |
+        */
+
+        $rutaQr = $qrCodeService->generarQrPerfil($emprendedor);
+
+        /*
+        |--------------------------------------------------------------------------
+        | 5. Guardar la ruta del QR
+        |--------------------------------------------------------------------------
+        |
+        | qr_url guarda la ruta relativa del archivo generado.
+        |
+        */
+
+        $emprendedor->update([
+            'qr_url' => $rutaQr,
+        ]);
 
         return redirect()
             ->route('admin.emprendedores.index')
