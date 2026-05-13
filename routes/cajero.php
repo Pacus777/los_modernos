@@ -20,4 +20,12 @@ Route::middleware(['auth', 'verified'])
         Route::get('/efectivo', function () {
             return Inertia::render('Cajero/Efectivo');
         })->name('efectivo');
+
+
+    Route::middleware(['auth', 'verified', 'check.role:admin,cajero'])
+    ->prefix('cajero')
+    ->name('cajero.')
+    ->group(function () {
+        // rutas cajero
+    });
     });

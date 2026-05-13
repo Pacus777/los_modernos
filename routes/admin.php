@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EmprendedorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -13,11 +14,33 @@ use Inertia\Inertia;
 |
 */
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'check.role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Admin/Dashboard');
         })->name('dashboard');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Gestión de emprendedores
+        |--------------------------------------------------------------------------
+        |
+        | Route::resource genera automáticamente las rutas:
+        |
+        | GET    /admin/emprendedores
+        | GET    /admin/emprendedores/create
+        | POST   /admin/emprendedores
+        | GET    /admin/emprendedores/{emprendedor}
+        | GET    /admin/emprendedores/{emprendedor}/edit
+        | PUT    /admin/emprendedores/{emprendedor}
+        | DELETE /admin/emprendedores/{emprendedor}
+        |
+        */
+
+        Route::resource('emprendedores', EmprendedorController::class)
+            ->parameters([
+                'emprendedores' => 'emprendedor',
+            ]);
     });
