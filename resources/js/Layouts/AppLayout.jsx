@@ -2,38 +2,94 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+const adminNav = [
+    { label: 'Panel', routeName: 'dashboard', href: null },
+    {
+        label: 'Emprendedores',
+        routeName: 'admin.emprendedores.index',
+        href: null,
+    },
+    { label: 'Campañas', routeName: 'admin.campanas.index', href: null },
+    { label: 'Donaciones', routeName: 'admin.donaciones.index', href: null },
+    {
+        label: 'Trazabilidad',
+        routeName: 'admin.trazabilidad.index',
+        href: null,
+    },
+    { label: 'Reportes', routeName: 'admin.reportes.index', href: null },
+];
 
+function navHref(entry) {
+    if (entry.href) {
+        return entry.href;
+    }
+
+    return route(entry.routeName);
+}
+
+function navActive(entry) {
+    try {
+        return route().current(entry.routeName);
+    } catch {
+        return false;
+    }
+}
+
+export default function AppLayout({
+    title = 'Panel administrativo',
+    metaDescription,
+    header,
+    children,
+}) {
+    const user = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
     return (
-        <div className="min-h-screen bg-wayna-50/70">
-            <nav className="border-b border-wayna-100 bg-white/95 shadow-sm backdrop-blur-sm">
+        <div className="min-h-screen bg-gray-100">
+            <Head title={title}>
+                {metaDescription ? (
+                    <meta
+                        head-key="description"
+                        name="description"
+                        content={metaDescription}
+                    />
+                ) : null}
+            </Head>
+
+            <nav className="border-b border-gray-100 bg-white">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
-                        <div className="flex">
+                        <div className="flex min-w-0 flex-1">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-wayna-800" />
+                                <Link
+                                    href={route('dashboard')}
+                                    className="flex items-center gap-2"
+                                >
+                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <span className="hidden text-sm font-semibold text-gray-700 sm:inline">
+                                        Wayna · Admin
+                                    </span>
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
+                            <div className="hidden min-w-0 space-x-4 lg:-my-px lg:ms-8 lg:flex xl:space-x-6">
+                                {adminNav.map((entry) => (
+                                    <NavLink
+                                        key={entry.routeName + entry.label}
+                                        href={navHref(entry)}
+                                        active={navActive(entry)}
+                                    >
+                                        {entry.label}
+                                    </NavLink>
+                                ))}
                             </div>
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div className="hidden shrink-0 sm:ms-4 sm:flex sm:items-center">
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -43,7 +99,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
-
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -64,14 +119,14 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <Dropdown.Link
                                             href={route('profile.edit')}
                                         >
-                                            Profile
+                                            Perfil
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            Cerrar sesión
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -80,9 +135,10 @@ export default function AuthenticatedLayout({ header, children }) {
 
                         <div className="-me-2 flex items-center sm:hidden">
                             <button
+                                type="button"
                                 onClick={() =>
                                     setShowingNavigationDropdown(
-                                        (previousState) => !previousState,
+                                        (open) => !open,
                                     )
                                 }
                                 className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
@@ -128,15 +184,20 @@ export default function AuthenticatedLayout({ header, children }) {
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
+                        {adminNav.map((entry) => (
+                            <ResponsiveNavLink
+                                key={
+                                    'm-' + entry.routeName + entry.label
+                                }
+                                href={navHref(entry)}
+                                active={navActive(entry)}
+                            >
+                                {entry.label}
+                            </ResponsiveNavLink>
+                        ))}
                     </div>
 
-                    <div className="border-t border-wayna-100 pb-1 pt-4">
+                    <div className="border-t border-gray-200 pb-1 pt-4">
                         <div className="px-4">
                             <div className="text-base font-medium text-gray-800">
                                 {user.name}
@@ -148,27 +209,27 @@ export default function AuthenticatedLayout({ header, children }) {
 
                         <div className="mt-3 space-y-1">
                             <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
+                                Perfil
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
                                 href={route('logout')}
                                 as="button"
                             >
-                                Log Out
+                                Cerrar sesión
                             </ResponsiveNavLink>
                         </div>
                     </div>
                 </div>
             </nav>
 
-            {header && (
-                <header className="border-b border-wayna-100 bg-white shadow-sm">
+            {header ? (
+                <header className="bg-white shadow">
                     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                         {header}
                     </div>
                 </header>
-            )}
+            ) : null}
 
             <main>{children}</main>
         </div>

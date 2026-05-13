@@ -1,4 +1,4 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
 /**
@@ -61,7 +61,7 @@ export default function Index({ emprendedores }) {
     };
 
     return (
-        <AuthenticatedLayout
+        <AdminLayout
             header={
                 <div className="flex items-center justify-between">
                     <div>
@@ -75,7 +75,7 @@ export default function Index({ emprendedores }) {
 
                     <Link
                         href={route('admin.emprendedores.create')}
-                        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
+                        className="rounded-lg bg-wayna-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wayna-700"
                     >
                         Nuevo emprendedor
                     </Link>
@@ -187,7 +187,7 @@ export default function Index({ emprendedores }) {
                                                         href={`/storage/${emprendedor.qr_url}`}
                                                         target="_blank"
                                                         rel="noreferrer"
-                                                        className="font-medium text-indigo-600 hover:text-indigo-800"
+                                                        className="font-medium text-wayna-600 hover:text-wayna-800"
                                                     >
                                                         Ver QR
                                                     </a>
@@ -239,7 +239,7 @@ export default function Index({ emprendedores }) {
                                             preserveScroll
                                             className={`rounded-md px-3 py-1.5 text-sm ${
                                                 link.active
-                                                    ? 'bg-indigo-600 text-white'
+                                                    ? 'bg-wayna-600 text-white'
                                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             } ${
                                                 !link.url
@@ -257,6 +257,6 @@ export default function Index({ emprendedores }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AdminLayout>
     );
 }

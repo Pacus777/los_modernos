@@ -1,4 +1,4 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 
 /**
@@ -109,7 +109,7 @@ export default function Form({ modo, emprendedor }) {
         : null;
 
     return (
-        <AuthenticatedLayout
+        <AdminLayout
             header={
                 <div>
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
@@ -157,7 +157,7 @@ export default function Form({ modo, emprendedor }) {
                                         type="text"
                                         value={data.nombre}
                                         onChange={(e) => setData('nombre', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                         placeholder="Ejemplo: Juan"
                                     />
 
@@ -181,7 +181,7 @@ export default function Form({ modo, emprendedor }) {
                                         type="text"
                                         value={data.apellidos}
                                         onChange={(e) => setData('apellidos', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                         placeholder="Ejemplo: Pérez Mamani"
                                     />
 
@@ -206,7 +206,7 @@ export default function Form({ modo, emprendedor }) {
                                     rows="4"
                                     value={data.descripcion}
                                     onChange={(e) => setData('descripcion', e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                     placeholder="Describe brevemente la historia o actividad del emprendedor."
                                 />
 
@@ -230,7 +230,7 @@ export default function Form({ modo, emprendedor }) {
                                         id="estado"
                                         value={data.estado}
                                         onChange={(e) => setData('estado', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                     >
                                         <option value="activo">Activo</option>
                                         <option value="inactivo">Inactivo</option>
@@ -258,7 +258,7 @@ export default function Form({ modo, emprendedor }) {
                                         step="0.01"
                                         value={data.meta_monto}
                                         onChange={(e) => setData('meta_monto', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                         placeholder="Ejemplo: 500"
                                     />
 
@@ -296,7 +296,7 @@ export default function Form({ modo, emprendedor }) {
                                     type="file"
                                     accept="image/jpeg,image/png,image/webp"
                                     onChange={(e) => setData('fotografia', e.target.files[0])}
-                                    className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                                    className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-wayna-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-wayna-700 hover:file:bg-wayna-100"
                                 />
 
                                 <p className="mt-1 text-xs text-gray-500">
@@ -323,7 +323,7 @@ export default function Form({ modo, emprendedor }) {
                                         href={`/storage/${emprendedor.qr_url}`}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="mt-2 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+                                        className="mt-2 inline-block text-sm font-semibold text-wayna-600 hover:text-wayna-800"
                                     >
                                         Ver QR
                                     </a>
@@ -341,7 +341,7 @@ export default function Form({ modo, emprendedor }) {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="rounded-md bg-wayna-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wayna-700 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     {processing
                                         ? 'Guardando...'
@@ -354,6 +354,6 @@ export default function Form({ modo, emprendedor }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AdminLayout>
     );
 }
