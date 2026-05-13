@@ -8,7 +8,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-
+use App\Http\Requests\Admin\StoreEmprendedorRequest;
+use App\Http\Requests\Admin\UpdateEmprendedorRequest;
+use Illuminate\Support\Facades\Storage;
 class EmprendedorController extends Controller
 {
     /*
@@ -84,38 +86,48 @@ class EmprendedorController extends Controller
     }
 
     /**
-     * Guarda un nuevo emprendedor en la base de datos.
-     */
-    public function store(Request $request): RedirectResponse
+ * Guarda un nuevo emprendedor en la base de datos.
+ */
+    public function store(StoreEmprendedorRequest $request): RedirectResponse
     {
         /*
         |--------------------------------------------------------------------------
-        | Validación inicial
+        | 1. Obtener datos validados
         |--------------------------------------------------------------------------
         |
-        | En esta tarea todavía no manejamos upload real de imagen.
-        | La fotografía se trabajará en T-10.
-        |
-        | qr_url queda nullable porque se llenará luego con QrCodeService
-        | en la tarea T-13.
+        | El FormRequest ya verificó que los campos sean correctos.
+        | Aquí el controller no repite validaciones.
         |
         */
 
-        $data = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellidos' => ['required', 'string', 'max:120'],
-            'descripcion' => ['nullable', 'string'],
-            'estado' => ['required', 'string', 'in:activo,inactivo'],
-            'meta_monto' => ['required', 'numeric', 'min:0'],
-        ]);
+        $data = $request->validated();
 
         /*
         |--------------------------------------------------------------------------
-        | Crear emprendedor
+        | 2. Guardar fotografía si fue enviada
         |--------------------------------------------------------------------------
         |
-        | Solo guardamos datos básicos.
-        | La imagen y el QR se integrarán en tareas posteriores.
+        | La imagen se guarda en el disco public, dentro de:
+        |
+        | storage/app/public/emprendedores/fotografias
+        |
+        | En la base de datos solo guardamos la ruta relativa.
+        |
+        */
+
+        if ($request->hasFile('fotografia')) {
+            $data['fotografia'] = $request
+                ->file('fotografia')
+                ->store('emprendedores/fotografias', 'public');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Crear emprendedor
+        |--------------------------------------------------------------------------
+        |
+        | qr_url queda vacío por ahora.
+        | Se llenará en T-13 cuando se integre QrCodeService.
         |
         */
 
@@ -151,25 +163,50 @@ class EmprendedorController extends Controller
     /**
      * Actualiza los datos de un emprendedor.
      */
-    public function update(Request $request, Emprendedor $emprendedor): RedirectResponse
+    /**
+     * Actualiza los datos de un emprendedor.
+     */
+    public function update(UpdateEmprendedorRequest $request, Emprendedor $emprendedor): RedirectResponse
     {
         /*
         |--------------------------------------------------------------------------
-        | Validación de actualización
+        | 1. Obtener datos validados
         |--------------------------------------------------------------------------
         |
-        | Mantenemos las mismas reglas básicas que en store.
-        | La fotografía todavía no se procesa aquí porque corresponde a T-10.
+        | Si no viene una nueva fotografía, se conserva la anterior.
         |
         */
 
-        $data = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellidos' => ['required', 'string', 'max:120'],
-            'descripcion' => ['nullable', 'string'],
-            'estado' => ['required', 'string', 'in:activo,inactivo'],
-            'meta_monto' => ['required', 'numeric', 'min:0'],
-        ]);
+        $data = $request->validated();
+
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Reemplazar fotografía si se subió una nueva
+        |--------------------------------------------------------------------------
+        |
+        | Primero eliminamos la fotografía anterior para no dejar archivos
+        | huérfanos en storage.
+        |
+        */
+
+        if ($request->hasFile('fotografia')) {
+            if ($emprendedor->fotografia) {
+                Storage::disk('public')->delete($emprendedor->fotografia);
+            }
+
+            $data['fotografia'] = $request
+                ->file('fotografia')
+                ->store('emprendedores/fotografias', 'public');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Actualizar emprendedor
+        |--------------------------------------------------------------------------
+        |
+        | Solo se actualizan los datos validados.
+        |
+        */
 
         $emprendedor->update($data);
 
