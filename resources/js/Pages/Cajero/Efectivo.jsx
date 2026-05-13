@@ -1,4 +1,4 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import CajeroLayout from '@/Layouts/CajeroLayout';
 import { Head } from '@inertiajs/react';
 
 /**
@@ -9,9 +9,9 @@ import { Head } from '@inertiajs/react';
  */
 export default function Efectivo() {
     return (
-        <AuthenticatedLayout
+        <CajeroLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                <h2 className="text-xl font-semibold leading-tight text-wayna-950">
                     Panel Cajero
                 </h2>
             }
@@ -19,14 +19,14 @@ export default function Efectivo() {
             <Head title="Pagos en efectivo" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+                <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                    <div className="overflow-hidden rounded-xl border border-wayna-100 bg-white shadow-sm shadow-wayna-900/5">
+                        <div className="p-6 text-stone-700">
                             Pantalla temporal para confirmar pagos en efectivo.
                         </div>
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </CajeroLayout>
     );
 }

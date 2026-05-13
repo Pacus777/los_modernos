@@ -69,7 +69,7 @@ export default function Login({ status, canResetPassword }) {
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                        className="mt-1 block w-full rounded-lg border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
@@ -96,14 +96,14 @@ export default function Login({ status, canResetPassword }) {
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-wayna-500 focus:ring-offset-2"
                         >
                             ¿Olvidaste tu contraseña?
                         </Link>
                     )}
 
                     <PrimaryButton
-                        className="ms-4 px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition"
+                        className="ms-4 px-6 py-2 rounded-lg bg-wayna-600 hover:bg-wayna-700 transition"
                         disabled={processing}
                     > 
                         Ingresar

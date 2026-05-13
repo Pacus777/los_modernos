@@ -1,4 +1,4 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head } from '@inertiajs/react';
 
 /**
@@ -9,9 +9,9 @@ import { Head } from '@inertiajs/react';
  */
 export default function Dashboard() {
     return (
-        <AuthenticatedLayout
+        <AdminLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                <h2 className="text-xl font-semibold leading-tight text-wayna-950">
                     Panel Administrador
                 </h2>
             }
@@ -20,13 +20,18 @@ export default function Dashboard() {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            Bienvenido al panel general del administrador.
+                    <div className="overflow-hidden rounded-xl border border-wayna-100 bg-white shadow-sm shadow-wayna-900/5">
+                        <div className="border-b border-wayna-50 bg-wayna-50/50 px-6 py-4">
+                            <p className="text-sm font-medium text-wayna-900">
+                                Bienvenido al panel general del administrador.
+                            </p>
+                        </div>
+                        <div className="p-6 text-stone-700">
+                            Usa el menú lateral para ir a <strong className="text-wayna-800">Emprendedores</strong> y gestionar el catálogo WAYNA.
                         </div>
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AdminLayout>
     );
 }
