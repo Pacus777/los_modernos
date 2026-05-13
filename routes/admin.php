@@ -39,5 +39,8 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
         |
         */
 
-        Route::resource('emprendedores', EmprendedorController::class);
+        Route::resource('emprendedores', EmprendedorController::class)
+            ->parameters([
+                'emprendedores' => 'emprendedor',
+            ]);
     });
