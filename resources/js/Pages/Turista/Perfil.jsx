@@ -1,8 +1,9 @@
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+import DonacionForm from '@/Components/Turista/DonacionForm';
 
-export default function Perfil({ emprendedor, campanaActiva, progreso }) {
+export default function Perfil({ emprendedor, campanaActiva, progreso, tipoPagos }) {
     const [montoSeleccionado, setMontoSeleccionado] = useState(10);
 
     const montosRapidos = [5, 10, 20, 50];

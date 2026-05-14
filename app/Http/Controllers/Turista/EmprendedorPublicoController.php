@@ -7,6 +7,7 @@ use App\Models\Emprendedor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\TipoPago;
 
 class EmprendedorPublicoController extends Controller
 {
@@ -82,6 +83,11 @@ class EmprendedorPublicoController extends Controller
                 'monto_faltante' => max($meta - $montoRecaudado, 0),
                 'porcentaje' => $porcentaje,
             ],
+
+            'tipoPagos' => TipoPago::query()
+                ->select('id', 'nombre', 'codigo')
+                ->orderBy('id')
+                ->get(),
         ]);
     }
 }
