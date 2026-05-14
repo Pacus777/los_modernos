@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Turista\DonacionConfirmacionController;
 use App\Http\Controllers\Turista\EmprendedorPublicoController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Turista\DonacionController;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 /*
@@ -23,5 +24,12 @@ Route::get('/emprendedor/{id}', [EmprendedorPublicoController::class, 'show'])
     ->name('turista.donaciones.store');
 
     Route::get('/donaciones/confirmacion', function () {
-        return Inertia::render('Turista/Confirmacion');
-    })->name('turista.donaciones.confirmacion');
+        return Inertia::render('Turista/Confirmacion', [
+            'confirmacion' => null,
+            'qr_pago_url' => null,
+            'success' => null,
+        ]);
+    });
+
+    Route::get('/donaciones/confirmacion/{donacion}', [DonacionConfirmacionController::class, 'show'])
+        ->name('turista.donaciones.confirmacion');

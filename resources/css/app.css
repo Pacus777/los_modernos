@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media (prefers-reduced-motion: reduce) {
+    .barra-progreso-fill {
+        transition-duration: 0.01ms !important;
+    }
+
+    .barra-progreso-shimmer {
+        animation: none !important;
+    }
+}
+
+@keyframes barra-progreso-shimmer {
+    0% {
+        transform: translateX(-120%);
+    }
+    100% {
+        transform: translateX(280%);
+    }
+}
+
+.barra-progreso-shimmer {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.22) 45%,
+        rgba(255, 247, 237, 0.45) 50%,
+        rgba(255, 255, 255, 0.18) 55%,
+        transparent 100%
+    );
+    animation: barra-progreso-shimmer 2.8s ease-in-out infinite;
+}

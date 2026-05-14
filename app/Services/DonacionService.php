@@ -22,7 +22,7 @@ class DonacionService
      * Flujo:
      * 1. Crear referencia de pago.
      * 2. Registrar donación como pendiente.
-     * 3. Registrar trazabilidad inicial.
+     * 3. Registrar trazabilidad en `transacciones` (UUID, origen/destino, metadatos).
      * 4. Generar QR de pago.
      *
      * Todo queda dentro de DB::transaction().
@@ -43,10 +43,6 @@ class DonacionService
                 'referencia_pago' => $referenciaPago,
             ]);
 
-            /*
-             * Por ahora registra una trazabilidad básica.
-             * Cuando llegues a T-34/T-35, este servicio guardará en la tabla transacciones.
-             */
             $trazabilidad = $this->traceabilityService->registrarDonacionCreada($donacion);
 
             /*

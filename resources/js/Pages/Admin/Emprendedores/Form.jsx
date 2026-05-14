@@ -1,43 +1,23 @@
+import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import {
+    adminBackdropTall,
+    adminFileInputClass,
+    adminFormFooterPrimaryBtn,
+    adminFormFooterSecondaryBtn,
+    adminInputClass,
+    adminLabelField,
+    adminLabelUpper,
+    adminSectionCard,
+    adminTextareaClass,
+} from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 
 /**
- * Formulario reutilizable para crear y editar emprendedores.
- *
- * Esta página recibe desde Laravel:
- * - modo: "crear" o "editar"
- * - emprendedor: null cuando se crea, objeto cuando se edita
- *
- * No se usa useEffect ni fetch porque los datos llegan como props de Inertia.
+ * Formulario crear / editar emprendedor — estilo WAYNA unificado con campañas.
  */
 export default function Form({ modo, emprendedor }) {
-    /*
-    |--------------------------------------------------------------------------
-    | Determinar si estamos creando o editando
-    |--------------------------------------------------------------------------
-    |
-    | Usamos esta variable para cambiar:
-    | - título de la página
-    | - texto del botón
-    | - ruta de envío
-    | - método HTTP usado por Inertia
-    |
-    */
-
     const esEdicion = modo === 'editar';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Estado del formulario con useForm
-    |--------------------------------------------------------------------------
-    |
-    | useForm maneja:
-    | - datos del formulario
-    | - errores de validación enviados por Laravel
-    | - estado de carga del botón
-    | - envío de datos con Inertia
-    |
-    */
 
     const { data, setData, post, processing, errors, reset } = useForm({
         nombre: emprendedor?.nombre || '',
@@ -47,21 +27,6 @@ export default function Form({ modo, emprendedor }) {
         meta_monto: emprendedor?.meta_monto || '',
         fotografia: null,
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Enviar formulario
-    |--------------------------------------------------------------------------
-    |
-    | Crear:
-    | POST /admin/emprendedores
-    |
-    | Editar:
-    | POST /admin/emprendedores/{id} con _method = PUT
-    |
-    | Usamos forceFormData porque el formulario puede incluir imagen.
-    |
-    */
 
     const submit = (e) => {
         e.preventDefault();
@@ -78,7 +43,6 @@ export default function Form({ modo, emprendedor }) {
                     preserveScroll: true,
                 }
             );
-
             return;
         }
 
@@ -91,19 +55,6 @@ export default function Form({ modo, emprendedor }) {
         });
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Vista previa de fotografía actual
-    |--------------------------------------------------------------------------
-    |
-    | Si estamos editando y el emprendedor ya tiene fotografía guardada,
-    | la mostramos desde /storage.
-    |
-    | Recuerda que para esto debe existir:
-    | php artisan storage:link
-    |
-    */
-
     const fotografiaActual = emprendedor?.fotografia
         ? `/storage/${emprendedor.fotografia}`
         : null;
@@ -112,239 +63,226 @@ export default function Form({ modo, emprendedor }) {
         <AdminLayout
             header={
                 <div>
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-wayna-600">
+                        Wayna admin
+                    </p>
+                    <h2 className="mt-1 text-2xl font-bold tracking-tight text-wayna-950 sm:text-3xl">
                         {esEdicion ? 'Editar emprendedor' : 'Nuevo emprendedor'}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
                         {esEdicion
-                            ? 'Actualiza los datos del emprendedor seleccionado.'
-                            : 'Registra un nuevo emprendedor dentro del sistema WAYNA.'}
+                            ? 'Actualizá datos y foto; el QR de perfil se mantiene salvo que cambie la lógica del sistema.'
+                            : 'Registrá un emprendedor nuevo: se generará el QR de perfil al guardar.'}
                     </p>
                 </div>
             }
         >
-            <Head title={esEdicion ? 'Editar emprendedor' : 'Nuevo emprendedor'} />
+            <Head title={esEdicion ? 'Editar emprendedor — Wayna' : 'Nuevo emprendedor — Wayna'} />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-                        <div className="border-b border-gray-200 px-6 py-4">
-                            <h3 className="text-base font-semibold text-gray-900">
-                                Datos del emprendedor
-                            </h3>
-                            <p className="mt-1 text-sm text-gray-500">
-                                Completa la información básica que será usada en el panel administrativo
-                                y en el perfil público.
+            <div className="relative py-8">
+                <div className={adminBackdropTall} aria-hidden />
+
+                <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                    <AdminBackLink href={route('admin.emprendedores.index')} />
+
+                    <div className="overflow-hidden rounded-3xl border border-wayna-200/90 bg-white shadow-2xl shadow-wayna-900/[0.08] ring-1 ring-black/[0.03]">
+                        <div className="bg-gradient-to-r from-wayna-600 via-wayna-500 to-orange-500 px-6 py-6 sm:px-8">
+                            <h3 className="text-lg font-bold text-white sm:text-xl">Datos del emprendedor</h3>
+                            <p className="mt-1 text-sm text-orange-50/95">
+                                Información del panel y del perfil público que ve el turista.
                             </p>
                         </div>
 
                         <form
                             onSubmit={submit}
                             encType="multipart/form-data"
-                            className="space-y-6 p-6"
+                            className="space-y-0"
                         >
-                            <div className="grid gap-6 md:grid-cols-2">
-                                <div>
-                                    <label
-                                        htmlFor="nombre"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Nombre
-                                    </label>
+                            <div className="space-y-8 bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
+                                <div className={adminSectionCard}>
+                                    <p className={adminLabelUpper}>Identidad</p>
+                                    <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                                        <div>
+                                            <label htmlFor="nombre" className={adminLabelField}>
+                                                Nombre
+                                            </label>
+                                            <input
+                                                id="nombre"
+                                                type="text"
+                                                value={data.nombre}
+                                                onChange={(e) => setData('nombre', e.target.value)}
+                                                className={adminInputClass}
+                                                placeholder="Ej. Camila"
+                                                required
+                                            />
+                                            {errors.nombre && (
+                                                <p className="mt-2 text-sm font-medium text-red-600">
+                                                    {errors.nombre}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="apellidos" className={adminLabelField}>
+                                                Apellidos
+                                            </label>
+                                            <input
+                                                id="apellidos"
+                                                type="text"
+                                                value={data.apellidos}
+                                                onChange={(e) => setData('apellidos', e.target.value)}
+                                                className={adminInputClass}
+                                                placeholder="Ej. Sánchez López"
+                                                required
+                                            />
+                                            {errors.apellidos && (
+                                                <p className="mt-2 text-sm font-medium text-red-600">
+                                                    {errors.apellidos}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
 
-                                    <input
-                                        id="nombre"
-                                        type="text"
-                                        value={data.nombre}
-                                        onChange={(e) => setData('nombre', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                        placeholder="Ejemplo: Juan"
-                                    />
-
-                                    {errors.nombre && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.nombre}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label
-                                        htmlFor="apellidos"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Apellidos
-                                    </label>
-
-                                    <input
-                                        id="apellidos"
-                                        type="text"
-                                        value={data.apellidos}
-                                        onChange={(e) => setData('apellidos', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                        placeholder="Ejemplo: Pérez Mamani"
-                                    />
-
-                                    {errors.apellidos && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.apellidos}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label
-                                    htmlFor="descripcion"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    Descripción
-                                </label>
-
-                                <textarea
-                                    id="descripcion"
-                                    rows="4"
-                                    value={data.descripcion}
-                                    onChange={(e) => setData('descripcion', e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                    placeholder="Describe brevemente la historia o actividad del emprendedor."
-                                />
-
-                                {errors.descripcion && (
-                                    <p className="mt-1 text-sm text-red-600">
-                                        {errors.descripcion}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="grid gap-6 md:grid-cols-2">
-                                <div>
-                                    <label
-                                        htmlFor="estado"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Estado
-                                    </label>
-
-                                    <select
-                                        id="estado"
-                                        value={data.estado}
-                                        onChange={(e) => setData('estado', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                    >
-                                        <option value="activo">Activo</option>
-                                        <option value="inactivo">Inactivo</option>
-                                    </select>
-
-                                    {errors.estado && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.estado}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label
-                                        htmlFor="meta_monto"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Meta económica Bs.
-                                    </label>
-
-                                    <input
-                                        id="meta_monto"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={data.meta_monto}
-                                        onChange={(e) => setData('meta_monto', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                        placeholder="Ejemplo: 500"
-                                    />
-
-                                    {errors.meta_monto && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.meta_monto}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label
-                                    htmlFor="fotografia"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    Fotografía
-                                </label>
-
-                                {fotografiaActual && (
-                                    <div className="mb-3 mt-2">
-                                        <p className="mb-2 text-sm text-gray-500">
-                                            Fotografía actual:
-                                        </p>
-                                        <img
-                                            src={fotografiaActual}
-                                            alt="Fotografía actual del emprendedor"
-                                            className="h-28 w-28 rounded-lg object-cover"
+                                    <div className="mt-5">
+                                        <label htmlFor="descripcion" className={adminLabelField}>
+                                            Descripción
+                                        </label>
+                                        <textarea
+                                            id="descripcion"
+                                            rows={4}
+                                            value={data.descripcion}
+                                            onChange={(e) => setData('descripcion', e.target.value)}
+                                            className={adminTextareaClass}
+                                            placeholder="Historia o actividad que verá el turista en Wayna."
                                         />
+                                        {errors.descripcion && (
+                                            <p className="mt-2 text-sm font-medium text-red-600">
+                                                {errors.descripcion}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={adminSectionCard}>
+                                    <p className={adminLabelUpper}>Estado y meta</p>
+                                    <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                                        <div>
+                                            <label htmlFor="estado" className={adminLabelField}>
+                                                Estado
+                                            </label>
+                                            <select
+                                                id="estado"
+                                                value={data.estado}
+                                                onChange={(e) => setData('estado', e.target.value)}
+                                                className={adminInputClass}
+                                            >
+                                                <option value="activo">Activo (visible)</option>
+                                                <option value="inactivo">Inactivo</option>
+                                            </select>
+                                            {errors.estado && (
+                                                <p className="mt-2 text-sm font-medium text-red-600">
+                                                    {errors.estado}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="meta_monto" className={adminLabelField}>
+                                                Meta económica referencial (Bs)
+                                            </label>
+                                            <div className="relative mt-2">
+                                                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-bold text-wayna-600">
+                                                    Bs
+                                                </span>
+                                                <input
+                                                    id="meta_monto"
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    value={data.meta_monto}
+                                                    onChange={(e) => setData('meta_monto', e.target.value)}
+                                                    className={`${adminInputClass} pl-11`}
+                                                    placeholder="0.00"
+                                                    required
+                                                />
+                                            </div>
+                                            {errors.meta_monto && (
+                                                <p className="mt-2 text-sm font-medium text-red-600">
+                                                    {errors.meta_monto}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={adminSectionCard}>
+                                    <p className={adminLabelUpper}>Fotografía</p>
+                                    <div className="mt-4">
+                                        {fotografiaActual && (
+                                            <div className="mb-4">
+                                                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-wayna-800">
+                                                    Vista actual
+                                                </p>
+                                                <img
+                                                    src={fotografiaActual}
+                                                    alt=""
+                                                    className="h-32 w-32 rounded-2xl object-cover ring-2 ring-wayna-100 shadow-md"
+                                                />
+                                            </div>
+                                        )}
+                                        <label htmlFor="fotografia" className={adminLabelField}>
+                                            Archivo (opcional al editar)
+                                        </label>
+                                        <input
+                                            id="fotografia"
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            onChange={(e) => setData('fotografia', e.target.files[0])}
+                                            className={adminFileInputClass}
+                                        />
+                                        <p className="mt-2 text-xs text-stone-500">
+                                            JPG, PNG o WEBP. Máximo 2 MB.
+                                        </p>
+                                        {errors.fotografia && (
+                                            <p className="mt-2 text-sm font-medium text-red-600">
+                                                {errors.fotografia}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {esEdicion && emprendedor?.qr_url && (
+                                    <div className="rounded-2xl border border-wayna-200 bg-gradient-to-r from-wayna-50 to-orange-50/60 px-5 py-4">
+                                        <p className="text-xs font-bold uppercase tracking-wide text-wayna-800">
+                                            Código QR de perfil
+                                        </p>
+                                        <p className="mt-1 text-sm text-stone-600">
+                                            Generado al crear el emprendedor; no se edita desde acá.
+                                        </p>
+                                        <a
+                                            href={`/storage/${emprendedor.qr_url}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="mt-2 inline-flex text-sm font-bold text-wayna-700 underline decoration-wayna-300 hover:text-wayna-900"
+                                        >
+                                            Abrir QR
+                                        </a>
                                     </div>
                                 )}
-
-                                <input
-                                    id="fotografia"
-                                    type="file"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    onChange={(e) => setData('fotografia', e.target.files[0])}
-                                    className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-wayna-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-wayna-700 hover:file:bg-wayna-100"
-                                />
-
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Formatos permitidos: JPG, JPEG, PNG o WEBP. Tamaño máximo: 2 MB.
-                                </p>
-
-                                {errors.fotografia && (
-                                    <p className="mt-1 text-sm text-red-600">
-                                        {errors.fotografia}
-                                    </p>
-                                )}
                             </div>
 
-                            {esEdicion && emprendedor?.qr_url && (
-                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                                    <p className="text-sm font-medium text-gray-700">
-                                        Código QR generado
-                                    </p>
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        El QR se genera automáticamente y no se modifica desde este formulario.
-                                    </p>
-
-                                    <a
-                                        href={`/storage/${emprendedor.qr_url}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="mt-2 inline-block text-sm font-semibold text-wayna-600 hover:text-wayna-800"
-                                    >
-                                        Ver QR
-                                    </a>
-                                </div>
-                            )}
-
-                            <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6">
+                            <div className="flex flex-col-reverse gap-3 border-t border-wayna-100 bg-white/95 px-6 py-5 sm:flex-row sm:justify-end sm:px-8">
                                 <Link
                                     href={route('admin.emprendedores.index')}
-                                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                                    className={adminFormFooterSecondaryBtn}
                                 >
                                     Cancelar
                                 </Link>
-
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="rounded-md bg-wayna-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wayna-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                    className={adminFormFooterPrimaryBtn}
                                 >
                                     {processing
-                                        ? 'Guardando...'
+                                        ? 'Guardando…'
                                         : esEdicion
                                             ? 'Actualizar emprendedor'
                                             : 'Guardar emprendedor'}

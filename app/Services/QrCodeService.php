@@ -86,6 +86,23 @@ class QrCodeService
     }
 
     /**
+     * URL pública del PNG del QR si ya existe en storage (sin regenerar).
+     */
+    public function urlPublicaQrPagoExistente(Donacion $donacion): ?string
+    {
+        $metodo = strtolower($donacion->metodo);
+        $rutaRelativa = str_contains($metodo, 'efectivo')
+            ? "donaciones/qrs/efectivo/donacion-{$donacion->id}.png"
+            : "donaciones/qrs/digital/donacion-{$donacion->id}.png";
+
+        if (! Storage::disk('public')->exists($rutaRelativa)) {
+            return null;
+        }
+
+        return Storage::url($rutaRelativa);
+    }
+
+    /**
      * QR 2: Genera QR de pago digital.
      *
      * En el MVP no estamos conectando aún con una pasarela bancaria real.

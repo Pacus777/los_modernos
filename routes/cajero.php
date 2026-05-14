@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Cajero\PendienteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -8,12 +9,11 @@ use Inertia\Inertia;
 | Rutas del panel cajero
 |--------------------------------------------------------------------------
 |
-| El cajero entra directamente a esta pantalla.
-| Más adelante esta ruta se protegerá con CheckRole.
+| Requieren autenticación y rol admin o cajero (T-39: rutas bajo /cajero).
 |
 */
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'check.role:admin,cajero'])
     ->prefix('cajero')
     ->name('cajero.')
     ->group(function () {
@@ -21,11 +21,12 @@ Route::middleware(['auth', 'verified'])
             return Inertia::render('Cajero/Efectivo');
         })->name('efectivo');
 
+        Route::get('/efectivo/pendientes', [PendienteController::class, 'index'])
+            ->name('efectivo.pendientes');
 
-    Route::middleware(['auth', 'verified', 'check.role:admin,cajero'])
-    ->prefix('cajero')
-    ->name('cajero.')
-    ->group(function () {
-        // rutas cajero
-    });
+        Route::get('/efectivo/{donacion}/confirmar', [PendienteController::class, 'confirmarForm'])
+            ->name('efectivo.confirmar');
+
+        Route::post('/efectivo/{donacion}/confirmar', [PendienteController::class, 'confirmar'])
+            ->name('efectivo.confirmar.store');
     });

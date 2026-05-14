@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -13,6 +15,22 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    /**
+     * Aplica el idioma de sesión (es|en) antes de compartir props Inertia.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $locale = $request->session()->get('locale');
+
+        if (! in_array($locale, ['es', 'en'], true)) {
+            $locale = 'es';
+        }
+
+        app()->setLocale($locale);
+
+        return parent::handle($request, $next);
+    }
 
     /**
      * Determine the current asset version.
@@ -37,7 +55,7 @@ class HandleInertiaRequests extends Middleware
             'role' => $request->user()?->role,
          ],
 
-         'locale' => fn () => $request->session()->get('locale', 'es'),
+         'locale' => $request->session()->get('locale', 'es'),
 
         'availableLocales' => [
             'es' => 'Español',

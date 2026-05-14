@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Turista;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campana;
+use App\Models\Donacion;
 use App\Models\Emprendedor;
+use App\Models\TipoPago;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\TipoPago;
 
 class EmprendedorPublicoController extends Controller
 {
@@ -20,9 +22,8 @@ class EmprendedorPublicoController extends Controller
      * Aquí se preparan los datos necesarios para React:
      * - datos básicos del emprendedor,
      * - campaña activa,
-     * - monto recaudado,
-     * - meta de apoyo,
-     * - porcentaje de progreso.
+     * - progreso (T-29 / PB-09): meta, monto acumulado por donaciones validadas y porcentaje
+     *   calculados en servidor; el frontend solo muestra props.
      */
     public function show(Request $request, int $id): Response
     {
@@ -30,31 +31,22 @@ class EmprendedorPublicoController extends Controller
             ->with([
                 'campanas' => function ($query) {
                     $query
-                        ->where('estado', 'activa')
+                        ->where('estado', Campana::ESTADO_ACTIVA)
                         ->withSum([
                             'donaciones as monto_validado' => function ($query) {
-                                $query->where('estado_pago', 'validado');
+                                $query->where('estado_pago', Donacion::ESTADO_VALIDADO);
                             },
                         ], 'monto')
-                        ->orderByDesc('fecha_inicio')
-                        ->limit(1);
+                        ->orderByDesc('fecha_inicio');
                 },
             ])
             ->findOrFail($id);
 
-        $campanaActiva = $emprendedor->campanas->first();
+        $campanasActivas = $emprendedor->campanas;
 
-        $meta = $campanaActiva
-            ? (float) $campanaActiva->meta_apoyo
-            : (float) ($emprendedor->meta_monto ?? 0);
+        $campanaActiva = $campanasActivas->first();
 
-        $montoRecaudado = $campanaActiva
-            ? (float) ($campanaActiva->monto_validado ?? $campanaActiva->monto_recaudado ?? 0)
-            : 0;
-
-        $porcentaje = $meta > 0
-            ? min(round(($montoRecaudado / $meta) * 100, 2), 100)
-            : 0;
+        $progreso = $this->calcularProgresoCampanaActiva($campanaActiva, $emprendedor);
 
         return Inertia::render('Turista/Perfil', [
             'emprendedor' => [
@@ -70,24 +62,54 @@ class EmprendedorPublicoController extends Controller
             'campanaActiva' => $campanaActiva ? [
                 'id' => $campanaActiva->id,
                 'titulo' => $campanaActiva->titulo,
-                'meta_apoyo' => $meta,
-                'monto_recaudado' => $montoRecaudado,
+                'meta_apoyo' => $progreso['meta'],
+                'monto_recaudado' => $progreso['monto_recaudado'],
                 'fecha_inicio' => $campanaActiva->fecha_inicio,
                 'fecha_fin' => $campanaActiva->fecha_fin,
                 'estado' => $campanaActiva->estado,
             ] : null,
 
-            'progreso' => [
-                'meta' => $meta,
-                'monto_recaudado' => $montoRecaudado,
-                'monto_faltante' => max($meta - $montoRecaudado, 0),
-                'porcentaje' => $porcentaje,
-            ],
+            'campanasActivas' => $campanasActivas
+                ->map(fn (Campana $c) => [
+                    'id' => $c->id,
+                    'titulo' => $c->titulo,
+                ])
+                ->values()
+                ->all(),
+
+            'progreso' => $progreso,
 
             'tipoPagos' => TipoPago::query()
                 ->select('id', 'nombre', 'codigo')
                 ->orderBy('id')
                 ->get(),
         ]);
+    }
+
+    /**
+     * Progreso de la campaña activa según la suma de donaciones validadas (PB-09 / T-29).
+     *
+     * @return array{meta: float, monto_recaudado: float, monto_faltante: float, porcentaje: float}
+     */
+    private function calcularProgresoCampanaActiva(?Campana $campana, Emprendedor $emprendedor): array
+    {
+        $meta = $campana
+            ? (float) $campana->meta_apoyo
+            : (float) ($emprendedor->meta_monto ?? 0);
+
+        $montoValidado = $campana
+            ? (float) ($campana->monto_validado ?? 0)
+            : 0.0;
+
+        $porcentaje = $meta > 0
+            ? min(round(($montoValidado / $meta) * 100, 2), 100.0)
+            : 0.0;
+
+        return [
+            'meta' => $meta,
+            'monto_recaudado' => $montoValidado,
+            'monto_faltante' => max($meta - $montoValidado, 0.0),
+            'porcentaje' => $porcentaje,
+        ];
     }
 }

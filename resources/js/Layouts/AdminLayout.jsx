@@ -51,6 +51,31 @@ export default function AdminLayout({ header, children }) {
                 >
                     <span>Emprendedores</span>
                 </Link>
+                <Link
+                    href={route('admin.campanas.index')}
+                    className={navItemClass(route().current('admin.campanas.*'))}
+                    onClick={() => setSidebarOpen(false)}
+                >
+                    <span>Campañas</span>
+                </Link>
+                <Link
+                    href={route('admin.donaciones.index')}
+                    className={navItemClass(
+                        route().current('admin.donaciones.*'),
+                    )}
+                    onClick={() => setSidebarOpen(false)}
+                >
+                    <span>Donaciones</span>
+                </Link>
+                <Link
+                    href={route('admin.transacciones.index')}
+                    className={navItemClass(
+                        route().current('admin.transacciones.*'),
+                    )}
+                    onClick={() => setSidebarOpen(false)}
+                >
+                    <span>Trazabilidad</span>
+                </Link>
             </nav>
 
             <div className="border-t border-wayna-800/80 p-3">

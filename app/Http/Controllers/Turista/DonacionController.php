@@ -27,10 +27,9 @@ class DonacionController extends Controller
         $resultado = $donacionService->registrar($validated);
 
         return redirect()
-            ->route('turista.donaciones.confirmacion')
-            ->with('success', 'Donación registrada correctamente. Escanea el QR para completar el pago.')
-            ->with('donacion_id', $resultado['donacion']->id)
-            ->with('referencia_pago', $resultado['donacion']->referencia_pago)
-            ->with('qr_pago_url', $resultado['qr_pago_url']);
+            ->route('turista.donaciones.confirmacion', [
+                'donacion' => $resultado['donacion']->id,
+            ])
+            ->with('success', 'Donación registrada correctamente. Escanea el QR para completar el pago.');
     }
 }
