@@ -1,34 +1,47 @@
+import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
+import {
+    adminBackdropShort,
+    adminListCardHeader,
+    adminListCardOuter,
+    adminPaginationBtnActive,
+    adminPaginationBtnIdle,
+    adminPrimaryGradientBtn,
+    adminTableActionDanger,
+    adminTableActionEdit,
+    adminTableHeadRow,
+    adminTableRowHover,
+} from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
+function IconoMas({ className }) {
+    return (
+        <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+            <path d="M10 3.25a.75.75 0 01.75.75v5.25H16a.75.75 0 010 1.5h-5.25V16a.75.75 0 01-1.5 0v-5.25H4a.75.75 0 010-1.5h5.25V4a.75.75 0 01.75-.75z" />
+        </svg>
+    );
+}
+
+function IconoPersonas({ className }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm11-1v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+        </svg>
+    );
+}
+
 /**
- * Página de listado de emprendedores.
- *
- * Esta página recibe los datos desde Laravel mediante Inertia.
- * No se usa fetch, axios ni useEffect porque el Controller ya envía
- * la lista de emprendedores como prop.
+ * Listado de emprendedores — panel admin WAYNA (unificado con campañas).
  */
 export default function Index({ emprendedores }) {
-    /*
-    |--------------------------------------------------------------------------
-    | Props globales de Inertia
-    |--------------------------------------------------------------------------
-    |
-    | Si en HandleInertiaRequests se comparte flash.success, aquí podemos
-    | mostrar mensajes después de crear, editar o desactivar un emprendedor.
-    |
-    */
-
     const { flash } = usePage().props;
 
-    /**
-     * Desactiva un emprendedor.
-     *
-     * En nuestro controller, el método destroy no elimina físicamente
-     * el registro. Solo cambia el estado a "inactivo".
-     *
-     * Usamos router.delete porque la ruta viene de Route::resource().
-     */
     const desactivarEmprendedor = (emprendedor) => {
         const confirmar = window.confirm(
             `¿Seguro que deseas desactivar a ${emprendedor.nombre} ${emprendedor.apellidos}?`
@@ -43,180 +56,178 @@ export default function Index({ emprendedores }) {
         });
     };
 
-    /**
-     * Construye la URL pública de una fotografía guardada en storage.
-     *
-     * En la base de datos guardamos algo como:
-     * emprendedores/fotografias/archivo.jpg
-     *
-     * En el navegador se accede como:
-     * /storage/emprendedores/fotografias/archivo.jpg
-     */
     const obtenerUrlFotografia = (fotografia) => {
         if (!fotografia) {
             return null;
         }
-
         return `/storage/${fotografia}`;
     };
+
+    const estiloEstado = (estado) =>
+        estado === 'activo'
+            ? 'bg-wayna-100 text-wayna-900 ring-1 ring-wayna-300/80 shadow-sm shadow-wayna-500/10'
+            : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200';
+
+    const totalLista = emprendedores?.data?.length ?? 0;
 
     return (
         <AdminLayout
             header={
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-wayna-600">
+                            Wayna admin
+                        </p>
+                        <h2 className="mt-1 text-2xl font-bold tracking-tight text-wayna-950 sm:text-3xl">
                             Emprendedores
                         </h2>
-                        <p className="mt-1 text-sm text-gray-500">
-                            Gestión de emprendedores registrados en WAYNA.
+                        <p className="mt-2 max-w-xl text-sm leading-relaxed text-stone-600">
+                            Alta, edición y estado de quienes aparecen en el perfil público y en las campañas de
+                            apoyo.
                         </p>
                     </div>
 
                     <Link
                         href={route('admin.emprendedores.create')}
-                        className="rounded-lg bg-wayna-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wayna-700"
+                        className={`group self-start sm:self-auto ${adminPrimaryGradientBtn}`}
                     >
+                        <IconoMas className="h-4 w-4 opacity-95" />
                         Nuevo emprendedor
                     </Link>
                 </div>
             }
         >
-            <Head title="Emprendedores" />
+            <Head title="Emprendedores — Wayna" />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    {flash?.success && (
-                        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                            {flash.success}
+            <div className="relative py-8">
+                <div className={adminBackdropShort} aria-hidden />
+
+                <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <AdminFlashSuccess message={flash?.success} />
+
+                    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-wayna-200/80 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm">
+                        <div className="flex items-center gap-2 text-sm text-stone-600">
+                            <IconoPersonas className="h-5 w-5 text-wayna-600" />
+                            <span>
+                                Mostrando{' '}
+                                <strong className="font-semibold text-wayna-900">{totalLista}</strong> en esta
+                                página
+                            </span>
                         </div>
-                    )}
+                    </div>
 
-                    <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-                        <div className="border-b border-gray-200 px-6 py-4">
-                            <h3 className="text-base font-semibold text-gray-900">
-                                Lista de emprendedores
-                            </h3>
-                            <p className="mt-1 text-sm text-gray-500">
-                                Desde esta sección se puede editar o desactivar un emprendedor.
+                    <div className={adminListCardOuter}>
+                        <div className={adminListCardHeader}>
+                            <h3 className="text-lg font-bold text-wayna-950">Directorio</h3>
+                            <p className="mt-1 text-sm text-stone-600">
+                                Fotografía, meta de referencia y QR de perfil. Desactivá sin borrar el historial.
                             </p>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                                            Emprendedor
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                                            Meta
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                                            Estado
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                                            QR
-                                        </th>
-                                        <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
-                                            Acciones
-                                        </th>
+                            <table className="min-w-full divide-y divide-wayna-100">
+                                <thead>
+                                    <tr className={adminTableHeadRow}>
+                                        <th className="px-6 py-4 sm:px-8">Emprendedor</th>
+                                        <th className="px-4 py-4 text-right">Meta Bs</th>
+                                        <th className="px-4 py-4">Estado</th>
+                                        <th className="px-4 py-4">QR</th>
+                                        <th className="px-6 py-4 text-right sm:px-8">Acciones</th>
                                     </tr>
                                 </thead>
 
-                                <tbody className="divide-y divide-gray-200 bg-white">
+                                <tbody className="divide-y divide-wayna-100 bg-white">
                                     {emprendedores.data.length === 0 && (
                                         <tr>
-                                            <td
-                                                colSpan="5"
-                                                className="px-6 py-8 text-center text-sm text-gray-500"
-                                            >
-                                                No hay emprendedores registrados todavía.
+                                            <td colSpan="5" className="px-6 py-16 text-center sm:px-8">
+                                                <div className="mx-auto max-w-md rounded-2xl border border-dashed border-wayna-200 bg-wayna-50/50 px-6 py-10">
+                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-orange-100 text-wayna-600">
+                                                        <IconoPersonas className="h-7 w-7" />
+                                                    </div>
+                                                    <p className="text-base font-semibold text-wayna-950">
+                                                        Aún no hay emprendedores
+                                                    </p>
+                                                    <p className="mt-2 text-sm leading-relaxed text-stone-600">
+                                                        Creá el primero para generar su QR de perfil y poder asignarle
+                                                        campañas.
+                                                    </p>
+                                                    <Link
+                                                        href={route('admin.emprendedores.create')}
+                                                        className={`mt-6 inline-flex ${adminPrimaryGradientBtn}`}
+                                                    >
+                                                        Registrar emprendedor
+                                                    </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     )}
 
                                     {emprendedores.data.map((emprendedor) => (
-                                        <tr key={emprendedor.id} className="hover:bg-gray-50">
-                                            <td className="whitespace-nowrap px-6 py-4">
+                                        <tr key={emprendedor.id} className={adminTableRowHover}>
+                                            <td className="px-6 py-4 sm:px-8">
                                                 <div className="flex items-center gap-3">
                                                     {obtenerUrlFotografia(emprendedor.fotografia) ? (
                                                         <img
-                                                            src={obtenerUrlFotografia(
-                                                                emprendedor.fotografia
-                                                            )}
-                                                            alt={`Fotografía de ${emprendedor.nombre}`}
-                                                            className="h-11 w-11 rounded-full object-cover"
+                                                            src={obtenerUrlFotografia(emprendedor.fotografia)}
+                                                            alt=""
+                                                            className="h-12 w-12 rounded-2xl object-cover ring-2 ring-wayna-100 shadow-sm"
                                                         />
                                                     ) : (
-                                                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-500">
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-orange-100 text-sm font-bold text-wayna-700 ring-2 ring-wayna-100">
                                                             {emprendedor.nombre?.charAt(0)}
                                                         </div>
                                                     )}
-
-                                                    <div>
-                                                        <div className="text-sm font-semibold text-gray-900">
+                                                    <div className="min-w-0">
+                                                        <div className="truncate font-semibold text-wayna-950">
                                                             {emprendedor.nombre} {emprendedor.apellidos}
                                                         </div>
-                                                        <div className="max-w-sm truncate text-sm text-gray-500">
+                                                        <div className="max-w-xs truncate text-sm text-stone-500">
                                                             {emprendedor.descripcion || 'Sin descripción'}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
-                                                Bs. {Number(emprendedor.meta_monto).toFixed(2)}
+                                            <td className="whitespace-nowrap px-4 py-4 text-right font-mono text-sm font-semibold text-wayna-900">
+                                                {Number(emprendedor.meta_monto).toFixed(2)}
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4">
+                                            <td className="whitespace-nowrap px-4 py-4">
                                                 <span
-                                                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                                                        emprendedor.estado === 'activo'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-gray-100 text-gray-700'
-                                                    }`}
+                                                    className={`inline-flex rounded-full px-3 py-1 text-xs font-bold capitalize ${estiloEstado(emprendedor.estado)}`}
                                                 >
                                                     {emprendedor.estado}
                                                 </span>
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                                            <td className="whitespace-nowrap px-4 py-4 text-sm">
                                                 {emprendedor.qr_url ? (
                                                     <a
                                                         href={`/storage/${emprendedor.qr_url}`}
                                                         target="_blank"
                                                         rel="noreferrer"
-                                                        className="font-medium text-wayna-600 hover:text-wayna-800"
+                                                        className="font-bold text-wayna-600 underline decoration-wayna-300 decoration-2 underline-offset-2 hover:text-wayna-800"
                                                     >
                                                         Ver QR
                                                     </a>
                                                 ) : (
-                                                    <span className="text-gray-400">
-                                                        Pendiente
-                                                    </span>
+                                                    <span className="text-stone-400">Pendiente</span>
                                                 )}
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                                <div className="flex justify-end gap-2">
+                                            <td className="whitespace-nowrap px-6 py-4 text-right sm:px-8">
+                                                <div className="flex flex-wrap justify-end gap-2">
                                                     <Link
-                                                        href={route(
-                                                            'admin.emprendedores.edit',
-                                                            emprendedor.id
-                                                        )}
-                                                        className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+                                                        href={route('admin.emprendedores.edit', emprendedor.id)}
+                                                        className={adminTableActionEdit}
                                                     >
                                                         Editar
                                                     </Link>
-
                                                     {emprendedor.estado === 'activo' && (
                                                         <button
                                                             type="button"
-                                                            onClick={() =>
-                                                                desactivarEmprendedor(emprendedor)
-                                                            }
-                                                            className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                                                            onClick={() => desactivarEmprendedor(emprendedor)}
+                                                            className={adminTableActionDanger}
                                                         >
                                                             Desactivar
                                                         </button>
@@ -230,22 +241,14 @@ export default function Index({ emprendedores }) {
                         </div>
 
                         {emprendedores.links && emprendedores.links.length > 3 && (
-                            <div className="border-t border-gray-200 px-6 py-4">
+                            <div className="border-t border-wayna-100 bg-wayna-50/30 px-6 py-4 sm:px-8">
                                 <div className="flex flex-wrap gap-2">
                                     {emprendedores.links.map((link, index) => (
                                         <Link
                                             key={index}
                                             href={link.url || '#'}
                                             preserveScroll
-                                            className={`rounded-md px-3 py-1.5 text-sm ${
-                                                link.active
-                                                    ? 'bg-wayna-600 text-white'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                            } ${
-                                                !link.url
-                                                    ? 'cursor-not-allowed opacity-50'
-                                                    : ''
-                                            }`}
+                                            className={`${link.active ? adminPaginationBtnActive : adminPaginationBtnIdle} ${!link.url ? 'pointer-events-none opacity-40' : ''}`}
                                             dangerouslySetInnerHTML={{
                                                 __html: link.label,
                                             }}
