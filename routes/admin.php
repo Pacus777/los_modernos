@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\EmprendedorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -42,5 +43,10 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
         Route::resource('emprendedores', EmprendedorController::class)
             ->parameters([
                 'emprendedores' => 'emprendedor',
+            ]);
+
+        Route::resource('campanas', CampanaController::class)
+            ->parameters([
+                'campanas' => 'campana',
             ]);
     });
