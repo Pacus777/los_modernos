@@ -20,7 +20,46 @@
     "secureSupportDescription": "Your donation will be registered and linked directly to the entrepreneur’s goal.",
     "continuePayment": "Continue to payment",
     "donationRegistered": "Donation registered",
-    "thankYou": "Thank you for your support. Your donation is being processed."
+    "thankYou": "Thank you for your support. Your donation is being processed.",
+    "confirmation": {
+      "headTitle": "Confirm payment — Wayna",
+      "title": "Your contribution was registered",
+      "intro": "Follow these steps to complete payment.",
+      "successFallback": "Donation registered. Use the QR code to continue.",
+      "emptyTitle": "We couldn’t find a recent donation",
+      "emptyBody": "You may have opened this page directly, or the session may have expired.",
+      "emptyCta": "Go to home",
+      "referenceLabel": "Payment reference",
+      "qrAlt": "QR code to complete your Wayna payment",
+      "helpDigital": "Scan this code with your phone camera. In the Wayna MVP it encodes your donation details; later it may link to your banking app.",
+      "helpCash": "Show this code at the Wayna desk or to the cashier so they can confirm your cash payment."
+    },
+    "profile": {
+      "headTitle": "Support {{name}}",
+      "photoPlaceholder": "Entrepreneur photo",
+      "badge": "Wayna entrepreneur",
+      "storyTitle": "Their story",
+      "storyFallback": "This entrepreneur is part of Wayna and seeks to grow with direct support from tourists and visitors.",
+      "goalSectionTitle": "Support goal",
+      "campaignActiveTitle": "Active campaign",
+      "raised": "Raised",
+      "goal": "Goal",
+      "noCampaignTitle": "No active campaign yet",
+      "noCampaignBody": "To receive donations from this page, an administrator must create a campaign with status \"active\" for this entrepreneur. The goal shown above may be informational only until that campaign exists.",
+      "referenceMetaNote": "Goal reference (no active campaign)"
+    },
+    "donationForm": {
+      "chooseTitle": "Choose your contribution",
+      "chooseSubtitle": "Pick an amount in bolivianos and confirm your support.",
+      "noActiveCampaign": "This entrepreneur does not have an active campaign yet.",
+      "noPaymentTypes": "No payment methods are available.",
+      "otherAmount": "Other amount",
+      "amountPlaceholder": "e.g. 30",
+      "paymentMethod": "Payment method",
+      "processing": "Processing...",
+      "confirmWithAmount": "Confirm contribution of Bs {{amount}}",
+      "pendingNote": "Your contribution will be registered as pending until it is confirmed."
+    }
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -36,6 +75,8 @@
     "password": "Password",
     "remember": "Remember me",
     "forgotPassword": "Forgot your password?",
-    "login": "Log in"
+    "login": "Log in",
+    "loginTitle": "Log in",
+    "loginButton": "Log in"
   }
 }

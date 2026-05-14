@@ -1,6 +1,9 @@
 import { useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
+    const { t } = useTranslation();
     const montosRapidos = [5, 10, 20, 50];
 
     const tipoPagoInicial = tipoPagos[0] ?? null;
@@ -13,6 +16,12 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
         metodo: tipoPagoInicial?.codigo ?? tipoPagoInicial?.nombre ?? 'qr_digital',
         referencia_pago: '',
     });
+
+    useEffect(() => {
+        if (campanaActiva?.id) {
+            setData('campana_id', campanaActiva.id);
+        }
+    }, [campanaActiva?.id, setData]);
 
     const seleccionarMonto = (monto) => {
         setData('monto', monto);
@@ -43,22 +52,22 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
             className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
         >
             <h2 className="text-lg font-bold text-gray-900">
-                Elige tu aporte
+                {t('tourist.donationForm.chooseTitle')}
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-                Selecciona un monto en bolivianos y confirma tu apoyo.
+                {t('tourist.donationForm.chooseSubtitle')}
             </p>
 
             {!campanaActiva && (
                 <div className="mt-4 rounded-xl bg-yellow-50 p-3 text-sm text-yellow-700">
-                    Este emprendedor todavía no tiene una campaña activa.
+                    {t('tourist.donationForm.noActiveCampaign')}
                 </div>
             )}
 
             {tipoPagos.length === 0 && (
                 <div className="mt-4 rounded-xl bg-yellow-50 p-3 text-sm text-yellow-700">
-                    No existen tipos de pago disponibles.
+                    {t('tourist.donationForm.noPaymentTypes')}
                 </div>
             )}
 
@@ -82,7 +91,7 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
 
             <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700">
-                    Otro monto
+                    {t('tourist.donationForm.otherAmount')}
                 </label>
 
                 <input
@@ -93,7 +102,7 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
                     onChange={(e) => setData('monto', e.target.value)}
                     disabled={processing}
                     className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
-                    placeholder="Ej. 30"
+                    placeholder={t('tourist.donationForm.amountPlaceholder')}
                 />
 
                 {errors.monto && (
@@ -106,7 +115,7 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
             {tipoPagos.length > 1 && (
                 <div className="mt-4">
                     <p className="text-sm font-medium text-gray-700">
-                        Método de pago
+                        {t('tourist.donationForm.paymentMethod')}
                     </p>
 
                     <div className="mt-2 grid grid-cols-2 gap-2">
@@ -151,12 +160,14 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
                 }`}
             >
                 {processing
-                    ? 'Procesando...'
-                    : `Confirmar aporte de Bs ${data.monto}`}
+                    ? t('tourist.donationForm.processing')
+                    : t('tourist.donationForm.confirmWithAmount', {
+                          amount: data.monto,
+                      })}
             </button>
 
             <p className="mt-3 text-center text-xs text-gray-400">
-                Tu aporte se registrará como pendiente hasta ser confirmado.
+                {t('tourist.donationForm.pendingNote')}
             </p>
         </form>
     );

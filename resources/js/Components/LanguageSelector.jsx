@@ -1,10 +1,9 @@
 import { router, usePage } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { initI18n } from '../i18n';
 
 export default function LanguageSelector() {
     const { props } = usePage();
-    const { i18n } = useTranslation();
     const [processing, setProcessing] = useState(false);
 
     const currentLocale = props.locale || 'es';
@@ -26,7 +25,7 @@ export default function LanguageSelector() {
                 preserveScroll: true,
                 preserveState: false,
                 onSuccess: () => {
-                    i18n.changeLanguage(locale);
+                    initI18n(locale);
                 },
                 onFinish: () => {
                     setProcessing(false);

@@ -20,7 +20,46 @@
     "secureSupportDescription": "Tu donación será registrada y vinculada directamente a la meta del emprendedor.",
     "continuePayment": "Continuar al pago",
     "donationRegistered": "Donación registrada",
-    "thankYou": "Gracias por tu apoyo. Tu donación está en proceso."
+    "thankYou": "Gracias por tu apoyo. Tu donación está en proceso.",
+    "confirmation": {
+      "headTitle": "Confirmar pago — Wayna",
+      "title": "Tu aporte quedó registrado",
+      "intro": "Seguí estos pasos para completar el pago.",
+      "successFallback": "Donación registrada. Usá el código QR para continuar.",
+      "emptyTitle": "No encontramos una donación reciente",
+      "emptyBody": "Es posible que hayas abierto esta página directamente o que la sesión haya expirado.",
+      "emptyCta": "Ir al inicio",
+      "referenceLabel": "Referencia de pago",
+      "qrAlt": "Código QR para completar el pago Wayna",
+      "helpDigital": "Escaneá este código con la cámara de tu celular. En el MVP de Wayna contiene los datos de tu donación; más adelante podrá enlazarse con tu app bancaria.",
+      "helpCash": "Mostrá este código en el punto Wayna o al cajero para que confirme tu pago en efectivo."
+    },
+    "profile": {
+      "headTitle": "Apoya a {{name}}",
+      "photoPlaceholder": "Foto del emprendedor",
+      "badge": "Emprendedor Wayna",
+      "storyTitle": "Su historia",
+      "storyFallback": "Este emprendedor forma parte de Wayna y busca fortalecer su actividad mediante el apoyo directo de turistas y visitantes.",
+      "goalSectionTitle": "Meta de apoyo",
+      "campaignActiveTitle": "Campaña activa",
+      "raised": "Recaudado",
+      "goal": "Meta",
+      "noCampaignTitle": "Aún no hay campaña activa",
+      "noCampaignBody": "Para recibir donaciones desde esta página, un administrador debe crear una campaña con estado «activa» para este emprendedor. La meta que ves arriba puede ser solo referencial hasta que exista esa campaña.",
+      "referenceMetaNote": "Referencia de meta (sin campaña vigente)"
+    },
+    "donationForm": {
+      "chooseTitle": "Elige tu aporte",
+      "chooseSubtitle": "Selecciona un monto en bolivianos y confirma tu apoyo.",
+      "noActiveCampaign": "Este emprendedor todavía no tiene una campaña activa.",
+      "noPaymentTypes": "No existen tipos de pago disponibles.",
+      "otherAmount": "Otro monto",
+      "amountPlaceholder": "Ej. 30",
+      "paymentMethod": "Método de pago",
+      "processing": "Procesando...",
+      "confirmWithAmount": "Confirmar aporte de Bs {{amount}}",
+      "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado."
+    }
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -36,6 +75,8 @@
     "password": "Contraseña",
     "remember": "Recordarme",
     "forgotPassword": "¿Olvidaste tu contraseña?",
-    "login": "Ingresar"
+    "login": "Ingresar",
+    "loginTitle": "Iniciar sesión",
+    "loginButton": "Ingresar"
   }
 }
