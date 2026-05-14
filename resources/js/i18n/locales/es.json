@@ -48,6 +48,9 @@
       "noCampaignBody": "Para recibir donaciones desde esta página, un administrador debe crear una campaña con estado «activa» para este emprendedor. La meta que ves arriba puede ser solo referencial hasta que exista esa campaña.",
       "referenceMetaNote": "Referencia de meta (sin campaña vigente)"
     },
+    "barraProgreso": {
+      "ariaLabel": "Progreso hacia la meta: {{pct}} por ciento"
+    },
     "donationForm": {
       "chooseTitle": "Elige tu aporte",
       "chooseSubtitle": "Selecciona un monto en bolivianos y confirma tu apoyo.",

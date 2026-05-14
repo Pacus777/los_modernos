@@ -48,6 +48,9 @@
       "noCampaignBody": "To receive donations from this page, an administrator must create a campaign with status \"active\" for this entrepreneur. The goal shown above may be informational only until that campaign exists.",
       "referenceMetaNote": "Goal reference (no active campaign)"
     },
+    "barraProgreso": {
+      "ariaLabel": "Progress toward the goal: {{pct}} percent"
+    },
     "donationForm": {
       "chooseTitle": "Choose your contribution",
       "chooseSubtitle": "Pick an amount in bolivianos and confirm your support.",

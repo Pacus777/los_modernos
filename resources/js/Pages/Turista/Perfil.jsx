@@ -1,5 +1,6 @@
 import GuestLayout from '@/Layouts/GuestLayout';
 import DonacionForm from '@/Components/Turista/DonacionForm';
+import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,8 +12,6 @@ export default function Perfil({ emprendedor, campanaActiva, progreso, tipoPagos
     const fotoUrl = emprendedor.fotografia
         ? `/storage/${emprendedor.fotografia}`
         : null;
-
-    const porcentaje = progreso?.porcentaje ?? 0;
 
     return (
         <GuestLayout variant="full">
@@ -57,51 +56,12 @@ export default function Perfil({ emprendedor, campanaActiva, progreso, tipoPagos
                     </div>
 
                     {campanaActiva ? (
-                        <div className="rounded-2xl border border-wayna-100 bg-wayna-50 p-4">
-                            <div className="flex items-start justify-between gap-4">
-                                <div>
-                                    <p className="text-sm font-medium text-wayna-700">
-                                        {t('tourist.profile.goalSectionTitle')}
-                                    </p>
-
-                                    <h3 className="mt-1 text-lg font-bold text-gray-900">
-                                        {campanaActiva.titulo}
-                                    </h3>
-                                </div>
-
-                                <span className="rounded-full bg-white px-3 py-1 text-sm font-bold text-wayna-700 shadow-sm">
-                                    {porcentaje}%
-                                </span>
-                            </div>
-
-                            <div className="mt-4 h-3 overflow-hidden rounded-full bg-white">
-                                <div
-                                    className="h-full rounded-full bg-wayna-600 transition-all duration-700"
-                                    style={{ width: `${porcentaje}%` }}
-                                />
-                            </div>
-
-                            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                                <div className="rounded-xl bg-white p-3">
-                                    <p className="text-gray-500">
-                                        {t('tourist.profile.raised')}
-                                    </p>
-                                    <p className="font-bold text-gray-900">
-                                        Bs{' '}
-                                        {Number(progreso?.monto_recaudado ?? 0).toFixed(2)}
-                                    </p>
-                                </div>
-
-                                <div className="rounded-xl bg-white p-3">
-                                    <p className="text-gray-500">
-                                        {t('tourist.profile.goal')}
-                                    </p>
-                                    <p className="font-bold text-gray-900">
-                                        Bs {Number(progreso?.meta ?? 0).toFixed(2)}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <BarraProgreso
+                            porcentaje={progreso?.porcentaje ?? 0}
+                            montoRecaudado={progreso?.monto_recaudado ?? 0}
+                            meta={progreso?.meta ?? 0}
+                            titulo={campanaActiva.titulo}
+                        />
                     ) : (
                         <div className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
                             <h3 className="text-base font-bold text-amber-950">
