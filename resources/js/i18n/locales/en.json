@@ -99,7 +99,11 @@
         "tipo_pago_id": "Payment type",
         "visitante_id": "Visitor",
         "referencia_pago": "Reference",
-        "locale": "Language"
+        "locale": "Language",
+        "estado_anterior": "Previous status",
+        "estado_nuevo": "New status",
+        "admin_user_id": "Admin (user)",
+        "cajero_user_id": "Cashier (user)"
       }
     }
   },

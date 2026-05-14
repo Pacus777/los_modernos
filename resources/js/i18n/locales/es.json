@@ -99,7 +99,11 @@
         "tipo_pago_id": "Tipo pago",
         "visitante_id": "Visitante",
         "referencia_pago": "Referencia",
-        "locale": "Idioma"
+        "locale": "Idioma",
+        "estado_anterior": "Estado anterior",
+        "estado_nuevo": "Estado nuevo",
+        "admin_user_id": "Admin (usuario)",
+        "cajero_user_id": "Cajero (usuario)"
       }
     }
   },

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CampanaController;
+use App\Http\Controllers\Admin\DonacionController;
 use App\Http\Controllers\Admin\EmprendedorController;
 use App\Http\Controllers\Admin\TransaccionController;
 use Illuminate\Support\Facades\Route;
@@ -53,4 +54,13 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
 
         Route::get('transacciones', [TransaccionController::class, 'index'])
             ->name('transacciones.index');
+
+        Route::get('donaciones', [DonacionController::class, 'index'])
+            ->name('donaciones.index');
+
+        Route::patch('donaciones/{donacion}/validar', [DonacionController::class, 'validar'])
+            ->name('donaciones.validar');
+
+        Route::patch('donaciones/{donacion}/rechazar', [DonacionController::class, 'rechazar'])
+            ->name('donaciones.rechazar');
     });

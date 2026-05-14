@@ -59,6 +59,15 @@ export default function AdminLayout({ header, children }) {
                     <span>Campañas</span>
                 </Link>
                 <Link
+                    href={route('admin.donaciones.index')}
+                    className={navItemClass(
+                        route().current('admin.donaciones.*'),
+                    )}
+                    onClick={() => setSidebarOpen(false)}
+                >
+                    <span>Donaciones</span>
+                </Link>
+                <Link
                     href={route('admin.transacciones.index')}
                     className={navItemClass(
                         route().current('admin.transacciones.*'),

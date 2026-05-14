@@ -25,6 +25,10 @@ function MetadatosCell({ meta }) {
         'tipo_pago_id',
         'visitante_id',
         'referencia_pago',
+        'estado_anterior',
+        'estado_nuevo',
+        'admin_user_id',
+        'cajero_user_id',
         'locale',
     ];
 
