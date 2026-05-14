@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "Wayna Conecta",
+    "language": "Idioma",
+    "spanish": "Español",
+    "english": "Inglés",
+    "back": "Volver",
+    "continue": "Continuar",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "tourist": {
+    "heroTitle": "Conecta con emprendedores locales",
+    "heroDescription": "Conoce historias reales y apoya directamente a emprendedores Wayna con una donación transparente.",
+    "viewEntrepreneurs": "Ver emprendedores",
+    "howItWorks": "¿Cómo funciona?",
+    "supportGoal": "Meta de apoyo",
+    "donateQuestion": "¿Cuánto te gustaría donar?",
+    "secureSupport": "Aporte seguro",
+    "secureSupportDescription": "Tu donación será registrada y vinculada directamente a la meta del emprendedor.",
+    "continuePayment": "Continuar al pago",
+    "donationRegistered": "Donación registrada",
+    "thankYou": "Gracias por tu apoyo. Tu donación está en proceso."
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "entrepreneurs": "Emprendedores",
+    "donations": "Donaciones",
+    "reports": "Reportes",
+    "settings": "Configuración"
+  }
+}

@@ -31,3 +31,4 @@ Thumbs.db
 .env
 /public/build
 /public/hot
+pnpm-lock.yaml 

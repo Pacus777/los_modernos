@@ -4,6 +4,12 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LocaleController;
+
+
+Route::post('/idioma', [LocaleController::class, 'update'])
+    ->name('locale.update');
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
