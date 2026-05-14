@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
         'flash' => [
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
+            'donacion_id' => fn () => $request->session()->get('donacion_id'),
+            'referencia_pago' => fn () => $request->session()->get('referencia_pago'),
+            'qr_pago_url' => fn () => $request->session()->get('qr_pago_url'),
         ],
        ];
     }
