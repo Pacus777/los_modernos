@@ -28,5 +28,14 @@
     "donations": "Donaciones",
     "reports": "Reportes",
     "settings": "Configuración"
+  },
+  "auth": {
+    "welcome": "Bienvenido",
+    "subtitle": "Ingresa para continuar al sistema",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "remember": "Recordarme",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "login": "Ingresar"
   }
 }
