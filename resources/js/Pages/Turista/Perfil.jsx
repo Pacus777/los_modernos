@@ -4,7 +4,7 @@ import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
-export default function Perfil({ emprendedor, campanaActiva, progreso, tipoPagos }) {
+export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [], progreso, tipoPagos }) {
     const { t } = useTranslation();
 
     const nombreCompleto = `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim();
@@ -82,8 +82,12 @@ export default function Perfil({ emprendedor, campanaActiva, progreso, tipoPagos
                     )}
 
                     <DonacionForm
-                        key={campanaActiva?.id ?? 'sin-campana'}
-                        campanaActiva={campanaActiva}
+                        key={
+                            campanasActivas.length > 0
+                                ? campanasActivas.map((c) => c.id).join('-')
+                                : 'sin-campana'
+                        }
+                        campanasActivas={campanasActivas}
                         tipoPagos={tipoPagos}
                     />
                 </div>

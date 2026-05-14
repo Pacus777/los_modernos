@@ -54,6 +54,7 @@
     "donationForm": {
       "chooseTitle": "Elige tu aporte",
       "chooseSubtitle": "Selecciona un monto en bolivianos y confirma tu apoyo.",
+      "campaignLabel": "Campaña",
       "noActiveCampaign": "Este emprendedor todavía no tiene una campaña activa.",
       "noPaymentTypes": "No existen tipos de pago disponibles.",
       "otherAmount": "Otro monto",

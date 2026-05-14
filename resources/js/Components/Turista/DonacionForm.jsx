@@ -1,15 +1,22 @@
 import { useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
+export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
     const { t } = useTranslation();
     const montosRapidos = [5, 10, 20, 50];
 
+    const listaCampanas = useMemo(
+        () => (Array.isArray(campanasActivas) ? campanasActivas : []),
+        [campanasActivas],
+    );
+
     const tipoPagoInicial = tipoPagos[0] ?? null;
 
+    const primeraCampanaId = listaCampanas[0]?.id ?? '';
+
     const { data, setData, post, processing, errors } = useForm({
-        campana_id: campanaActiva?.id ?? '',
+        campana_id: primeraCampanaId,
         tipo_pago_id: tipoPagoInicial?.id ?? '',
         visitante_id: '',
         monto: 10,
@@ -17,11 +24,21 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
         referencia_pago: '',
     });
 
+    const idsKey = listaCampanas.map((c) => c.id).join(',');
+
     useEffect(() => {
-        if (campanaActiva?.id) {
-            setData('campana_id', campanaActiva.id);
+        if (listaCampanas.length === 0) {
+            setData('campana_id', '');
+            return;
         }
-    }, [campanaActiva?.id, setData]);
+
+        const validIds = new Set(listaCampanas.map((c) => Number(c.id)));
+        const current = Number(data.campana_id);
+
+        if (!Number.isFinite(current) || !validIds.has(current)) {
+            setData('campana_id', listaCampanas[0].id);
+        }
+    }, [idsKey, listaCampanas, setData, data.campana_id]);
 
     const seleccionarMonto = (monto) => {
         setData('monto', monto);
@@ -40,8 +57,12 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
         });
     };
 
+    const campanaIdValido =
+        listaCampanas.length > 0 &&
+        listaCampanas.some((c) => String(c.id) === String(data.campana_id));
+
     const puedeEnviar =
-        campanaActiva?.id &&
+        campanaIdValido &&
         data.tipo_pago_id &&
         Number(data.monto) > 0 &&
         !processing;
@@ -59,9 +80,33 @@ export default function DonacionForm({ campanaActiva, tipoPagos = [] }) {
                 {t('tourist.donationForm.chooseSubtitle')}
             </p>
 
-            {!campanaActiva && (
+            {listaCampanas.length === 0 && (
                 <div className="mt-4 rounded-xl bg-yellow-50 p-3 text-sm text-yellow-700">
                     {t('tourist.donationForm.noActiveCampaign')}
+                </div>
+            )}
+
+            {listaCampanas.length > 0 && (
+                <div className="mt-4">
+                    <label
+                        htmlFor="donacion-campana-id"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        {t('tourist.donationForm.campaignLabel')}
+                    </label>
+                    <select
+                        id="donacion-campana-id"
+                        value={data.campana_id}
+                        onChange={(e) => setData('campana_id', e.target.value)}
+                        disabled={processing}
+                        className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                    >
+                        {listaCampanas.map((c) => (
+                            <option key={c.id} value={c.id}>
+                                {c.titulo}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             )}
 

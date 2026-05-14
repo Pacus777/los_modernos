@@ -54,6 +54,7 @@
     "donationForm": {
       "chooseTitle": "Choose your contribution",
       "chooseSubtitle": "Pick an amount in bolivianos and confirm your support.",
+      "campaignLabel": "Campaign",
       "noActiveCampaign": "This entrepreneur does not have an active campaign yet.",
       "noPaymentTypes": "No payment methods are available.",
       "otherAmount": "Other amount",

@@ -37,13 +37,14 @@ class EmprendedorPublicoController extends Controller
                                 $query->where('estado_pago', Donacion::ESTADO_VALIDADO);
                             },
                         ], 'monto')
-                        ->orderByDesc('fecha_inicio')
-                        ->limit(1);
+                        ->orderByDesc('fecha_inicio');
                 },
             ])
             ->findOrFail($id);
 
-        $campanaActiva = $emprendedor->campanas->first();
+        $campanasActivas = $emprendedor->campanas;
+
+        $campanaActiva = $campanasActivas->first();
 
         $progreso = $this->calcularProgresoCampanaActiva($campanaActiva, $emprendedor);
 
@@ -67,6 +68,14 @@ class EmprendedorPublicoController extends Controller
                 'fecha_fin' => $campanaActiva->fecha_fin,
                 'estado' => $campanaActiva->estado,
             ] : null,
+
+            'campanasActivas' => $campanasActivas
+                ->map(fn (Campana $c) => [
+                    'id' => $c->id,
+                    'titulo' => $c->titulo,
+                ])
+                ->values()
+                ->all(),
 
             'progreso' => $progreso,
 
