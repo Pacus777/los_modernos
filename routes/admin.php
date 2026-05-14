@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DonacionController;
 use App\Http\Controllers\Admin\EmprendedorController;
 use App\Http\Controllers\Admin\TransaccionController;
 use App\Http\Controllers\Admin\ReporteController;
+use App\Http\Controllers\Admin\PuntoController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -68,4 +69,9 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
 
         Route::get('/reportes', [ReporteController::class, 'donaciones'])
             ->name('reportes.index');
+
+        Route::resource('puntos', PuntoController::class)
+            ->parameters([
+                'puntos' => 'punto',
+            ]);
     });

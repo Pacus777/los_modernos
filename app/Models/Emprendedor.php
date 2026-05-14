@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
 class Emprendedor extends Model
@@ -89,5 +90,18 @@ class Emprendedor extends Model
     public function campanas(): HasMany
     {
         return $this->hasMany(Campana::class, 'emprendedor_id');
+    }
+
+    /**
+ * Puntos físicos donde aparece este emprendedor.
+ */
+    public function puntos(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Punto::class,
+            'emprendedor_punto',
+            'emprendedor_id',
+            'punto_id'
+        )->withTimestamps();
     }
 }
