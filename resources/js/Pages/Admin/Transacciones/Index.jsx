@@ -6,25 +6,16 @@ import {
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /** Metadatos en chips compactos (sin scroll dentro de la celda). */
 function MetadatosCell({ meta }) {
+    const { t } = useTranslation();
     if (meta == null || typeof meta !== 'object' || Array.isArray(meta)) {
         return <span className="text-stone-400">—</span>;
     }
-
-    const etiquetas = {
-        evento: 'Evento',
-        donacion_id: 'Donación',
-        campana_id: 'Campaña',
-        monto: 'Monto',
-        tipo_pago_id: 'Tipo pago',
-        visitante_id: 'Visitante',
-        referencia_pago: 'Referencia',
-        locale: 'Idioma',
-    };
 
     const orden = [
         'evento',
@@ -36,6 +27,9 @@ function MetadatosCell({ meta }) {
         'referencia_pago',
         'locale',
     ];
+
+    const etiquetaMeta = (k) =>
+        t(`admin.traceability.meta.${k}`, { defaultValue: k });
 
     const formatearValor = (clave, valor) => {
         if (valor === null || valor === undefined) {
@@ -69,7 +63,7 @@ function MetadatosCell({ meta }) {
         <div className="flex max-w-md flex-wrap gap-1.5">
             {claves.map((k) => {
                 const valor = formatearValor(k, meta[k]);
-                const label = etiquetas[k] ?? k;
+                const label = etiquetaMeta(k);
                 return (
                     <span
                         key={k}
@@ -90,50 +84,72 @@ function MetadatosCell({ meta }) {
 }
 
 /**
- * Trazabilidad — listado admin (T-36 backend + listado base; T-37 puede refinar UI).
+ * Trazabilidad — panel admin (T-37: filtros con useForm + GET Inertia).
  */
 export default function Index({ transacciones, filters }) {
+    const { t, i18n } = useTranslation();
     const { flash } = usePage().props;
-    const [local, setLocal] = useState(() => ({ ...filters }));
+    const filterForm = useForm({
+        estado: filters.estado ?? '',
+        origen: filters.origen ?? '',
+        fecha_desde: filters.fecha_desde ?? '',
+        fecha_hasta: filters.fecha_hasta ?? '',
+    });
 
     useEffect(() => {
-        setLocal({ ...filters });
+        filterForm.reset({
+            estado: filters.estado ?? '',
+            origen: filters.origen ?? '',
+            fecha_desde: filters.fecha_desde ?? '',
+            fecha_hasta: filters.fecha_hasta ?? '',
+        });
+        // Solo alineamos con props del servidor cuando cambia la query.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
     const aplicarFiltros = (e) => {
         e.preventDefault();
-        router.get(route('admin.transacciones.index'), local, {
+        filterForm.get(route('admin.transacciones.index'), {
             preserveState: true,
             preserveScroll: true,
+            replace: true,
         });
     };
 
     const limpiarFiltros = () => {
+        filterForm.reset({
+            estado: '',
+            origen: '',
+            fecha_desde: '',
+            fecha_hasta: '',
+        });
         router.get(route('admin.transacciones.index'), {}, {
             preserveState: true,
             preserveScroll: true,
+            replace: true,
         });
     };
 
     const filas = transacciones?.data ?? [];
+    const localeFecha = i18n.language?.startsWith('en') ? 'en-US' : 'es-BO';
 
     return (
         <AdminLayout
             header={
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-wayna-600">
-                        Wayna admin
+                        {t('admin.traceability.kicker')}
                     </p>
                     <h2 className="mt-1 text-2xl font-bold tracking-tight text-wayna-950 sm:text-3xl">
-                        Trazabilidad
+                        {t('admin.traceability.title')}
                     </h2>
                     <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-                        Registros de transacciones con UUID. Filtrá por estado, origen y fechas.
+                        {t('admin.traceability.intro')}
                     </p>
                 </div>
             }
         >
-            <Head title="Trazabilidad — WAYNA" />
+            <Head title={t('admin.traceability.headTitle')} />
 
             {flash?.success && (
                 <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
@@ -149,60 +165,64 @@ export default function Index({ transacciones, filters }) {
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
-                                Estado
+                                {t('admin.traceability.filterEstado')}
                             </label>
                             <input
                                 type="text"
-                                value={local.estado}
+                                value={filterForm.data.estado}
                                 onChange={(e) =>
-                                    setLocal((p) => ({ ...p, estado: e.target.value }))
+                                    filterForm.setData('estado', e.target.value)
                                 }
                                 className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
-                                placeholder="ej. pendiente"
+                                placeholder={t(
+                                    'admin.traceability.filterEstadoPlaceholder',
+                                )}
                             />
                         </div>
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
-                                Origen (contiene)
+                                {t('admin.traceability.filterOrigen')}
                             </label>
                             <input
                                 type="text"
-                                value={local.origen}
+                                value={filterForm.data.origen}
                                 onChange={(e) =>
-                                    setLocal((p) => ({ ...p, origen: e.target.value }))
+                                    filterForm.setData('origen', e.target.value)
                                 }
                                 className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
-                                placeholder="ej. turista"
+                                placeholder={t(
+                                    'admin.traceability.filterOrigenPlaceholder',
+                                )}
                             />
                         </div>
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
-                                Desde
+                                {t('admin.traceability.filterDesde')}
                             </label>
                             <input
                                 type="date"
-                                value={local.fecha_desde}
+                                value={filterForm.data.fecha_desde}
                                 onChange={(e) =>
-                                    setLocal((p) => ({
-                                        ...p,
-                                        fecha_desde: e.target.value,
-                                    }))
+                                    filterForm.setData(
+                                        'fecha_desde',
+                                        e.target.value,
+                                    )
                                 }
                                 className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
                             />
                         </div>
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
-                                Hasta
+                                {t('admin.traceability.filterHasta')}
                             </label>
                             <input
                                 type="date"
-                                value={local.fecha_hasta}
+                                value={filterForm.data.fecha_hasta}
                                 onChange={(e) =>
-                                    setLocal((p) => ({
-                                        ...p,
-                                        fecha_hasta: e.target.value,
-                                    }))
+                                    filterForm.setData(
+                                        'fecha_hasta',
+                                        e.target.value,
+                                    )
                                 }
                                 className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
                             />
@@ -211,16 +231,18 @@ export default function Index({ transacciones, filters }) {
                     <div className="mt-3 flex flex-wrap gap-2">
                         <button
                             type="submit"
-                            className="rounded-lg bg-wayna-600 px-4 py-2 text-sm font-semibold text-white hover:bg-wayna-700"
+                            disabled={filterForm.processing}
+                            className="rounded-lg bg-wayna-600 px-4 py-2 text-sm font-semibold text-white hover:bg-wayna-700 disabled:opacity-60"
                         >
-                            Aplicar filtros
+                            {t('admin.traceability.applyFilters')}
                         </button>
                         <button
                             type="button"
+                            disabled={filterForm.processing}
                             onClick={limpiarFiltros}
-                            className="rounded-lg border border-wayna-200 bg-white px-4 py-2 text-sm font-semibold text-wayna-900 hover:bg-wayna-50"
+                            className="rounded-lg border border-wayna-200 bg-white px-4 py-2 text-sm font-semibold text-wayna-900 hover:bg-wayna-50 disabled:opacity-60"
                         >
-                            Limpiar
+                            {t('admin.traceability.clearFilters')}
                         </button>
                     </div>
                 </form>
@@ -230,22 +252,22 @@ export default function Index({ transacciones, filters }) {
                         <thead className={adminTableHeadRow}>
                             <tr>
                                 <th className="min-w-[14rem] px-4 py-3 font-semibold text-wayna-950">
-                                    UUID
+                                    {t('admin.traceability.colUuid')}
                                 </th>
                                 <th className="px-4 py-3 font-semibold text-wayna-950">
-                                    Origen
+                                    {t('admin.traceability.colOrigen')}
                                 </th>
                                 <th className="px-4 py-3 font-semibold text-wayna-950">
-                                    Destino
+                                    {t('admin.traceability.colDestino')}
                                 </th>
                                 <th className="px-4 py-3 font-semibold text-wayna-950">
-                                    Estado
+                                    {t('admin.traceability.colEstado')}
                                 </th>
                                 <th className="px-4 py-3 font-semibold text-wayna-950">
-                                    Fecha
+                                    {t('admin.traceability.colFecha')}
                                 </th>
                                 <th className="px-4 py-3 font-semibold text-wayna-950">
-                                    Metadatos
+                                    {t('admin.traceability.colMetadatos')}
                                 </th>
                             </tr>
                         </thead>
@@ -256,7 +278,7 @@ export default function Index({ transacciones, filters }) {
                                         colSpan={6}
                                         className="px-4 py-8 text-center text-sm text-stone-500"
                                     >
-                                        No hay transacciones con los filtros actuales.
+                                        {t('admin.traceability.emptyRows')}
                                     </td>
                                 </tr>
                             ) : (
@@ -285,7 +307,7 @@ export default function Index({ transacciones, filters }) {
                                             {row.created_at
                                                 ? new Date(
                                                       row.created_at,
-                                                  ).toLocaleString('es-BO')
+                                                  ).toLocaleString(localeFecha)
                                                 : '—'}
                                         </td>
                                         <td className="min-w-[12rem] max-w-sm px-4 py-3 align-top text-xs text-stone-700">
@@ -306,6 +328,7 @@ export default function Index({ transacciones, filters }) {
                                     key={index}
                                     href={link.url || '#'}
                                     preserveScroll
+                                    preserveState
                                     className={`${link.active ? adminPaginationBtnActive : adminPaginationBtnIdle} ${!link.url ? 'pointer-events-none opacity-40' : ''}`}
                                     dangerouslySetInnerHTML={{
                                         __html: link.label,

@@ -70,7 +70,38 @@
     "entrepreneurs": "Emprendedores",
     "donations": "Donaciones",
     "reports": "Reportes",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "traceability": {
+      "headTitle": "Trazabilidad — WAYNA",
+      "kicker": "Wayna admin",
+      "title": "Trazabilidad",
+      "intro": "Registros de transacciones con UUID. Filtrá por estado, origen y fechas.",
+      "filterEstado": "Estado",
+      "filterEstadoPlaceholder": "ej. pendiente",
+      "filterOrigen": "Origen (contiene)",
+      "filterOrigenPlaceholder": "ej. turista",
+      "filterDesde": "Desde",
+      "filterHasta": "Hasta",
+      "applyFilters": "Aplicar filtros",
+      "clearFilters": "Limpiar",
+      "colUuid": "UUID",
+      "colOrigen": "Origen",
+      "colDestino": "Destino",
+      "colEstado": "Estado",
+      "colFecha": "Fecha",
+      "colMetadatos": "Metadatos",
+      "emptyRows": "No hay transacciones con los filtros actuales.",
+      "meta": {
+        "evento": "Evento",
+        "donacion_id": "Donación",
+        "campana_id": "Campaña",
+        "monto": "Monto",
+        "tipo_pago_id": "Tipo pago",
+        "visitante_id": "Visitante",
+        "referencia_pago": "Referencia",
+        "locale": "Idioma"
+      }
+    }
   },
   "auth": {
     "welcome": "Bienvenido",
