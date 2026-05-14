@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\EmprendedorController;
+use App\Http\Controllers\Admin\TransaccionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -49,4 +50,7 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
             ->parameters([
                 'campanas' => 'campana',
             ]);
+
+        Route::get('transacciones', [TransaccionController::class, 'index'])
+            ->name('transacciones.index');
     });
