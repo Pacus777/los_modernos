@@ -8,6 +8,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Campana extends Model
 {
+    public const ESTADO_ACTIVA = 'activa';
+
+    public const ESTADO_INACTIVA = 'inactiva';
+
+    public const ESTADO_FINALIZADA = 'finalizada';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Regla de negocio (PB-09)
+    |--------------------------------------------------------------------------
+    |
+    | Un emprendedor puede tener varias campañas en el tiempo, pero solo una
+    | debería estar en estado "activa" a la vez. Eso se valida al crear/editar
+    | campañas (admin); la base no impone un índice único parcial por motor.
+    |
+    | monto_recaudado se mantiene alineado con donaciones validadas vía
+    | DonacionObserver al cambiar estado_pago.
+    |
+    */
+
     protected $table = 'campanas';
 
     protected $fillable = [
