@@ -1,0 +1,41 @@
+{
+  "common": {
+    "appName": "Wayna Connect",
+    "language": "Language",
+    "spanish": "Spanish",
+    "english": "English",
+    "back": "Back",
+    "continue": "Continue",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "tourist": {
+    "heroTitle": "Connect with local entrepreneurs",
+    "heroDescription": "Discover real stories and directly support Wayna entrepreneurs with a transparent donation.",
+    "viewEntrepreneurs": "View entrepreneurs",
+    "howItWorks": "How does it work?",
+    "supportGoal": "Support goal",
+    "donateQuestion": "How much would you like to donate?",
+    "secureSupport": "Secure support",
+    "secureSupportDescription": "Your donation will be registered and linked directly to the entrepreneur’s goal.",
+    "continuePayment": "Continue to payment",
+    "donationRegistered": "Donation registered",
+    "thankYou": "Thank you for your support. Your donation is being processed."
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "entrepreneurs": "Entrepreneurs",
+    "donations": "Donations",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "auth": {
+    "welcome": "Welcome",
+    "subtitle": "Sign in to continue to the system",
+    "email": "Email address",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "login": "Log in"
+  }
+}

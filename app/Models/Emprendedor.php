@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Emprendedor extends Model
 {
@@ -82,5 +84,10 @@ class Emprendedor extends Model
     public function nombreCompleto(): string
     {
         return trim($this->nombre . ' ' . $this->apellidos);
+    }
+
+    public function campanas(): HasMany
+    {
+        return $this->hasMany(Campana::class, 'emprendedor_id');
     }
 }

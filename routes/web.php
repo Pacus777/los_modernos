@@ -4,6 +4,18 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LocaleController;
+
+
+//esto y Turista/Prueba.jsx son solo para probar el sistema de traducciones, luego se eliminarán
+Route::get('/turista-prueba', function () {
+    return Inertia::render('Turista/Prueba');
+})->name('turista.prueba');
+
+
+Route::post('/idioma', [LocaleController::class, 'update'])
+    ->name('locale.update');
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Donacion;
 use App\Models\Emprendedor;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -17,54 +18,32 @@ class QrCodeService
     | QrCodeService
     |--------------------------------------------------------------------------
     |
-    | Servicio encargado de generar códigos QR para el sistema WAYNA.
-    | En esta tarea generamos el QR del perfil público del emprendedor.
+    | Este servicio genera los distintos QR del sistema WAYNA:
+    |
+    | 1. QR de perfil:
+    |    Abre el perfil público del emprendedor.
+    |
+    | 2. QR de pago digital:
+    |    Identifica una donación pendiente para pago digital.
+    |
+    | 3. QR de confirmación en efectivo:
+    |    Lo escanea el cajero para confirmar una donación en efectivo.
     |
     */
 
     /**
-     * Genera el QR público de un emprendedor y guarda la imagen PNG en storage.
+     * QR 1: Genera el QR público de un emprendedor.
      *
-     * El QR apunta a una ruta pública del sistema:
+     * Este QR apunta a:
      * /emprendedor/{id}
      *
-     * En la base de datos se guarda solo la ruta relativa del archivo PNG:
-     * emprendedores/qrs/emprendedor-1.png
+     * Sirve para que el turista vea el perfil, historia y campaña.
      */
     public function generarQrPerfil(Emprendedor $emprendedor): string
     {
-        /*
-        |--------------------------------------------------------------------------
-        | 1. Construir URL pública del perfil
-        |--------------------------------------------------------------------------
-        |
-        | Esta URL será el contenido real del QR.
-        | Cuando el turista escanee el QR, abrirá esta ruta.
-        |
-        */
-
         $urlPerfil = url("/emprendedor/{$emprendedor->id}");
 
-        /*
-        |--------------------------------------------------------------------------
-        | 2. Definir ruta donde se guardará el QR
-        |--------------------------------------------------------------------------
-        |
-        | Esta ruta es relativa al disco public de Laravel.
-        | No se guarda /storage/ en la base de datos.
-        |
-        */
-
         $rutaQr = "emprendedores/qrs/emprendedor-{$emprendedor->id}.png";
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Generar QR usando Endroid QR Code
-        |--------------------------------------------------------------------------
-        |
-        | Esta versión de la librería usa new Builder(...), no Builder::create().
-        |
-        */
 
         $builder = new Builder(
             writer: new PngWriter(),
@@ -80,17 +59,100 @@ class QrCodeService
 
         $resultado = $builder->build();
 
+        Storage::disk('public')->put($rutaQr, $resultado->getString());
+
         /*
-        |--------------------------------------------------------------------------
-        | 4. Guardar archivo PNG en storage público
-        |--------------------------------------------------------------------------
-        |
-        | getString() devuelve el contenido binario de la imagen PNG.
-        |
-        */
+         * Este método devuelve la ruta relativa porque normalmente se guarda
+         * en la tabla emprendedores como qr_url.
+         */
+        return $rutaQr;
+    }
+
+    /**
+     * Decide qué QR generar según el método de pago.
+     *
+     * Si el método contiene "efectivo", genera QR para cajero.
+     * Si no, genera QR de pago digital.
+     */
+    public function generarQrPago(Donacion $donacion): string
+    {
+        $metodo = strtolower($donacion->metodo);
+
+        if (str_contains($metodo, 'efectivo')) {
+            return $this->generarQrConfirmacionEfectivo($donacion);
+        }
+
+        return $this->generarQrPagoDigital($donacion);
+    }
+
+    /**
+     * QR 2: Genera QR de pago digital.
+     *
+     * En el MVP no estamos conectando aún con una pasarela bancaria real.
+     * Por eso el QR contiene datos de la donación:
+     * referencia, monto, moneda y estado.
+     *
+     * Más adelante este contenido puede reemplazarse por un QR bancario real.
+     */
+    public function generarQrPagoDigital(Donacion $donacion): string
+    {
+        $contenidoQr = json_encode([
+            'sistema' => 'Wayna Conecta',
+            'tipo' => 'pago_digital',
+            'donacion_id' => $donacion->id,
+            'referencia_pago' => $donacion->referencia_pago,
+            'monto' => (float) $donacion->monto,
+            'moneda' => 'BOB',
+            'estado_pago' => $donacion->estado_pago,
+        ]);
+
+        $rutaQr = "donaciones/qrs/digital/donacion-{$donacion->id}.png";
+
+        return $this->guardarQrEnStorage($contenidoQr, $rutaQr);
+    }
+
+    /**
+     * QR 3: Genera QR de confirmación en efectivo.
+     *
+     * Este QR no es para que el turista pague digitalmente.
+     * Es para que el cajero lo escanee y confirme que recibió efectivo.
+     *
+     * La ruta real de confirmación se protegerá después con middleware
+     * de cajero/admin, para que un turista no pueda validar pagos.
+     */
+    public function generarQrConfirmacionEfectivo(Donacion $donacion): string
+    {
+        $urlConfirmacion = url("/cajero/efectivo/{$donacion->id}/confirmar");
+
+        $rutaQr = "donaciones/qrs/efectivo/donacion-{$donacion->id}.png";
+
+        return $this->guardarQrEnStorage($urlConfirmacion, $rutaQr);
+    }
+
+    /**
+     * Método reutilizable para generar cualquier QR y guardarlo en storage.
+     *
+     * Devuelve una URL pública tipo:
+     * /storage/donaciones/qrs/...
+     */
+    private function guardarQrEnStorage(string $contenido, string $rutaQr): string
+    {
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $contenido,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 500,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+        );
+
+        $resultado = $builder->build();
 
         Storage::disk('public')->put($rutaQr, $resultado->getString());
 
-        return $rutaQr;
+        return Storage::url($rutaQr);
     }
 }

@@ -2,6 +2,7 @@ import '../css/app.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
+import { initI18n } from './i18n';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
@@ -16,6 +17,10 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
+
+        const locale = props.initialPage.props.locale || 'es';
+
+        initI18n(locale);
 
         root.render(<App {...props} />);
     },
