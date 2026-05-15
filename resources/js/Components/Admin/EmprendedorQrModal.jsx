@@ -1,9 +1,4 @@
-import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
-import {
-    modalWaynaBody,
-    modalWaynaFooter,
-    modalWaynaShell,
-} from '@/Components/Admin/adminUi';
+import { calcularPorcentajeMeta } from '@/Components/BarraProgresoMeta';
 import Modal from '@/Components/Modal';
 import { descargarDataUrl, exportarTarjetaQrPng } from '@/utils/exportQrTarjetaCanvas';
 import { textosTarjetaQr } from '@/utils/qrTarjetaTextos';
@@ -32,22 +27,26 @@ function slugArchivo(nombre) {
 }
 
 /**
- * Modal de perfil + QR del emprendedor (admin).
- * La descarga genera un PNG con tarjeta informativa; el modal se mantiene como antes.
+ * Tarjeta modal de perfil + QR (diseño referencia UI).
+ * Si no hay QR, el botón de generar aparece en el recuadro derecho donde va el código.
  */
 export default function EmprendedorQrModal({
     show = false,
     onClose,
     emprendedor,
-    qrSrc,
+    qrSrc = '',
     fotoSrc = null,
     editHref,
+    onGenerarQr,
+    generandoQr = false,
 }) {
     const [exportando, setExportando] = useState(false);
 
-    if (!show || !emprendedor || !qrSrc) {
+    if (!show || !emprendedor) {
         return null;
     }
+
+    const tieneQr = Boolean(qrSrc?.trim());
 
     const nombreCompleto =
         `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim() || 'Emprendedor';
@@ -57,19 +56,14 @@ export default function EmprendedorQrModal({
     const metaCampana = campanaActiva ? Number(campanaActiva.meta_apoyo) : 0;
     const recaudado = campanaActiva ? Number(campanaActiva.monto_recaudado) : 0;
     const metaReferencia = Number(emprendedor.meta_monto) || 0;
-
     const metaProgreso = metaCampana > 0 ? metaCampana : metaReferencia;
-    const porcentaje =
-        metaProgreso > 0
-            ? Math.min(100, Math.round((recaudado / metaProgreso) * 100))
-            : 0;
-
-    const estiloEstado =
-        emprendedor.estado === 'activo'
-            ? 'bg-wayna-100 text-wayna-900 ring-1 ring-wayna-300/70'
-            : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200';
+    const porcentaje = calcularPorcentajeMeta(recaudado, metaProgreso);
 
     const descargarQr = async (locale) => {
+        if (!tieneQr) {
+            return;
+        }
+
         setExportando(true);
         const textos = textosTarjetaQr(locale, campanaActiva?.titulo);
         const base = slugArchivo(nombreCompleto) || 'emprendedor';
@@ -98,162 +92,139 @@ export default function EmprendedorQrModal({
         }
     };
 
-    const imprimirQr = () => {
-        document.body.classList.add('printing-emprendedor-qr');
-        const limpiar = () => document.body.classList.remove('printing-emprendedor-qr');
-        window.addEventListener('afterprint', limpiar, { once: true });
-        window.print();
-    };
-
     return (
-        <Modal show={show} onClose={onClose} maxWidth="xl">
-            <div id="emprendedor-qr-print" className={modalWaynaShell}>
-                <div className="header-wayna-gradient shrink-0 px-4 py-3 sm:px-5">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85">
-                        QR del emprendedor
-                    </p>
-                    <h2 className="mt-1 text-lg font-bold text-white sm:text-xl">
-                        {nombreCompleto}
-                    </h2>
-                    {campanaActiva?.titulo ? (
-                        <p className="mt-1 text-sm text-white/90">
-                            Campaña activa: {campanaActiva.titulo}
-                        </p>
-                    ) : null}
-                </div>
+        <Modal show={show} onClose={onClose} maxWidth="4xl">
+            <div
+                id="emprendedor-qr-print"
+                className="overflow-hidden rounded-3xl bg-[#5c4033] shadow-2xl shadow-stone-900/40"
+            >
+                <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-stretch sm:gap-6 sm:p-6 lg:p-7">
+                    <div className="flex shrink-0 justify-center sm:justify-start">
+                        {fotoSrc ? (
+                            <img
+                                src={fotoSrc}
+                                alt={nombreCompleto}
+                                className="h-36 w-36 rounded-2xl object-cover shadow-lg ring-2 ring-white/20 sm:h-40 sm:w-40"
+                            />
+                        ) : (
+                            <div className="flex h-36 w-36 items-center justify-center rounded-2xl bg-[#4a3228] text-4xl font-black text-amber-100/90 shadow-lg ring-2 ring-white/15 sm:h-40 sm:w-40">
+                                {emprendedor.nombre?.charAt(0) ?? '?'}
+                            </div>
+                        )}
+                    </div>
 
-                <div className={`${modalWaynaBody} p-4 sm:p-5`}>
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
-                        <div className="flex shrink-0 flex-col items-center gap-2 lg:w-28">
-                            {fotoSrc ? (
-                                <img
-                                    src={fotoSrc}
-                                    alt={nombreCompleto}
-                                    className="h-28 w-28 rounded-2xl object-cover shadow-md ring-2 ring-wayna-200"
-                                />
-                            ) : (
-                                <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-3xl font-black text-wayna-700 ring-2 ring-wayna-200">
-                                    {emprendedor.nombre?.charAt(0) ?? '?'}
-                                </div>
-                            )}
-                            <span
-                                className={`inline-flex rounded-full px-3 py-1 text-xs font-bold capitalize ${estiloEstado}`}
-                            >
-                                {emprendedor.estado}
-                            </span>
-                        </div>
-
-                        <div className="min-w-0 flex-1 space-y-4">
+                    <div className="min-w-0 flex-1 space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
-                                    Información del emprendimiento
+                                <p className="text-sm font-bold text-amber-100/95">
+                                    Información de la empresa
                                 </p>
-                                <p className="mt-2 text-sm leading-relaxed text-stone-700">
+                                <p className="mt-2 text-sm leading-relaxed text-stone-100/90">
                                     {emprendedor.descripcion?.trim() ||
                                         'Sin descripción registrada.'}
                                 </p>
                             </div>
-
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                <div className="rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3">
-                                    <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
-                                        Meta de referencia
-                                    </p>
-                                    <p className="mt-1 font-mono text-base font-bold text-wayna-950">
-                                        Bs {formatearBs(metaReferencia)}
-                                    </p>
-                                </div>
-                                <div className="rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3">
-                                    <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
-                                        {campanaActiva ? 'Meta campaña activa' : 'Recaudado'}
-                                    </p>
-                                    <p className="mt-1 font-mono text-base font-bold text-wayna-950">
-                                        {campanaActiva
-                                            ? `Bs ${formatearBs(metaCampana)}`
-                                            : `Bs ${formatearBs(recaudado)}`}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {campanaActiva ? (
-                                <div>
-                                    <p className="mb-2 text-xs font-semibold text-stone-600">
-                                        Progreso de la campaña
-                                    </p>
-                                    <BarraProgresoMeta
-                                        montoRecaudado={recaudado}
-                                        meta={metaProgreso}
-                                        porcentaje={porcentaje}
-                                    />
-                                </div>
-                            ) : (
-                                <p className="rounded-xl border border-dashed border-wayna-200 bg-surface-muted/80 px-4 py-3 text-sm text-stone-600">
-                                    Este emprendedor no tiene una campaña activa. El QR
-                                    enlaza a su perfil público.
+                            <div className="sm:text-right">
+                                <p className="text-sm font-bold text-amber-100/95">Meta</p>
+                                <p className="mt-2 font-mono text-2xl font-black text-white">
+                                    Bs {formatearBs(metaProgreso > 0 ? metaProgreso : metaReferencia)}
                                 </p>
-                            )}
+                                {campanaActiva?.titulo ? (
+                                    <p className="mt-1 text-xs text-stone-200/80">
+                                        {campanaActiva.titulo}
+                                    </p>
+                                ) : null}
+                            </div>
                         </div>
 
-                        <div className="flex flex-col items-center gap-2 lg:w-44 lg:border-l lg:border-wayna-100 lg:pl-4">
-                            {editHref ? (
-                                <Link
-                                    href={editHref}
-                                    onClick={onClose}
-                                    className="no-print-qr w-full rounded-xl bg-wayna-500 px-4 py-2 text-center text-sm font-bold text-white shadow-sm transition hover:bg-wayna-600"
-                                >
-                                    Editar
-                                </Link>
+                        <p className="text-sm leading-relaxed text-stone-100/85">
+                            {nombreCompleto}
+                            {emprendedor.estado ? (
+                                <span className="ml-2 inline-flex rounded-full bg-white/15 px-2 py-0.5 text-xs font-bold capitalize text-amber-50">
+                                    {emprendedor.estado}
+                                </span>
                             ) : null}
-                            <div className="rounded-2xl border-2 border-wayna-200 bg-white p-2 shadow-inner">
-                                <img
-                                    src={qrSrc}
-                                    alt={`QR ${nombreCompleto}`}
-                                    className="h-32 w-32 object-contain sm:h-36 sm:w-36"
-                                />
+                        </p>
+
+                        <div>
+                            <div className="relative h-10 overflow-hidden rounded-full bg-[#b8d4eb] shadow-inner">
+                                <div
+                                    className="absolute inset-y-0 left-0 flex items-center rounded-full bg-[#1e4a7a] px-4 transition-[width] duration-500"
+                                    style={{ width: `${Math.max(porcentaje, 8)}%` }}
+                                >
+                                    <span className="truncate text-xs font-bold text-white sm:text-sm">
+                                        {porcentaje}% recaudado
+                                    </span>
+                                </div>
                             </div>
-                            <p className="text-center text-xs text-stone-500">
-                                Escaneá para abrir el perfil público
+                            <p className="mt-2 text-xs text-stone-200/75">
+                                Bs {formatearBs(recaudado)} de Bs {formatearBs(metaProgreso)}
                             </p>
-                            <div className="no-print-qr flex w-full flex-col gap-2">
-                                <p className="text-center text-[10px] font-bold uppercase tracking-wide text-stone-500">
-                                    Descargar tarjeta
-                                </p>
-                                <div className="grid grid-cols-2 gap-2">
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 sm:w-44 sm:shrink-0">
+                        {editHref ? (
+                            <Link
+                                href={editHref}
+                                onClick={onClose}
+                                className="no-print-qr w-full rounded-full bg-[#f5c518] px-5 py-2.5 text-center text-sm font-bold text-stone-900 shadow-md transition hover:bg-[#ffd84d]"
+                            >
+                                Editar
+                            </Link>
+                        ) : null}
+
+                        {tieneQr ? (
+                            <>
+                                <div className="rounded-2xl bg-white p-2.5 shadow-lg">
+                                    <img
+                                        src={qrSrc}
+                                        alt={`QR ${nombreCompleto}`}
+                                        className="h-36 w-36 object-contain sm:h-40 sm:w-40"
+                                    />
+                                </div>
+                                <div className="no-print-qr flex w-full gap-2">
                                     <button
                                         type="button"
                                         onClick={() => descargarQr('es')}
                                         disabled={exportando}
-                                        className="btn-wayna-primary text-xs sm:text-sm"
+                                        className="flex-1 rounded-full border border-white/25 bg-white/10 px-2 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20"
                                     >
-                                        {exportando ? '…' : 'Español'}
+                                        {exportando ? '…' : 'Descargar ES'}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => descargarQr('en')}
                                         disabled={exportando}
-                                        className="btn-wayna-primary text-xs sm:text-sm"
+                                        className="flex-1 rounded-full border border-white/25 bg-white/10 px-2 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20"
                                     >
-                                        {exportando ? '…' : 'English'}
+                                        {exportando ? '…' : 'EN'}
                                     </button>
                                 </div>
+                            </>
+                        ) : (
+                            <div className="flex h-36 w-36 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-amber-200/50 bg-[#4a3228]/80 p-4 text-center sm:h-40 sm:w-40">
+                                <p className="text-xs font-semibold leading-snug text-amber-100/90">
+                                    QR pendiente
+                                </p>
                                 <button
                                     type="button"
-                                    onClick={imprimirQr}
-                                    disabled={exportando}
-                                    className="btn-wayna-secondary w-full text-sm"
+                                    onClick={onGenerarQr}
+                                    disabled={generandoQr || !onGenerarQr}
+                                    className="w-full rounded-full bg-[#f5c518] px-3 py-2 text-xs font-bold text-stone-900 shadow-md transition hover:bg-[#ffd84d] disabled:opacity-60"
                                 >
-                                    Imprimir
+                                    {generandoQr ? 'Generando…' : 'Generar QR'}
                                 </button>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
-                <div className={`${modalWaynaFooter} no-print-qr flex justify-center`}>
+                <div className="no-print-qr border-t border-white/10 px-5 py-3 text-center sm:px-6">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="btn-wayna-primary min-w-[10rem]"
+                        className="text-sm font-semibold text-amber-100/90 underline decoration-white/30 underline-offset-2 hover:text-white"
                     >
                         Cerrar
                     </button>

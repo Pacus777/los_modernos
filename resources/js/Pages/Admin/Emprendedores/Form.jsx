@@ -1,4 +1,4 @@
-﻿import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import AdminBackLink from '@/Components/Admin/AdminBackLink';
 import AdminFormField from '@/Components/Admin/AdminFormField';
 import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
 import AdminEmprendedorMediosFields from '@/Components/Admin/AdminEmprendedorMediosFields';
@@ -16,10 +16,11 @@ import {
     adminSectionCard,
     adminTextareaClass,
 } from '@/Components/Admin/adminUi';
+import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
 function formatearBs(valor) {
@@ -33,11 +34,16 @@ function formatearBs(valor) {
 /**
  * Formulario crear / editar emprendedor por pasos (T-A7).
  */
-export default function Form({ modo, emprendedor, tiposEmprendimiento = [], departamentos = [] }) {
+export default function Form({
+    modo,
+    emprendedor,
+    tiposEmprendimiento = [],
+    departamentos = [],
+}) {
+    const { flash } = usePage().props;
     const esEdicion = modo === 'editar';
     const [paso, setPaso] = useState(1);
     const [erroresPaso, setErroresPaso] = useState({});
-
     const { data, setData, post, processing, errors, reset } = useForm({
         nombre: emprendedor?.nombre || '',
         apellidos: emprendedor?.apellidos || '',
@@ -237,6 +243,7 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
 
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                     <AdminBackLink href={route('admin.emprendedores.index')} />
+                    <AdminFlashSuccess message={flash?.success} />
 
                     <div className="overflow-hidden rounded-3xl border border-wayna-200/90 bg-white shadow-2xl shadow-wayna-900/[0.08] ring-1 ring-black/[0.03]">
                         <div className="header-wayna-gradient px-6 py-5 sm:px-8">
@@ -510,6 +517,18 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
                                                 guardar.
                                             </div>
                                         ) : null}
+                                        {esEdicion && !emprendedor?.qr_url ? (
+                                            <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-4 text-sm text-amber-900/90">
+                                                <p className="font-semibold text-amber-950">
+                                                    Código QR pendiente
+                                                </p>
+                                                <p className="mt-1">
+                                                    En el listado, usá <strong>Ver QR</strong> para
+                                                    abrir la tarjeta y generar el código en el
+                                                    recuadro derecho.
+                                                </p>
+                                            </div>
+                                        ) : null}
                                     </div>
                                 )}
 
@@ -608,6 +627,7 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
                     </div>
                 </div>
             </div>
+
         </AdminLayout>
     );
 }

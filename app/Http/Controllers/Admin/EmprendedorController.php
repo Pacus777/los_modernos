@@ -203,8 +203,27 @@ class EmprendedorController extends Controller
     }
 
     /**
-     * Actualiza los datos de un emprendedor.
+     * Genera el QR de perfil si el emprendedor aún no tiene uno (qr_url vacío).
      */
+    public function generarQr(Emprendedor $emprendedor, QrCodeService $qrCodeService): RedirectResponse
+    {
+        if (filled($emprendedor->qr_url)) {
+            return redirect()
+                ->back()
+                ->with('error', 'Este emprendedor ya tiene un código QR. Usá «Ver QR» en el listado.');
+        }
+
+        $rutaQr = $qrCodeService->generarQrPerfil($emprendedor);
+
+        $emprendedor->update([
+            'qr_url' => $rutaQr,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Código QR de perfil generado correctamente.');
+    }
+
     /**
      * Actualiza los datos de un emprendedor.
      */

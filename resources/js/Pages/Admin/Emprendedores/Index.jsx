@@ -1,4 +1,6 @@
 import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
+import EmprendedorDetalleModal from '@/Components/Admin/EmprendedorDetalleModal';
+import EmprendedorDirectorioTarjeta from '@/Components/Admin/EmprendedorDirectorioTarjeta';
 import {
     adminBackdropShort,
     adminListCardHeader,
@@ -11,14 +13,12 @@ import {
     adminTableHeadRow,
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
-import EmprendedorDetalleModal from '@/Components/Admin/EmprendedorDetalleModal';
-import EmprendedorQrModal from '@/Components/Admin/EmprendedorQrModal';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 function IconoMas({ className }) {
     return (
@@ -43,18 +43,39 @@ function IconoPersonas({ className }) {
 }
 
 /**
- * Listado de emprendedores — panel admin WAYNA (unificado con campañas).
+ * Listado tabla + vista QR tipo tarjeta debajo al pulsar «Ver QR».
  */
 export default function Index({ emprendedores }) {
     const { flash } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const [detalle, setDetalle] = useState({ open: false, emprendedor: null });
-    const [qrPreview, setQrPreview] = useState({
-        open: false,
-        emprendedor: null,
-        qrSrc: '',
-        fotoSrc: null,
-    });
+    const [panelQrEmprendedorId, setPanelQrEmprendedorId] = useState(null);
+    const [generandoId, setGenerandoId] = useState(null);
+
+    const emprendedorPanelQr = useMemo(() => {
+        if (!panelQrEmprendedorId) {
+            return null;
+        }
+        return (
+            emprendedores.data.find((e) => e.id === panelQrEmprendedorId) ??
+            null
+        );
+    }, [panelQrEmprendedorId, emprendedores.data]);
+
+    useEffect(() => {
+        if (
+            panelQrEmprendedorId &&
+            !emprendedores.data.some((e) => e.id === panelQrEmprendedorId)
+        ) {
+            setPanelQrEmprendedorId(null);
+        }
+    }, [emprendedores.data, panelQrEmprendedorId]);
+
+    const togglearPanelQr = (emprendedor) => {
+        setPanelQrEmprendedorId((id) =>
+            id === emprendedor.id ? null : emprendedor.id,
+        );
+    };
 
     const desactivarEmprendedor = (emprendedor) => {
         requestConfirm({
@@ -79,21 +100,17 @@ export default function Index({ emprendedores }) {
         setDetalle({ open: false, emprendedor: null });
     };
 
-    const verQrEmprendedor = (emprendedor) => {
-        if (!emprendedor.qr_url) {
-            return;
-        }
-        setQrPreview({
-            open: true,
-            emprendedor,
-            qrSrc: `/storage/${emprendedor.qr_url}`,
-            fotoSrc: obtenerUrlFotografia(emprendedor.fotografia),
+    const generarQrPara = (emprendedor) => {
+        setGenerandoId(emprendedor.id);
+        router.post(route('admin.emprendedores.generar-qr', emprendedor.id), {}, {
+            preserveScroll: true,
+            onFinish: () => setGenerandoId(null),
         });
     };
 
     const verQrDesdeDetalle = (emprendedor) => {
         cerrarDetalle();
-        verQrEmprendedor(emprendedor);
+        setPanelQrEmprendedorId(emprendedor.id);
     };
 
     const detenerClic = (e) => {
@@ -164,8 +181,8 @@ export default function Index({ emprendedores }) {
                         <div className={adminListCardHeader}>
                             <h3 className="text-lg font-bold text-wayna-950">Directorio</h3>
                             <p className="mt-1 text-sm text-stone-600">
-                                Hacé clic en una fila para ver la ficha completa. Editá o desactivá desde las
-                                acciones.
+                                Hacé clic en una fila para ver la ficha completa. Usá <strong>Ver QR</strong> para
+                                mostrar la tarjeta con código debajo del listado.
                             </p>
                         </div>
 
@@ -193,8 +210,8 @@ export default function Index({ emprendedores }) {
                                                         Aún no hay emprendedores
                                                     </p>
                                                     <p className="mt-2 text-sm leading-relaxed text-stone-600">
-                                                        Creá el primero para generar su QR de perfil y poder asignarle
-                                                        campañas.
+                                                        Creá el primero para generar su QR de perfil y poder
+                                                        asignarle campañas.
                                                     </p>
                                                     <Link
                                                         href={route('admin.emprendedores.create')}
@@ -219,7 +236,11 @@ export default function Index({ emprendedores }) {
                                                     abrirDetalle(emprendedor);
                                                 }
                                             }}
-                                            className={`${adminTableRowHover} cursor-pointer`}
+                                            className={`${adminTableRowHover} cursor-pointer ${
+                                                panelQrEmprendedorId === emprendedor.id
+                                                    ? 'bg-wayna-50/90 ring-2 ring-inset ring-wayna-200'
+                                                    : ''
+                                            }`}
                                             aria-label={`Ver ficha de ${emprendedor.nombre} ${emprendedor.apellidos}`}
                                         >
                                             <td className="px-6 py-4 sm:px-8">
@@ -282,17 +303,21 @@ export default function Index({ emprendedores }) {
                                                 className="whitespace-nowrap px-4 py-4 text-sm"
                                                 onClick={detenerClic}
                                             >
-                                                {emprendedor.qr_url ? (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => verQrEmprendedor(emprendedor)}
-                                                        className="font-bold text-wayna-600 underline decoration-wayna-300 decoration-2 underline-offset-2 transition hover:text-wayna-800"
-                                                    >
-                                                        Ver QR
-                                                    </button>
-                                                ) : (
-                                                    <span className="text-stone-400">Pendiente</span>
-                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => togglearPanelQr(emprendedor)}
+                                                    className={`font-bold underline decoration-2 underline-offset-2 transition ${
+                                                        panelQrEmprendedorId === emprendedor.id
+                                                            ? 'text-wayna-800 decoration-wayna-500'
+                                                            : emprendedor.qr_url
+                                                              ? 'text-wayna-600 decoration-wayna-300 hover:text-wayna-800'
+                                                              : 'text-amber-700 decoration-amber-300 hover:text-amber-900'
+                                                    }`}
+                                                >
+                                                    {panelQrEmprendedorId === emprendedor.id
+                                                        ? 'Ocultar QR'
+                                                        : 'Ver QR'}
+                                                </button>
                                             </td>
 
                                             <td
@@ -309,7 +334,9 @@ export default function Index({ emprendedores }) {
                                                     {emprendedor.estado === 'activo' && (
                                                         <button
                                                             type="button"
-                                                            onClick={() => desactivarEmprendedor(emprendedor)}
+                                                            onClick={() =>
+                                                                desactivarEmprendedor(emprendedor)
+                                                            }
                                                             className={adminTableActionDanger}
                                                         >
                                                             Desactivar
@@ -322,6 +349,48 @@ export default function Index({ emprendedores }) {
                                 </tbody>
                             </table>
                         </div>
+
+                        {emprendedorPanelQr ? (
+                            <div className="border-t border-wayna-200 bg-wayna-50/50 px-4 py-6 sm:px-8">
+                                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                                    <p className="text-sm font-semibold text-wayna-900">
+                                        Vista QR — {emprendedorPanelQr.nombre}{' '}
+                                        {emprendedorPanelQr.apellidos}
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPanelQrEmprendedorId(null)}
+                                        className="text-sm font-bold text-wayna-700 underline decoration-wayna-300 underline-offset-2 hover:text-wayna-950"
+                                    >
+                                        Cerrar vista
+                                    </button>
+                                </div>
+                                <EmprendedorDirectorioTarjeta
+                                    emprendedor={emprendedorPanelQr}
+                                    fotoSrc={obtenerUrlFotografia(
+                                        emprendedorPanelQr.fotografia,
+                                    )}
+                                    qrSrc={
+                                        emprendedorPanelQr.qr_url
+                                            ? `/storage/${emprendedorPanelQr.qr_url}`
+                                            : ''
+                                    }
+                                    editHref={route(
+                                        'admin.emprendedores.edit',
+                                        emprendedorPanelQr.id,
+                                    )}
+                                    onGenerarQr={() => generarQrPara(emprendedorPanelQr)}
+                                    generandoQr={generandoId === emprendedorPanelQr.id}
+                                    onVerFicha={() => abrirDetalle(emprendedorPanelQr)}
+                                    onDesactivar={() =>
+                                        desactivarEmprendedor(emprendedorPanelQr)
+                                    }
+                                    puedeDesactivar={
+                                        emprendedorPanelQr.estado === 'activo'
+                                    }
+                                />
+                            </div>
+                        ) : null}
 
                         {emprendedores.links && emprendedores.links.length > 3 && (
                             <div className="border-t border-wayna-100 bg-wayna-50/30 px-6 py-4 sm:px-8">
@@ -359,25 +428,6 @@ export default function Index({ emprendedores }) {
                 }
                 onVerQr={verQrDesdeDetalle}
                 onClose={cerrarDetalle}
-            />
-            <EmprendedorQrModal
-                show={qrPreview.open}
-                emprendedor={qrPreview.emprendedor}
-                qrSrc={qrPreview.qrSrc}
-                fotoSrc={qrPreview.fotoSrc}
-                editHref={
-                    qrPreview.emprendedor
-                        ? route('admin.emprendedores.edit', qrPreview.emprendedor.id)
-                        : null
-                }
-                onClose={() =>
-                    setQrPreview({
-                        open: false,
-                        emprendedor: null,
-                        qrSrc: '',
-                        fotoSrc: null,
-                    })
-                }
             />
         </AdminLayout>
     );

@@ -163,14 +163,25 @@ export default function EmprendedorDetalleModal({
                                                 onClick={() => onVerQr(emprendedor)}
                                                 className="text-sm font-bold text-wayna-600 underline decoration-wayna-300 underline-offset-2 hover:text-wayna-800"
                                             >
-                                                Ampliar y descargar QR
+                                                Ver QR debajo
                                             </button>
                                         ) : null}
                                     </div>
                                 ) : (
-                                    <p className="mt-2 text-sm text-stone-500">
-                                        QR pendiente de generación.
-                                    </p>
+                                    <div className="mt-3">
+                                        <p className="text-sm text-stone-500">
+                                            QR pendiente de generación.
+                                        </p>
+                                        {onVerQr ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => onVerQr(emprendedor)}
+                                                className="mt-2 text-sm font-bold text-wayna-600 underline decoration-wayna-300 underline-offset-2 hover:text-wayna-800"
+                                            >
+                                                Ver QR debajo
+                                            </button>
+                                        ) : null}
+                                    </div>
                                 )}
                             </div>
 

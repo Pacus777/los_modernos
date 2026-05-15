@@ -23,6 +23,8 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::redirect('/', '/admin/dashboard');
+
         Route::get('/dashboard', [ReporteController::class, 'impacto'])
             ->name('dashboard');
 
@@ -47,6 +49,9 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
             ->parameters([
                 'emprendedores' => 'emprendedor',
             ]);
+
+        Route::post('emprendedores/{emprendedor}/generar-qr', [EmprendedorController::class, 'generarQr'])
+            ->name('emprendedores.generar-qr');
 
         Route::resource('campanas', CampanaController::class)
             ->parameters([
