@@ -53,6 +53,18 @@
         @apply btn-wayna-chip;
     }
 
+    .admin-media-dropzone:focus-within {
+        @apply border-wayna-500 ring-2 ring-wayna-400/30;
+    }
+
+    .admin-medios-panel {
+        @apply backdrop-blur-sm;
+    }
+
+    .admin-vista-previa-item {
+        animation: admin-vista-previa-fade 0.35s ease-out both;
+    }
+
     .btn-wayna-chip-payment-selected {
         @apply relative rounded-xl border-2 border-wayna-300 bg-gradient-to-br from-wayna-500 to-wayna-600 px-3 py-3 text-sm font-bold text-white ring-2 ring-wayna-400/80 ring-offset-2 ring-offset-white;
         box-shadow:
@@ -186,6 +198,18 @@
 
 .barra-progreso-badge {
     animation: barra-progreso-badge-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes admin-vista-previa-fade {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 @keyframes wayna-payment-chip-glow {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
+use App\Services\EmprendedorMediosService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -46,6 +47,9 @@ class Emprendedor extends Model
         'tipo_emprendimiento',
         'departamento',
         'fotografia',
+        'foto_empresa',
+        'galeria',
+        'video_url',
         'qr_url',
         'estado',
         'meta_monto',
@@ -65,7 +69,48 @@ class Emprendedor extends Model
         'meta_monto' => 'decimal:2',
         'tipo_emprendimiento' => TipoEmprendimiento::class,
         'departamento' => Departamento::class,
+        'galeria' => 'array',
     ];
+
+    /**
+     * Foto de perfil del emprendedor (cabecera turista). No usar foto_empresa aquí.
+     */
+    public function urlFotoPerfil(): ?string
+    {
+        return EmprendedorMediosService::urlAlmacenPublico($this->fotografia);
+    }
+
+    /** @deprecated Use urlFotoPerfil() — mantiene compatibilidad con props Inertia. */
+    public function urlFotoPortada(): ?string
+    {
+        return $this->urlFotoPerfil();
+    }
+
+    public function urlFotoEmpresa(): ?string
+    {
+        return EmprendedorMediosService::urlAlmacenPublico($this->foto_empresa);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function urlsGaleriaPublica(): array
+    {
+        $rutas = is_array($this->galeria) ? $this->galeria : [];
+
+        return array_values(array_filter(array_map(
+            fn (string $ruta) => EmprendedorMediosService::urlAlmacenPublico($ruta),
+            $rutas,
+        )));
+    }
+
+    /**
+     * @return array{titulo: string, tipo: 'none'|'archivo'|'embed', src: string|null, embed_url: string|null}
+     */
+    public function presentacionVideoPublico(): array
+    {
+        return EmprendedorMediosService::presentacionVideo($this->video_url);
+    }
 
     /**
      * Verifica si el emprendedor está activo.

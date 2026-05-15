@@ -47,7 +47,14 @@
       "goal": "Goal",
       "noCampaignTitle": "No active campaign yet",
       "noCampaignBody": "To receive donations from this page, an administrator must create a campaign with status \"active\" for this entrepreneur. The goal shown above may be informational only until that campaign exists.",
-      "referenceMetaNote": "Goal reference (no active campaign)"
+      "referenceMetaNote": "Goal reference (no active campaign)",
+      "businessPhotoTitle": "Our business",
+      "businessPhotoAlt": "Business photo of {{name}}",
+      "galleryTitle": "Gallery",
+      "gallerySubtitle": "See more of their work and products.",
+      "galleryImageAlt": "Image {{index}} of {{name}}",
+      "videoTitle": "Video",
+      "videoUnsupported": "Your browser cannot play this video."
     },
     "barraProgreso": {
       "ariaLabel": "Progress toward the goal: {{pct}} percent"

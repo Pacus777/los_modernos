@@ -4,15 +4,21 @@ import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '@/Components/Turista/ChatWidget';
+import PerfilMediosEmprendedor from '@/Components/Turista/PerfilMediosEmprendedor';
 
-export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [], progreso, tipoPagos }) {
+export default function Perfil({
+    emprendedor,
+    medios,
+    campanaActiva,
+    campanasActivas = [],
+    progreso,
+    tipoPagos,
+}) {
     const { t } = useTranslation();
 
     const nombreCompleto = `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim();
 
-    const fotoUrl = emprendedor.fotografia
-        ? `/storage/${emprendedor.fotografia}`
-        : null;
+    const fotoUrl = emprendedor.foto_portada ?? null;
 
     return (
         <GuestLayout variant="full">
@@ -67,6 +73,26 @@ export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [
                             {emprendedor.descripcion || t('tourist.profile.storyFallback')}
                         </p>
                     </div>
+
+                    {medios?.foto_empresa && (
+                        <div>
+                            <h2 className="text-lg font-bold text-gray-900">
+                                {t('tourist.profile.businessPhotoTitle')}
+                            </h2>
+                            <img
+                                src={medios.foto_empresa}
+                                alt={t('tourist.profile.businessPhotoAlt', {
+                                    name: nombreCompleto,
+                                })}
+                                className="mt-3 max-h-80 w-full rounded-2xl object-cover shadow-md ring-1 ring-wayna-100"
+                            />
+                        </div>
+                    )}
+
+                    <PerfilMediosEmprendedor
+                        medios={medios}
+                        nombreEmprendimiento={nombreCompleto}
+                    />
 
                     {campanaActiva ? (
                         <BarraProgreso

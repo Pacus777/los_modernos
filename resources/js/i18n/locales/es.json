@@ -47,7 +47,14 @@
       "goal": "Meta",
       "noCampaignTitle": "Aún no hay campaña activa",
       "noCampaignBody": "Para recibir donaciones desde esta página, un administrador debe crear una campaña con estado «activa» para este emprendedor. La meta que ves arriba puede ser solo referencial hasta que exista esa campaña.",
-      "referenceMetaNote": "Referencia de meta (sin campaña vigente)"
+      "referenceMetaNote": "Referencia de meta (sin campaña vigente)",
+      "businessPhotoTitle": "Nuestro emprendimiento",
+      "businessPhotoAlt": "Foto del emprendimiento de {{name}}",
+      "galleryTitle": "Galería",
+      "gallerySubtitle": "Conocé más del trabajo y los productos.",
+      "galleryImageAlt": "Imagen {{index}} de {{name}}",
+      "videoTitle": "Video",
+      "videoUnsupported": "Tu navegador no puede reproducir este video."
     },
     "barraProgreso": {
       "ariaLabel": "Progreso hacia la meta: {{pct}} por ciento"

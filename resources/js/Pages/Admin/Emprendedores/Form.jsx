@@ -1,11 +1,13 @@
-import AdminBackLink from '@/Components/Admin/AdminBackLink';
+﻿import AdminBackLink from '@/Components/Admin/AdminBackLink';
 import AdminFormField from '@/Components/Admin/AdminFormField';
 import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
+import AdminEmprendedorMediosFields from '@/Components/Admin/AdminEmprendedorMediosFields';
+import AdminEmprendedorVistaPreviaMedios from '@/Components/Admin/AdminEmprendedorVistaPreviaMedios';
+import AdminFotografiaPerfilField from '@/Components/Admin/AdminFotografiaPerfilField';
 import AdminResumenEmprendedor from '@/Components/Admin/AdminResumenEmprendedor';
 import EmprendedorFormStepper, { PASOS_EMPRENDEDOR } from '@/Components/Admin/EmprendedorFormStepper';
 import {
     adminBackdropTall,
-    adminFileInputClass,
     adminFormGrid2,
     adminFormStack,
     adminInputClass,
@@ -49,6 +51,17 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
         estado: emprendedor?.estado || 'activo',
         meta_monto: emprendedor?.meta_monto ?? '',
         fotografia: null,
+        foto_empresa: null,
+        galeria: [],
+        galeria_nuevas: [],
+        galeria_conservar: Array.isArray(emprendedor?.galeria) ? [...emprendedor.galeria] : [],
+        video: null,
+        video_enlace:
+            emprendedor?.video_url?.startsWith('http://') ||
+            emprendedor?.video_url?.startsWith('https://')
+                ? emprendedor.video_url
+                : '',
+        quitar_video: false,
     });
 
     const fotografiaActual = emprendedor?.fotografia
@@ -76,6 +89,11 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
         } else if (
             errors.descripcion ||
             errors.fotografia ||
+            errors.foto_empresa ||
+            errors.galeria ||
+            errors.galeria_nuevas ||
+            errors.video ||
+            errors.video_enlace ||
             errors.tipo_emprendimiento ||
             errors.departamento
         ) {
@@ -403,44 +421,30 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
                                                     placeholder="Ej. Artesanías en madera y tejidos de la Chiquitanía."
                                                 />
                                             </AdminFormField>
-                                            {fotoMostrar ? (
-                                                <div>
-                                                    <p className="mb-2 text-xs font-bold uppercase tracking-wide text-wayna-800">
-                                                        {vistaPreviaNueva
-                                                            ? 'Vista previa'
-                                                            : 'Foto actual'}
-                                                    </p>
-                                                    <img
-                                                        src={fotoMostrar}
-                                                        alt=""
-                                                        className="h-36 w-36 rounded-2xl object-cover ring-2 ring-wayna-100 shadow-md"
-                                                    />
-                                                </div>
-                                            ) : null}
-                                            <AdminFormField
-                                                id="fotografia"
-                                                label={
-                                                    esEdicion
-                                                        ? 'Cambiar fotografía'
-                                                        : 'Fotografía de perfil'
+                                            <AdminFotografiaPerfilField
+                                                fotografia={data.fotografia}
+                                                setFotografia={(file) =>
+                                                    setData('fotografia', file)
                                                 }
-                                                optional
-                                                hint="JPG, PNG o WEBP. Máximo 2 MB."
+                                                urlActual={fotografiaActual}
                                                 error={error('fotografia')}
-                                            >
-                                                <input
-                                                    id="fotografia"
-                                                    type="file"
-                                                    accept="image/jpeg,image/png,image/webp"
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            'fotografia',
-                                                            e.target.files?.[0] ?? null,
-                                                        )
-                                                    }
-                                                    className={adminFileInputClass}
-                                                />
-                                            </AdminFormField>
+                                                esEdicion={esEdicion}
+                                                nombreCompleto={nombreCompleto}
+                                            />
+
+                                            <AdminEmprendedorMediosFields
+                                                data={data}
+                                                setData={setData}
+                                                emprendedor={emprendedor}
+                                                error={error}
+                                                esEdicion={esEdicion}
+                                            />
+
+                                            <AdminEmprendedorVistaPreviaMedios
+                                                data={data}
+                                                emprendedor={emprendedor}
+                                                fotoPerfilUrl={fotoMostrar}
+                                            />
                                         </div>
                                     </div>
                                 )}
@@ -558,27 +562,6 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
                                                 </div>
                                                 <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">
                                                     <dt className="text-xs font-bold uppercase text-wayna-700">
-                                                        Fotografía
-                                                    </dt>
-                                                    <dd className="sm:col-span-2 flex items-center gap-3">
-                                                        {fotoMostrar ? (
-                                                            <img
-                                                                src={fotoMostrar}
-                                                                alt=""
-                                                                className="h-16 w-16 rounded-xl object-cover ring-1 ring-wayna-200"
-                                                            />
-                                                        ) : null}
-                                                        <span className="text-sm text-stone-600">
-                                                            {data.fotografia
-                                                                ? 'Nueva imagen seleccionada'
-                                                                : fotografiaActual
-                                                                  ? 'Se mantiene la actual'
-                                                                  : 'Sin foto'}
-                                                        </span>
-                                                    </dd>
-                                                </div>
-                                                <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">
-                                                    <dt className="text-xs font-bold uppercase text-wayna-700">
                                                         Estado
                                                     </dt>
                                                     <dd className="sm:col-span-2 text-sm font-semibold capitalize text-wayna-950">
@@ -595,6 +578,13 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
                                                 </div>
                                             </dl>
                                         </div>
+
+                                        <AdminEmprendedorVistaPreviaMedios
+                                            data={data}
+                                            emprendedor={emprendedor}
+                                            fotoPerfilUrl={fotoMostrar}
+                                        />
+
                                         {!esEdicion && (
                                             <p className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-900">
                                                 Al guardar se creará el emprendedor y se generará
@@ -621,3 +611,4 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [], depa
         </AdminLayout>
     );
 }
+

@@ -13,6 +13,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\Admin\StoreEmprendedorRequest;
 use App\Http\Requests\Admin\UpdateEmprendedorRequest;
+use App\Services\EmprendedorMediosService;
 use App\Services\ImageStorageService;
 use App\Services\QrCodeService;
 use Illuminate\Support\Facades\Storage;
@@ -103,6 +104,7 @@ class EmprendedorController extends Controller
         StoreEmprendedorRequest $request,
         QrCodeService $qrCodeService,
         ImageStorageService $imageStorageService,
+        EmprendedorMediosService $emprendedorMediosService,
     ): RedirectResponse {
         /*
         |--------------------------------------------------------------------------
@@ -113,7 +115,7 @@ class EmprendedorController extends Controller
         |
         */
 
-        $data = $request->validated();
+        $data = $this->datosEmprendedorSinMedios($request);
 
         /*
         |--------------------------------------------------------------------------
@@ -143,6 +145,8 @@ class EmprendedorController extends Controller
         */
 
         $emprendedor = Emprendedor::create($data);
+
+        $emprendedorMediosService->sincronizarDesdeRequest($emprendedor, $request);
 
         /*
         |--------------------------------------------------------------------------
@@ -208,6 +212,7 @@ class EmprendedorController extends Controller
         UpdateEmprendedorRequest $request,
         Emprendedor $emprendedor,
         ImageStorageService $imageStorageService,
+        EmprendedorMediosService $emprendedorMediosService,
     ): RedirectResponse {
         /*
         |--------------------------------------------------------------------------
@@ -218,7 +223,7 @@ class EmprendedorController extends Controller
         |
         */
 
-        $data = $request->validated();
+        $data = $this->datosEmprendedorSinMedios($request);
 
         /*
         |--------------------------------------------------------------------------
@@ -252,9 +257,30 @@ class EmprendedorController extends Controller
 
         $emprendedor->update($data);
 
+        $emprendedorMediosService->sincronizarDesdeRequest($emprendedor->fresh(), $request);
+
         return redirect()
             ->route('admin.emprendedores.index')
             ->with('success', 'Emprendedor actualizado correctamente.');
+    }
+
+    /**
+     * Campos de texto/número del emprendedor, sin archivos ni metadatos de galería.
+     *
+     * @return array<string, mixed>
+     */
+    private function datosEmprendedorSinMedios(StoreEmprendedorRequest|UpdateEmprendedorRequest $request): array
+    {
+        return collect($request->validated())->except([
+            'fotografia',
+            'foto_empresa',
+            'galeria',
+            'galeria_nuevas',
+            'galeria_conservar',
+            'video',
+            'video_enlace',
+            'quitar_video',
+        ])->all();
     }
 
     /**

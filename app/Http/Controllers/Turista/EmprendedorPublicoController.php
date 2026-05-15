@@ -59,8 +59,15 @@ class EmprendedorPublicoController extends Controller
                 'departamento' => $emprendedor->departamento?->value,
                 'departamento_etiqueta' => $emprendedor->departamento?->etiqueta(),
                 'fotografia' => $emprendedor->fotografia,
+                'foto_portada' => $emprendedor->urlFotoPerfil(),
                 'qr_url' => $emprendedor->qr_url,
                 'estado' => $emprendedor->estado,
+            ],
+
+            'medios' => [
+                'foto_empresa' => $emprendedor->urlFotoEmpresa(),
+                'galeria' => $emprendedor->urlsGaleriaPublica(),
+                'video' => $emprendedor->presentacionVideoPublico(),
             ],
 
             'campanaActiva' => $campanaActiva ? [
