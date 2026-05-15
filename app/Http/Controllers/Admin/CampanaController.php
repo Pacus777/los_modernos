@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\RangoMonto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCampanaRequest;
 use App\Http\Requests\Admin\UpdateCampanaRequest;
 use App\Models\Campana;
 use App\Models\Emprendedor;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,17 +20,31 @@ class CampanaController extends Controller
     /**
      * Listado paginado de campañas para el panel admin (PB-13 / T-31).
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $validated = $request->validate([
+            'rango_monto' => ['nullable', 'string', Rule::in(RangoMonto::valores())],
+        ]);
+
+        $rangoMonto = RangoMonto::desdeFiltro($validated['rango_monto'] ?? '')?->value ?? '';
+
         $campanas = Campana::query()
             ->with('emprendedor:id,nombre,apellidos')
             ->withCount('donaciones')
+            ->when(
+                $rango = RangoMonto::desdeFiltro($rangoMonto),
+                fn ($q) => $rango->aplicarFiltro($q, 'meta_apoyo'),
+            )
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Admin/Campanas/Index', [
             'campanas' => $campanas,
+            'filters' => [
+                'rango_monto' => $rangoMonto,
+            ],
+            'rangosMonto' => RangoMonto::opcionesFiltro(),
         ]);
     }
 

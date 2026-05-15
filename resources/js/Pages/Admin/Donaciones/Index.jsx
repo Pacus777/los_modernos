@@ -1,3 +1,4 @@
+import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
 import {
     adminListCardOuter,
     adminPaginationBtnActive,
@@ -6,6 +7,7 @@ import {
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { etiquetaRangoMonto } from '@/utils/rangoMonto';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
@@ -34,7 +36,7 @@ function badgeEstado(estado) {
 /**
  * Donaciones — panel admin (T-38 paso 3: listado y filtros).
  */
-export default function Index({ donaciones, filters }) {
+export default function Index({ donaciones, filters, rangosMonto = [] }) {
     const { flash } = usePage().props;
     const [accionEnDonacionId, setAccionEnDonacionId] = useState(null);
 
@@ -54,6 +56,7 @@ export default function Index({ donaciones, filters }) {
         estado_pago: filters.estado_pago ?? '',
         fecha_desde: filters.fecha_desde ?? '',
         fecha_hasta: filters.fecha_hasta ?? '',
+        rango_monto: filters.rango_monto ?? '',
     });
 
     useEffect(() => {
@@ -61,6 +64,7 @@ export default function Index({ donaciones, filters }) {
             estado_pago: filters.estado_pago ?? '',
             fecha_desde: filters.fecha_desde ?? '',
             fecha_hasta: filters.fecha_hasta ?? '',
+            rango_monto: filters.rango_monto ?? '',
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
@@ -79,6 +83,7 @@ export default function Index({ donaciones, filters }) {
             estado_pago: '',
             fecha_desde: '',
             fecha_hasta: '',
+            rango_monto: '',
         });
         router.get(route('admin.donaciones.index'), {}, {
             preserveState: true,
@@ -100,8 +105,9 @@ export default function Index({ donaciones, filters }) {
                         Donaciones
                     </h2>
                     <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-                        Revisá aportes por estado de pago y fechas. Las donaciones
-                        pendientes pueden validarse o rechazarse desde la tabla.
+                        Revisá aportes por estado, fechas y rango de monto (bajo, medio,
+                        alto). Las donaciones pendientes pueden validarse o rechazarse
+                        desde la tabla.
                     </p>
                 </div>
             }
@@ -125,7 +131,30 @@ export default function Index({ donaciones, filters }) {
                     onSubmit={aplicarFiltros}
                     className="border-b border-wayna-100 bg-wayna-50/40 px-4 py-4 sm:px-6"
                 >
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+                    <p className="mb-3 text-xs text-stone-500">
+                        Rangos: bajo hasta Bs. 500 · medio Bs. 501–2.000 · alto más de
+                        Bs. 2.000 (ayuda visual, no cálculo financiero).
+                    </p>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
+                        <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
+                                Rango de monto
+                            </label>
+                            <select
+                                value={filterForm.data.rango_monto}
+                                onChange={(e) =>
+                                    filterForm.setData('rango_monto', e.target.value)
+                                }
+                                className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                            >
+                                <option value="">Todos los rangos</option>
+                                {rangosMonto.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
                                 Estado de pago
@@ -255,8 +284,13 @@ export default function Index({ donaciones, filters }) {
                                         <td className="whitespace-nowrap px-4 py-3 align-top font-mono text-xs text-stone-800">
                                             #{row.id}
                                         </td>
-                                        <td className="whitespace-nowrap px-4 py-3 align-top font-semibold text-wayna-950">
-                                            Bs {Number(row.monto).toFixed(2)}
+                                        <td className="whitespace-nowrap px-4 py-3 align-top">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="font-semibold text-wayna-950">
+                                                    Bs {Number(row.monto).toFixed(2)}
+                                                </span>
+                                                <AdminRangoMontoBadge monto={row.monto} />
+                                            </div>
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3 align-top">
                                             <span

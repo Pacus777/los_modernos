@@ -1,4 +1,5 @@
 import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
+import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
 import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import {
     adminBackdropShort,
@@ -14,7 +15,9 @@ import {
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { etiquetaRangoMonto } from '@/utils/rangoMonto';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 function IconoCampana({ className }) {
     return (
@@ -41,9 +44,38 @@ function IconoMas({ className }) {
 /**
  * Listado de campañas — panel admin WAYNA (T-32 / PB-13).
  */
-export default function Index({ campanas }) {
+export default function Index({ campanas, filters = {}, rangosMonto = [] }) {
     const { flash } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
+
+    const filterForm = useForm({
+        rango_monto: filters.rango_monto ?? '',
+    });
+
+    useEffect(() => {
+        filterForm.reset({
+            rango_monto: filters.rango_monto ?? '',
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filters]);
+
+    const aplicarFiltros = (e) => {
+        e.preventDefault();
+        filterForm.get(route('admin.campanas.index'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const limpiarFiltros = () => {
+        filterForm.reset({ rango_monto: '' });
+        router.get(route('admin.campanas.index'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
     const estiloEstado = (estado) => {
         const map = {
@@ -134,6 +166,68 @@ export default function Index({ campanas }) {
                     </div>
 
                     <div className={adminListCardOuter}>
+                        <form
+                            onSubmit={aplicarFiltros}
+                            className="border-b border-wayna-100 bg-wayna-50/40 px-4 py-4 sm:px-6"
+                        >
+                            <p className="text-xs font-semibold uppercase tracking-wide text-wayna-800">
+                                Rango de meta (ayuda visual)
+                            </p>
+                            <p className="mt-1 text-xs text-stone-500">
+                                Bajo hasta Bs. 500 · Medio Bs. 501–2.000 · Alto más de Bs. 2.000
+                            </p>
+                            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+                                <div className="min-w-[14rem] flex-1 sm:max-w-xs">
+                                    <label
+                                        htmlFor="rango_monto_campanas"
+                                        className="block text-xs font-semibold uppercase tracking-wide text-wayna-800"
+                                    >
+                                        Filtrar por meta
+                                    </label>
+                                    <select
+                                        id="rango_monto_campanas"
+                                        value={filterForm.data.rango_monto}
+                                        onChange={(e) =>
+                                            filterForm.setData('rango_monto', e.target.value)
+                                        }
+                                        className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                                    >
+                                        <option value="">Todos los rangos</option>
+                                        {rangosMonto.map((opt) => (
+                                            <option key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        type="submit"
+                                        disabled={filterForm.processing}
+                                        className="rounded-lg bg-wayna-500 px-4 py-2 text-sm font-semibold text-white hover:bg-wayna-700 disabled:opacity-60"
+                                    >
+                                        Aplicar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={filterForm.processing}
+                                        onClick={limpiarFiltros}
+                                        className="rounded-lg border border-wayna-200 bg-white px-4 py-2 text-sm font-semibold text-wayna-900 hover:bg-wayna-50 disabled:opacity-60"
+                                    >
+                                        Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                            {filters.rango_monto ? (
+                                <p className="mt-2 text-xs text-wayna-800">
+                                    Filtro activo:{' '}
+                                    <span className="font-semibold">
+                                        {etiquetaRangoMonto(filters.rango_monto)}
+                                    </span>
+                                </p>
+                            ) : null}
+                        </form>
+
                         <div className={adminListCardHeader}>
                             <h3 className="text-lg font-bold text-wayna-950">Todas las campañas</h3>
                             <p className="mt-1 text-sm text-stone-600">
@@ -164,11 +258,14 @@ export default function Index({ campanas }) {
                                                         <IconoCampana className="h-7 w-7" />
                                                     </div>
                                                     <p className="text-base font-semibold text-wayna-950">
-                                                        Aún no hay campañas
+                                                        {filters.rango_monto
+                                                            ? 'Sin campañas en este rango'
+                                                            : 'Aún no hay campañas'}
                                                     </p>
                                                     <p className="mt-2 text-sm leading-relaxed text-stone-600">
-                                                        Creá la primera campaña para que los turistas vean la meta
-                                                        en el perfil público.
+                                                        {filters.rango_monto
+                                                            ? 'Probá otro rango de meta o limpiá el filtro.'
+                                                            : 'Creá la primera campaña para que los turistas vean la meta en el perfil público.'}
                                                     </p>
                                                     <Link
                                                         href={route('admin.campanas.create')}
@@ -216,8 +313,13 @@ export default function Index({ campanas }) {
                                                         <span className="text-stone-400">—</span>
                                                     )}
                                                 </td>
-                                                <td className="whitespace-nowrap px-4 py-4 text-right font-mono text-sm font-semibold text-wayna-900">
-                                                    Bs {Number(c.meta_apoyo).toFixed(2)}
+                                                <td className="whitespace-nowrap px-4 py-4 text-right">
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        <span className="font-mono text-sm font-semibold text-wayna-900">
+                                                            Bs {Number(c.meta_apoyo).toFixed(2)}
+                                                        </span>
+                                                        <AdminRangoMontoBadge monto={c.meta_apoyo} />
+                                                    </div>
                                                 </td>
                                                 <td className="whitespace-nowrap px-4 py-4 text-right font-mono text-sm text-stone-700">
                                                     Bs {Number(c.monto_recaudado).toFixed(2)}

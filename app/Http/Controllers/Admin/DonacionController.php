@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\RangoMonto;
 use App\Http\Controllers\Controller;
 use App\Models\Donacion;
 use App\Services\TraceabilityService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -29,6 +31,7 @@ class DonacionController extends Controller
             'estado_pago' => ['nullable', 'string', 'max:20'],
             'fecha_desde' => ['nullable', 'date'],
             'fecha_hasta' => ['nullable', 'date'],
+            'rango_monto' => ['nullable', 'string', Rule::in(RangoMonto::valores())],
         ]);
 
         $estadosValidos = [
@@ -42,10 +45,13 @@ class DonacionController extends Controller
             $estadoPago = '';
         }
 
+        $rangoMonto = RangoMonto::desdeFiltro($validated['rango_monto'] ?? '')?->value ?? '';
+
         $filters = [
             'estado_pago' => $estadoPago,
             'fecha_desde' => $validated['fecha_desde'] ?? '',
             'fecha_hasta' => $validated['fecha_hasta'] ?? '',
+            'rango_monto' => $rangoMonto,
         ];
 
         $donaciones = Donacion::query()
@@ -62,6 +68,10 @@ class DonacionController extends Controller
                 filled($filters['fecha_hasta']),
                 fn ($q) => $q->whereDate('created_at', '<=', $filters['fecha_hasta'])
             )
+            ->when(
+                $rango = RangoMonto::desdeFiltro($rangoMonto),
+                fn ($q) => $rango->aplicarFiltro($q, 'monto'),
+            )
             ->orderByDesc('created_at')
             ->paginate(15)
             ->withQueryString();
@@ -72,7 +82,9 @@ class DonacionController extends Controller
                 'estado_pago' => $filters['estado_pago'],
                 'fecha_desde' => $filters['fecha_desde'],
                 'fecha_hasta' => $filters['fecha_hasta'],
+                'rango_monto' => $filters['rango_monto'],
             ],
+            'rangosMonto' => RangoMonto::opcionesFiltro(),
         ]);
     }
 
