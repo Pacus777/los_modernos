@@ -153,7 +153,7 @@ export default function Index({ campanas }) {
                                         <tr>
                                             <td colSpan="6" className="px-6 py-16 text-center sm:px-8">
                                                 <div className="mx-auto max-w-md rounded-2xl border border-dashed border-wayna-200 bg-wayna-50/50 px-6 py-10">
-                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-orange-100 text-wayna-600">
+                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-wayna-600">
                                                         <IconoCampana className="h-7 w-7" />
                                                     </div>
                                                     <p className="text-base font-semibold text-wayna-950">
@@ -198,7 +198,7 @@ export default function Index({ campanas }) {
                                                         </div>
                                                         <div className="h-1.5 overflow-hidden rounded-full bg-wayna-100">
                                                             <div
-                                                                className="h-full rounded-full bg-gradient-to-r from-wayna-600 to-wayna-400 transition-all duration-500"
+                                                                className="h-full rounded-full bg-gradient-to-r from-wayna-500 to-wayna-400 transition-all duration-500"
                                                                 style={{ width: `${p}%` }}
                                                             />
                                                         </div>

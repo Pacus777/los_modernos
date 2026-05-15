@@ -1,4 +1,4 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
+import { WaynaBrand } from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
@@ -65,15 +65,11 @@ export default function AppLayout({
                     <div className="flex h-16 justify-between">
                         <div className="flex min-w-0 flex-1">
                             <div className="flex shrink-0 items-center">
-                                <Link
+                                <WaynaBrand
                                     href={route('dashboard')}
-                                    className="flex items-center gap-2"
-                                >
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                                    <span className="hidden text-sm font-semibold text-gray-700 sm:inline">
-                                        Wayna · Admin
-                                    </span>
-                                </Link>
+                                    size="sm"
+                                    tone="light"
+                                />
                             </div>
 
                             <div className="hidden min-w-0 space-x-4 lg:-my-px lg:ms-8 lg:flex xl:space-x-6">

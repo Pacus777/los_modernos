@@ -179,7 +179,7 @@ export default function Dashboard({ metricas, progresoCampanas = [], filtros = {
                             </p>
                         </div>
 
-                        <div className="rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-orange-50/50 p-5 shadow-sm">
+                        <div className="rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-surface-muted/50 p-5 shadow-sm">
                             <p className="text-xs font-bold uppercase tracking-wide text-wayna-700">
                                 Aportes
                             </p>
@@ -297,7 +297,7 @@ export default function Dashboard({ metricas, progresoCampanas = [], filtros = {
 
                             <Link
                                 href={route('admin.campanas.index')}
-                                className="group flex flex-col rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-orange-50/40 p-5 shadow-sm transition hover:border-wayna-300 hover:shadow-md"
+                                className="group flex flex-col rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-surface-muted/40 p-5 shadow-sm transition hover:border-wayna-300 hover:shadow-md"
                             >
                                 <span className="text-xs font-bold uppercase tracking-wide text-wayna-700">
                                     Metas

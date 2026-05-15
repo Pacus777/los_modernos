@@ -141,7 +141,7 @@ export default function Index({ emprendedores }) {
                                         <tr>
                                             <td colSpan="5" className="px-6 py-16 text-center sm:px-8">
                                                 <div className="mx-auto max-w-md rounded-2xl border border-dashed border-wayna-200 bg-wayna-50/50 px-6 py-10">
-                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-orange-100 text-wayna-600">
+                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-wayna-500">
                                                         <IconoPersonas className="h-7 w-7" />
                                                     </div>
                                                     <p className="text-base font-semibold text-wayna-950">
@@ -173,7 +173,7 @@ export default function Index({ emprendedores }) {
                                                             className="h-12 w-12 rounded-2xl object-cover ring-2 ring-wayna-100 shadow-sm"
                                                         />
                                                     ) : (
-                                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-orange-100 text-sm font-bold text-wayna-700 ring-2 ring-wayna-100">
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-sm font-bold text-wayna-700 ring-2 ring-wayna-100">
                                                             {emprendedor.nombre?.charAt(0)}
                                                         </div>
                                                     )}

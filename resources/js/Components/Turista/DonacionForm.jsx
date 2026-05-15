@@ -70,7 +70,7 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
     return (
         <form
             onSubmit={submit}
-            className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+            className="rounded-2xl border border-surface-200 bg-surface-card p-4 shadow-sm"
         >
             <h2 className="text-lg font-bold text-gray-900">
                 {t('tourist.donationForm.chooseTitle')}
@@ -123,11 +123,11 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
                         type="button"
                         onClick={() => seleccionarMonto(monto)}
                         disabled={processing}
-                        className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${
+                        className={
                             Number(data.monto) === monto
-                                ? 'border-wayna-600 bg-wayna-600 text-white'
-                                : 'border-gray-200 bg-white text-gray-700 hover:bg-wayna-50'
-                        }`}
+                                ? 'btn-wayna-chip-selected'
+                                : 'btn-wayna-chip'
+                        }
                     >
                         Bs {monto}
                     </button>
@@ -170,11 +170,11 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
                                 type="button"
                                 onClick={() => seleccionarTipoPago(tipoPago)}
                                 disabled={processing}
-                                className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${
+                                className={
                                     Number(data.tipo_pago_id) === Number(tipoPago.id)
-                                        ? 'border-wayna-600 bg-wayna-600 text-white'
-                                        : 'border-gray-200 bg-white text-gray-700 hover:bg-wayna-50'
-                                }`}
+                                        ? 'btn-wayna-chip-selected'
+                                        : 'btn-wayna-chip'
+                                }
                             >
                                 {tipoPago.nombre}
                             </button>
@@ -198,10 +198,8 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
             <button
                 type="submit"
                 disabled={!puedeEnviar}
-                className={`mt-5 w-full rounded-xl px-4 py-3 text-sm font-bold text-white transition ${
-                    puedeEnviar
-                        ? 'bg-wayna-600 hover:bg-wayna-700'
-                        : 'cursor-not-allowed bg-gray-300'
+                className={`btn-wayna-primary mt-5 w-full ${
+                    puedeEnviar ? '' : 'cursor-not-allowed !bg-stone-300 !shadow-none hover:!bg-stone-300'
                 }`}
             >
                 {processing

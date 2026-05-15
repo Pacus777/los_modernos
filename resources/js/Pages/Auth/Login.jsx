@@ -117,7 +117,7 @@ export default function Login({ status, canResetPassword }) {
                     )}
 
                     <PrimaryButton
-                        className="ms-4 rounded-lg bg-wayna-600 px-6 py-2 transition hover:bg-wayna-700"
+                        className="ms-4 rounded-lg bg-wayna-500 px-6 py-2 transition hover:bg-wayna-700"
                         disabled={processing}
                     >
                         {t('auth.loginButton')}

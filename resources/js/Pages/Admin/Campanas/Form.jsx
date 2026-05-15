@@ -74,7 +74,7 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                     <AdminBackLink href={route('admin.campanas.index')} />
 
                     <div className="overflow-hidden rounded-3xl border border-wayna-200/90 bg-white shadow-2xl shadow-wayna-900/[0.08] ring-1 ring-black/[0.03]">
-                        <div className="bg-gradient-to-r from-wayna-600 via-wayna-500 to-orange-500 px-6 py-6 sm:px-8">
+                        <div className="header-wayna-gradient px-6 py-6 sm:px-8">
                             <h3 className="text-lg font-bold text-white sm:text-xl">
                                 {esEdicion ? 'Datos de la campaña' : 'Alta de campaña'}
                             </h3>
@@ -115,7 +115,7 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                             )}
                                         </div>
 
-                                        <div className="rounded-xl border border-wayna-200/80 bg-gradient-to-r from-wayna-50 to-orange-50/60 px-4 py-3 text-sm leading-relaxed text-wayna-950">
+                                        <div className="rounded-xl border border-wayna-200/80 bg-gradient-to-r from-wayna-50 to-surface-muted/60 px-4 py-3 text-sm leading-relaxed text-wayna-950">
                                             <span className="font-bold text-wayna-800">Regla Wayna:</span> solo
                                             puede haber{' '}
                                             <span className="font-semibold">una campaña activa</span> por

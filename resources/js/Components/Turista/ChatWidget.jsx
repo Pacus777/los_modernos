@@ -1,3 +1,4 @@
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import { useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,13 +79,16 @@ export default function ChatWidget() {
                 <div className="mb-3 overflow-hidden rounded-3xl border border-wayna-100 bg-white shadow-2xl">
                     <div className="border-b border-wayna-100 bg-wayna-50 px-5 py-4">
                         <div className="flex items-start justify-between gap-3">
-                            <div>
+                            <div className="flex items-start gap-3">
+                                <ApplicationLogo size="xs" tone="light" />
+                                <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-wayna-600">
                                     {t('chat.etiqueta', 'Asistente Wayna')}
                                 </p>
                                 <h3 className="mt-1 text-base font-black text-wayna-950">
                                     {t('chat.titulo', '¿Necesitas ayuda?')}
                                 </h3>
+                                </div>
                             </div>
 
                             <button

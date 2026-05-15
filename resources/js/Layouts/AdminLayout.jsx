@@ -1,4 +1,4 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
+import { WaynaBrand } from '@/Components/ApplicationLogo';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -11,25 +11,21 @@ export default function AdminLayout({ header, children }) {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
 
     const navItemClass = (active) =>
-        `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+        `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
             active
-                ? 'bg-wayna-500 text-white shadow-sm'
-                : 'text-orange-100/90 hover:bg-wayna-900/80 hover:text-white'
+                ? 'bg-wayna-700 text-white shadow-sm ring-1 ring-white/15'
+                : 'text-white/90 hover:bg-wayna-600 hover:text-white'
         }`;
 
     const SidebarContent = () => (
         <>
-            <div className="flex h-16 shrink-0 items-center gap-2 border-b border-wayna-800/80 px-4">
-                <Link
+            <div className="flex shrink-0 flex-col items-center justify-center border-b border-wayna-600/40 bg-wayna-500 px-4 py-5">
+                <WaynaBrand
                     href={route('admin.dashboard')}
-                    className="flex items-center gap-2"
+                    size="nav-lg"
+                    tone="on-brand"
                     onClick={() => setSidebarOpen(false)}
-                >
-                    <ApplicationLogo className="h-8 w-auto fill-current text-wayna-200" />
-                    <span className="text-sm font-semibold tracking-tight text-white">
-                        WAYNA
-                    </span>
-                </Link>
+                />
             </div>
 
             <nav className="flex flex-1 flex-col gap-1 p-3">
@@ -78,16 +74,16 @@ export default function AdminLayout({ header, children }) {
                 </Link>
             </nav>
 
-            <div className="border-t border-wayna-800/80 p-3">
+            <div className="border-t border-wayna-600/50 bg-wayna-600/30 p-3">
                 <div className="flex flex-col gap-1">
                     {userMenuOpen && (
                         <div
                             id="admin-sidebar-user-menu"
-                            className="mb-1 flex flex-col overflow-hidden rounded-lg border border-wayna-700/50 bg-wayna-950/95 shadow-inner"
+                            className="mb-1 flex flex-col overflow-hidden rounded-lg border border-wayna-700/50 bg-wayna-800 shadow-inner"
                         >
                             <Link
                                 href={route('profile.edit')}
-                                className="px-3 py-2.5 text-sm text-orange-50/95 transition hover:bg-wayna-800/90 hover:text-white"
+                                className="px-3 py-2.5 text-sm text-white/95 transition hover:bg-wayna-700 hover:text-white"
                                 onClick={() => {
                                     setUserMenuOpen(false);
                                     setSidebarOpen(false);
@@ -113,7 +109,7 @@ export default function AdminLayout({ header, children }) {
                         type="button"
                         aria-expanded={userMenuOpen}
                         aria-controls="admin-sidebar-user-menu"
-                        className="flex w-full items-center justify-between rounded-lg bg-wayna-900/60 px-3 py-2 text-left text-sm text-orange-50 hover:bg-wayna-900"
+                        className="flex w-full items-center justify-between rounded-lg bg-wayna-700/80 px-3 py-2 text-left text-sm text-white hover:bg-wayna-700"
                         onClick={() => setUserMenuOpen((o) => !o)}
                     >
                         <span className="truncate">{user?.name}</span>
@@ -139,7 +135,7 @@ export default function AdminLayout({ header, children }) {
     );
 
     return (
-        <div className="min-h-screen bg-wayna-50/80">
+        <div className="min-h-screen bg-surface">
             {sidebarOpen && (
                 <button
                     type="button"
@@ -153,12 +149,12 @@ export default function AdminLayout({ header, children }) {
             )}
 
             <div className="flex min-h-screen">
-                <aside className="relative z-50 hidden h-screen w-64 shrink-0 flex-col overflow-y-auto bg-gradient-to-b from-wayna-950 via-wayna-900 to-wayna-950 lg:flex lg:flex-col">
+                <aside className="relative z-50 hidden h-screen w-64 shrink-0 flex-col overflow-y-auto bg-gradient-to-b from-wayna-500 via-wayna-600 to-wayna-700 lg:flex lg:flex-col">
                     <SidebarContent />
                 </aside>
 
                 <aside
-                    className={`fixed inset-y-0 left-0 z-50 flex h-full max-h-screen w-64 flex-col overflow-y-auto bg-gradient-to-b from-wayna-950 via-wayna-900 to-wayna-950 shadow-2xl shadow-wayna-950/40 transition-transform duration-200 ease-out lg:hidden ${
+                    className={`fixed inset-y-0 left-0 z-50 flex h-full max-h-screen w-64 flex-col overflow-y-auto bg-gradient-to-b from-wayna-500 via-wayna-600 to-wayna-700 shadow-2xl shadow-wayna-950/40 transition-transform duration-200 ease-out lg:hidden ${
                         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
                 >
@@ -166,30 +162,35 @@ export default function AdminLayout({ header, children }) {
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-wayna-200/80 bg-white/95 px-4 backdrop-blur-sm lg:hidden">
-                        <button
-                            type="button"
-                            className="rounded-lg p-2 text-wayna-800 hover:bg-wayna-50"
-                            onClick={() => setSidebarOpen(true)}
-                            aria-label="Abrir menú"
-                        >
-                            <svg
-                                className="h-6 w-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                    <div className="nav-wayna-bar sticky top-0 z-30 lg:hidden">
+                        <div className="flex h-[4.25rem] items-center justify-between gap-3 px-4 sm:h-[4.75rem]">
+                            <button
+                                type="button"
+                                className="rounded-lg p-2 text-white hover:bg-wayna-600"
+                                onClick={() => setSidebarOpen(true)}
+                                aria-label="Abrir menú"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                />
-                            </svg>
-                        </button>
-                        <span className="text-sm font-semibold text-wayna-900">
-                            WAYNA
-                        </span>
+                                <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M4 6h16M4 12h16M4 18h16"
+                                    />
+                                </svg>
+                            </button>
+                            <WaynaBrand
+                                href={route('admin.dashboard')}
+                                size="nav"
+                                tone="on-brand"
+                            />
+                            <span className="w-10" aria-hidden />
+                        </div>
                     </div>
 
                     {header && (

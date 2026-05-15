@@ -20,7 +20,7 @@ export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [
             <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
 
             <section className="overflow-hidden rounded-3xl bg-white shadow-xl shadow-wayna-900/10">
-                <div className="relative h-64 bg-gradient-to-br from-wayna-100 to-orange-100">
+                <div className="relative h-64 bg-gradient-to-br from-wayna-100 to-surface-muted">
                     {fotoUrl ? (
                         <img
                             src={fotoUrl}
@@ -101,7 +101,7 @@ export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [
                     <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
 
                     <section className="overflow-hidden rounded-3xl bg-white shadow-xl shadow-wayna-900/10">
-                        <div className="relative h-64 bg-gradient-to-br from-wayna-100 to-orange-100">
+                        <div className="relative h-64 bg-gradient-to-br from-wayna-100 to-surface-muted">
                             {fotoUrl ? (
                                 <img
                                     src={fotoUrl}

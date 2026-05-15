@@ -146,7 +146,7 @@ export default function Pendientes({ pendientes }) {
                                                         'cajero.efectivo.confirmar',
                                                         row.id,
                                                     )}
-                                                    className="inline-flex rounded-lg bg-wayna-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-wayna-700"
+                                                    className="inline-flex rounded-lg bg-wayna-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-wayna-700"
                                                 >
                                                     Confirmar
                                                 </Link>

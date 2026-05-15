@@ -26,7 +26,7 @@ export default function BarraProgreso({
     }, [pct]);
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-wayna-200/90 bg-gradient-to-b from-white via-wayna-50/90 to-orange-50/70 p-4 shadow-lg shadow-wayna-600/10 ring-1 ring-wayna-200/40">
+        <div className="relative overflow-hidden rounded-2xl border border-wayna-200/90 bg-gradient-to-b from-surface-card via-wayna-50/90 to-surface-muted p-4 shadow-lg shadow-wayna-500/10 ring-1 ring-wayna-200/40">
             {/* Línea superior tipo “status” + rejilla sutil */}
             <div
                 className="pointer-events-none absolute inset-0 opacity-[0.35]"
@@ -61,7 +61,7 @@ export default function BarraProgreso({
             </div>
 
             <div
-                className="relative mt-5 h-5 rounded-full bg-gradient-to-b from-wayna-100 to-orange-100 p-[3px] shadow-[inset_0_1px_6px_rgba(194,65,12,0.12)] ring-1 ring-wayna-200/80"
+                className="relative mt-5 h-5 rounded-full bg-gradient-to-b from-wayna-100 to-surface-muted p-[3px] shadow-[inset_0_1px_6px_rgba(240,126,38,0.12)] ring-1 ring-wayna-200/80"
                 role="progressbar"
                 aria-valuemin={0}
                 aria-valuemax={100}
@@ -70,7 +70,7 @@ export default function BarraProgreso({
             >
                 <div className="h-full overflow-hidden rounded-full bg-white/95 ring-1 ring-inset ring-wayna-100/90">
                     <div
-                        className="barra-progreso-fill relative h-full overflow-hidden rounded-full bg-gradient-to-r from-wayna-600 via-wayna-500 to-wayna-400 shadow-[0_0_12px_rgba(249,115,22,0.35)] transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                        className="barra-progreso-fill relative h-full overflow-hidden rounded-full bg-gradient-to-r from-wayna-500 via-wayna-500 to-wayna-400 shadow-[0_0_12px_rgba(240,126,38,0.35)] transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
                         style={{ width: `${anchoBarra}%` }}
                     >
                         {pct > 0 ? (

@@ -34,7 +34,7 @@ export default function Confirmacion() {
             <Head title={t('tourist.confirmation.headTitle')} />
 
             <section className="overflow-hidden rounded-3xl border border-wayna-100 bg-white shadow-xl shadow-wayna-900/10">
-                <div className="border-b border-wayna-100 bg-gradient-to-r from-wayna-600 to-wayna-500 px-5 py-6 text-white">
+                <div className="header-wayna-gradient border-b border-wayna-400/30 px-5 py-6">
                     <h1 className="text-xl font-bold sm:text-2xl">
                         {t('tourist.confirmation.title')}
                     </h1>
@@ -54,7 +54,7 @@ export default function Confirmacion() {
                             </p>
                             <Link
                                 href="/"
-                                className="mt-4 inline-flex items-center justify-center rounded-xl bg-wayna-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-wayna-700"
+                                className="btn-wayna-primary mt-4"
                             >
                                 {t('tourist.confirmation.emptyCta')}
                             </Link>
