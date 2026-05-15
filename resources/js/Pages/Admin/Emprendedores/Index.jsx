@@ -11,7 +11,7 @@ import {
     adminTableHeadRow,
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
-import QrPreviewModal from '@/Components/QrPreviewModal';
+import EmprendedorQrModal from '@/Components/Admin/EmprendedorQrModal';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -45,7 +45,12 @@ function IconoPersonas({ className }) {
 export default function Index({ emprendedores }) {
     const { flash } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
-    const [qrPreview, setQrPreview] = useState({ open: false, src: '', nombre: '' });
+    const [qrPreview, setQrPreview] = useState({
+        open: false,
+        emprendedor: null,
+        qrSrc: '',
+        fotoSrc: null,
+    });
 
     const desactivarEmprendedor = (emprendedor) => {
         requestConfirm({
@@ -68,8 +73,9 @@ export default function Index({ emprendedores }) {
         }
         setQrPreview({
             open: true,
-            src: `/storage/${emprendedor.qr_url}`,
-            nombre: `${emprendedor.nombre} ${emprendedor.apellidos}`.trim(),
+            emprendedor,
+            qrSrc: `/storage/${emprendedor.qr_url}`,
+            fotoSrc: obtenerUrlFotografia(emprendedor.fotografia),
         });
     };
 
@@ -277,12 +283,24 @@ export default function Index({ emprendedores }) {
                 </div>
             </div>
             <ConfirmDialogPortal />
-            <QrPreviewModal
+            <EmprendedorQrModal
                 show={qrPreview.open}
-                src={qrPreview.src}
-                title="QR del emprendedor"
-                subtitle={qrPreview.nombre}
-                onClose={() => setQrPreview({ open: false, src: '', nombre: '' })}
+                emprendedor={qrPreview.emprendedor}
+                qrSrc={qrPreview.qrSrc}
+                fotoSrc={qrPreview.fotoSrc}
+                editHref={
+                    qrPreview.emprendedor
+                        ? route('admin.emprendedores.edit', qrPreview.emprendedor.id)
+                        : null
+                }
+                onClose={() =>
+                    setQrPreview({
+                        open: false,
+                        emprendedor: null,
+                        qrSrc: '',
+                        fotoSrc: null,
+                    })
+                }
             />
         </AdminLayout>
     );

@@ -1,0 +1,179 @@
+import Modal from '@/Components/Modal';
+import { Link } from '@inertiajs/react';
+
+function formatearBs(valor) {
+    const n = Number(valor);
+    if (Number.isNaN(n)) {
+        return '0,00';
+    }
+    return n.toLocaleString('es-BO', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
+
+/**
+ * Modal de perfil + QR del emprendedor (admin), inspirado en mockup Wayna.
+ */
+export default function EmprendedorQrModal({
+    show = false,
+    onClose,
+    emprendedor,
+    qrSrc,
+    fotoSrc = null,
+    editHref,
+}) {
+    if (!show || !emprendedor || !qrSrc) {
+        return null;
+    }
+
+    const nombreCompleto =
+        `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim() || 'Emprendedor';
+
+    const campanaActiva = emprendedor.campanas?.[0] ?? null;
+    const metaCampana = campanaActiva ? Number(campanaActiva.meta_apoyo) : 0;
+    const recaudado = campanaActiva ? Number(campanaActiva.monto_recaudado) : 0;
+    const metaReferencia = Number(emprendedor.meta_monto) || 0;
+
+    const metaProgreso = metaCampana > 0 ? metaCampana : metaReferencia;
+    const porcentaje =
+        metaProgreso > 0
+            ? Math.min(100, Math.round((recaudado / metaProgreso) * 100))
+            : 0;
+
+    const estiloEstado =
+        emprendedor.estado === 'activo'
+            ? 'bg-wayna-100 text-wayna-900 ring-1 ring-wayna-300/70'
+            : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200';
+
+    return (
+        <Modal show={show} onClose={onClose} maxWidth="2xl">
+            <div className="overflow-hidden">
+                <div className="header-wayna-gradient px-5 py-4 sm:px-6">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/85">
+                        QR del emprendedor
+                    </p>
+                    <h2 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+                        {nombreCompleto}
+                    </h2>
+                    {campanaActiva?.titulo ? (
+                        <p className="mt-1 text-sm text-white/90">
+                            Campaña activa: {campanaActiva.titulo}
+                        </p>
+                    ) : null}
+                </div>
+
+                <div className="bg-surface-card p-5 sm:p-6">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
+                        <div className="flex shrink-0 flex-col items-center gap-3 lg:w-36">
+                            {fotoSrc ? (
+                                <img
+                                    src={fotoSrc}
+                                    alt={nombreCompleto}
+                                    className="h-32 w-32 rounded-2xl object-cover shadow-md ring-2 ring-wayna-200"
+                                />
+                            ) : (
+                                <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-3xl font-black text-wayna-700 ring-2 ring-wayna-200">
+                                    {emprendedor.nombre?.charAt(0) ?? '?'}
+                                </div>
+                            )}
+                            <span
+                                className={`inline-flex rounded-full px-3 py-1 text-xs font-bold capitalize ${estiloEstado}`}
+                            >
+                                {emprendedor.estado}
+                            </span>
+                        </div>
+
+                        <div className="min-w-0 flex-1 space-y-4">
+                            <div>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
+                                    Información del emprendimiento
+                                </p>
+                                <p className="mt-2 text-sm leading-relaxed text-stone-700">
+                                    {emprendedor.descripcion?.trim() ||
+                                        'Sin descripción registrada.'}
+                                </p>
+                            </div>
+
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3">
+                                    <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
+                                        Meta de referencia
+                                    </p>
+                                    <p className="mt-1 font-mono text-lg font-bold text-wayna-950">
+                                        Bs {formatearBs(metaReferencia)}
+                                    </p>
+                                </div>
+                                <div className="rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3">
+                                    <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
+                                        {campanaActiva ? 'Meta campaña activa' : 'Recaudado'}
+                                    </p>
+                                    <p className="mt-1 font-mono text-lg font-bold text-wayna-950">
+                                        {campanaActiva
+                                            ? `Bs ${formatearBs(metaCampana)}`
+                                            : `Bs ${formatearBs(recaudado)}`}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {campanaActiva ? (
+                                <div>
+                                    <div className="mb-2 flex items-center justify-between gap-2 text-xs font-semibold text-stone-600">
+                                        <span>Progreso de la campaña</span>
+                                        <span className="text-wayna-800">
+                                            Bs {formatearBs(recaudado)} / Bs{' '}
+                                            {formatearBs(metaProgreso)} ({porcentaje}%)
+                                        </span>
+                                    </div>
+                                    <div className="h-3 overflow-hidden rounded-full bg-wayna-100 ring-1 ring-wayna-200/80">
+                                        <div
+                                            className="h-full rounded-full bg-gradient-to-r from-wayna-500 to-wayna-400 transition-all duration-500"
+                                            style={{ width: `${porcentaje}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="rounded-xl border border-dashed border-wayna-200 bg-surface-muted/80 px-4 py-3 text-sm text-stone-600">
+                                    Este emprendedor no tiene una campaña activa. El QR
+                                    enlaza a su perfil público.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col items-center gap-3 lg:w-52 lg:border-l lg:border-wayna-100 lg:pl-6">
+                            {editHref ? (
+                                <Link
+                                    href={editHref}
+                                    onClick={onClose}
+                                    className="w-full rounded-xl bg-wayna-500 px-4 py-2 text-center text-sm font-bold text-white shadow-sm transition hover:bg-wayna-600"
+                                >
+                                    Editar
+                                </Link>
+                            ) : null}
+                            <div className="rounded-2xl border-2 border-wayna-200 bg-white p-3 shadow-inner">
+                                <img
+                                    src={qrSrc}
+                                    alt={`QR ${nombreCompleto}`}
+                                    className="h-40 w-40 object-contain sm:h-44 sm:w-44"
+                                />
+                            </div>
+                            <p className="text-center text-xs text-stone-500">
+                                Escaneá para abrir el perfil público
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-center border-t border-wayna-100 pt-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="btn-wayna-primary min-w-[10rem]"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    );
+}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campana;
 use App\Models\Emprendedor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,6 +57,12 @@ class EmprendedorController extends Controller
         */
 
         $emprendedores = Emprendedor::query()
+            ->with([
+                'campanas' => fn ($q) => $q
+                    ->where('estado', Campana::ESTADO_ACTIVA)
+                    ->latest('id')
+                    ->limit(1),
+            ])
             ->latest()
             ->paginate(10)
             ->withQueryString();
