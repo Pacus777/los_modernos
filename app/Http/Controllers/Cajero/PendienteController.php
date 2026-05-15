@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Cajero;
 
 use App\Http\Controllers\Controller;
 use App\Models\Donacion;
-use App\Services\TraceabilityService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Services\DonacionService;
+use Illuminate\Validation\ValidationException;
 
 class PendienteController extends Controller
 {
     public function __construct(
-        protected TraceabilityService $traceabilityService,
+        protected DonacionService $donacionService,
     ) {
     }
 

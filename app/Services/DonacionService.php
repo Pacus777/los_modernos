@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Donacion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\Campana;
+use Illuminate\Validation\ValidationException;
 
 class DonacionService
 {
@@ -90,14 +92,140 @@ class DonacionService
     }
 
     /**
+ * Confirma una donación en efectivo pendiente.
+ *
+ * Este método centraliza la validación de efectivo para que admin y cajero
+ * usen la misma lógica.
+ *
+ * Flujo:
+ * 1. Verifica que la donación sea en efectivo.
+ * 2. Verifica que siga pendiente.
+ * 3. Cambia estado_pago a validado.
+ * 4. Actualiza monto_recaudado de la campaña.
+ * 5. Registra trazabilidad.
+ */
+    public function confirmarPagoEfectivo(Donacion $donacion, ?int $usuarioId = null): Donacion
+    {
+        return DB::transaction(function () use ($donacion, $usuarioId) {
+            /*
+            |--------------------------------------------------------------------------
+            | 1. Bloquear la donación
+            |--------------------------------------------------------------------------
+            |
+            | lockForUpdate evita que dos usuarios confirmen la misma donación
+            | al mismo tiempo.
+            |
+            */
+
+            $donacion = Donacion::query()
+                ->with(['tipoPago', 'campana'])
+                ->lockForUpdate()
+                ->findOrFail($donacion->id);
+
+            /*
+            |--------------------------------------------------------------------------
+            | 2. Verificar que sea efectivo
+            |--------------------------------------------------------------------------
+            */
+
+            if (! $this->esPagoEnEfectivo($donacion)) {
+                throw ValidationException::withMessages([
+                    'donacion' => 'Solo se pueden confirmar donaciones en efectivo desde esta pantalla.',
+                ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 3. Verificar que esté pendiente
+            |--------------------------------------------------------------------------
+            */
+
+            if ($donacion->estado_pago !== Donacion::ESTADO_PENDIENTE) {
+                throw ValidationException::withMessages([
+                    'donacion' => 'Esta donación ya fue procesada anteriormente.',
+                ]);
+            }
+
+            $estadoAnterior = $donacion->estado_pago;
+
+            /*
+            |--------------------------------------------------------------------------
+            | 4. Validar donación
+            |--------------------------------------------------------------------------
+            */
+
+            $donacion->update([
+                'estado_pago' => Donacion::ESTADO_VALIDADO,
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | 5. Actualizar monto recaudado de la campaña
+            |--------------------------------------------------------------------------
+            |
+            | Se suma el monto de la donación validada a la campaña.
+            |
+            */
+
+            
+
+            /*
+            |--------------------------------------------------------------------------
+            | 6. Registrar trazabilidad
+            |--------------------------------------------------------------------------
+            |
+            | Usamos el servicio ya existente para dejar evidencia del cambio.
+            |
+            */
+
+            $this->traceabilityService->registrarRevisionDonacionPorCajero(
+                $donacion->fresh(),
+                $estadoAnterior,
+                Donacion::ESTADO_VALIDADO,
+                $usuarioId,
+            );
+            /*
+            |--------------------------------------------------------------------------
+            | Actualización de monto recaudado
+            |--------------------------------------------------------------------------
+            |
+            | No incrementamos aquí monto_recaudado porque esa responsabilidad
+            | ya la tiene DonacionObserver cuando la donación cambia a validado.
+            |
+            | Esto evita duplicar el monto en la campaña.
+            |
+            */
+            return $donacion->refresh();
+        });
+    }
+
+    /**
+     * Determina si una donación corresponde a pago en efectivo.
+     *
+     * Se revisa el tipo de pago y también el campo metodo como respaldo.
+     */
+    private function esPagoEnEfectivo(Donacion $donacion): bool
+    {
+        $metodoEfectivo = str_contains(
+            strtolower((string) $donacion->metodo),
+            'efectivo',
+        );
+
+        $tipoEfectivo = $donacion->tipoPago?->codigo === 'efectivo';
+
+        return $metodoEfectivo || $tipoEfectivo;
+    }
+
+    /**
      * Determina si una donación corresponde a pago en efectivo.
      *
      * Se revisa primero la relación tipoPago porque es más consistente.
      * También se revisa el campo metodo como respaldo.
      */
+    /*
     private function esPagoEnEfectivo(Donacion $donacion): bool
     {
         return $donacion->tipoPago?->codigo === 'efectivo'
             || $donacion->metodo === 'efectivo';
-    }
+    }*/
 }

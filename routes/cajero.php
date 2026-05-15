@@ -4,15 +4,6 @@ use App\Http\Controllers\Cajero\PendienteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Rutas del panel cajero
-|--------------------------------------------------------------------------
-|
-| Requieren autenticación y rol admin o cajero (T-39: rutas bajo /cajero).
-|
-*/
-
 Route::middleware(['auth', 'verified', 'check.role:admin,cajero'])
     ->prefix('cajero')
     ->name('cajero.')
