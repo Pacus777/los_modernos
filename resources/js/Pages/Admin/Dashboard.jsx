@@ -1,4 +1,5 @@
 import DashboardGraficas from '@/Components/Admin/DashboardGraficas';
+import RecaudacionDetalleModal from '@/Components/Admin/RecaudacionDetalleModal';
 import {
     adminBackdropShort,
     adminListCardOuter,
@@ -24,6 +25,7 @@ function IconoFlecha({ className }) {
  */
 export default function Dashboard({
     metricas,
+    detalleRecaudacion = {},
     progresoCampanas = [],
     graficas = {},
     filtros = {},
@@ -35,6 +37,7 @@ export default function Dashboard({
     );
     const [progresoAbierto, setProgresoAbierto] = useState(false);
     const [graficasAbiertas, setGraficasAbiertas] = useState(true);
+    const [modalRecaudacion, setModalRecaudacion] = useState(false);
 
     const aplicarFiltros = (e) => {
         e.preventDefault();
@@ -77,24 +80,31 @@ export default function Dashboard({
 
     const tarjetas = [
         {
-            label: 'Recaudación validada',
-            valor: formatearMonto(metricas?.total_recaudado),
-            hint: 'Confirmada por admin o cajero',
+            id: 'recaudacion',
+            label: 'Recaudación total',
+            valor: formatearMonto(
+                detalleRecaudacion?.total_general ?? metricas?.total_recaudado,
+            ),
+            hint: 'Clic para ver el desglose',
             className: 'from-white to-wayna-50/70',
+            clickeable: true,
         },
         {
+            id: 'aportes',
             label: 'Aportes',
             valor: metricas?.numero_aportes ?? 0,
             hint: 'Donaciones validadas',
             className: 'from-white to-surface-muted/60',
         },
         {
+            id: 'emprendedores',
             label: 'Emprendedores apoyados',
             valor: metricas?.emprendedores_apoyados ?? 0,
             hint: 'Con al menos un aporte',
             className: 'from-white to-emerald-50/40',
         },
         {
+            id: 'campanas',
             label: 'Campañas activas',
             valor: metricas?.campanas_activas ?? 0,
             hint: 'En curso ahora',
@@ -125,21 +135,50 @@ export default function Dashboard({
 
                 <div className="relative mx-auto max-w-6xl space-y-4 px-4 sm:px-6 lg:px-8">
                     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        {tarjetas.map((t) => (
-                            <div
-                                key={t.label}
-                                className={`rounded-2xl border border-wayna-200/90 bg-gradient-to-br p-4 shadow-sm ${t.className}`}
-                            >
-                                <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
-                                    {t.label}
-                                </p>
-                                <p className="mt-2 text-2xl font-black tracking-tight text-wayna-950 sm:text-3xl">
-                                    {t.valor}
-                                </p>
-                                <p className="mt-1 text-xs text-stone-600">{t.hint}</p>
-                            </div>
-                        ))}
+                        {tarjetas.map((t) => {
+                            const contenido = (
+                                <>
+                                    <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
+                                        {t.label}
+                                    </p>
+                                    <p className="mt-2 text-2xl font-black tracking-tight text-wayna-950 sm:text-3xl">
+                                        {t.valor}
+                                    </p>
+                                    <p className="mt-1 text-xs text-stone-600">{t.hint}</p>
+                                </>
+                            );
+
+                            if (t.clickeable) {
+                                return (
+                                    <button
+                                        key={t.id}
+                                        type="button"
+                                        onClick={() => setModalRecaudacion(true)}
+                                        className={`rounded-2xl border border-wayna-200/90 bg-gradient-to-br p-4 text-left shadow-sm transition hover:border-wayna-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40 ${t.className}`}
+                                        aria-label="Ver detalle de recaudación total"
+                                    >
+                                        {contenido}
+                                    </button>
+                                );
+                            }
+
+                            return (
+                                <div
+                                    key={t.id}
+                                    className={`rounded-2xl border border-wayna-200/90 bg-gradient-to-br p-4 shadow-sm ${t.className}`}
+                                >
+                                    {contenido}
+                                </div>
+                            );
+                        })}
                     </div>
+
+                    <RecaudacionDetalleModal
+                        show={modalRecaudacion}
+                        onClose={() => setModalRecaudacion(false)}
+                        detalle={detalleRecaudacion}
+                        filtros={filtros}
+                    />
 
                     <div className={adminListCardOuter}>
                         <button

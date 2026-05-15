@@ -196,6 +196,7 @@ class ReporteController extends Controller
                 'emprendedores_apoyados' => (int) $resumen->emprendedores_apoyados,
                 'campanas_activas' => $campanasActivas,
             ],
+            'detalleRecaudacion' => $this->construirDetalleRecaudacion($fechaInicio, $fechaFin),
             'progresoCampanas' => $progresoCampanas,
             'graficas' => $graficas,
             'filtros' => [
@@ -332,6 +333,169 @@ class ReporteController extends Controller
         return $normalizado !== ''
             ? ucwords($normalizado)
             : 'Sin método';
+    }
+
+    private function consultaDonacionesImpacto(?string $fechaInicio, ?string $fechaFin): Builder
+    {
+        return Donacion::query()
+            ->join('campanas', 'donaciones.campana_id', '=', 'campanas.id')
+            ->leftJoin('tipos_pago', 'donaciones.tipo_pago_id', '=', 'tipos_pago.id')
+            ->whereIn('donaciones.estado_pago', [
+                Donacion::ESTADO_VALIDADO,
+                Donacion::ESTADO_PENDIENTE,
+            ])
+            ->when($fechaInicio, function ($query) use ($fechaInicio) {
+                $query->whereDate('donaciones.created_at', '>=', $fechaInicio);
+            })
+            ->when($fechaFin, function ($query) use ($fechaFin) {
+                $query->whereDate('donaciones.created_at', '<=', $fechaFin);
+            });
+    }
+
+    /**
+     * @return array{efectivo: string, qr: string}
+     */
+    private function condicionesCanalPago(): array
+    {
+        return [
+            'efectivo' => "(LOWER(donaciones.metodo) LIKE '%efectivo%' OR tipos_pago.codigo = 'efectivo')",
+            'qr' => "(LOWER(donaciones.metodo) LIKE '%qr%' OR tipos_pago.codigo = 'qr')",
+        ];
+    }
+
+    private function aplicarAgregadosRecaudacion(Builder $query): Builder
+    {
+        $canales = $this->condicionesCanalPago();
+
+        return $query
+            ->selectRaw('COALESCE(SUM(donaciones.monto), 0) as total_general')
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN donaciones.estado_pago = ? THEN donaciones.monto ELSE 0 END), 0) as total_validado',
+                [Donacion::ESTADO_VALIDADO],
+            )
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN donaciones.estado_pago = ? THEN donaciones.monto ELSE 0 END), 0) as total_pendiente',
+                [Donacion::ESTADO_PENDIENTE],
+            )
+            ->selectRaw(
+                "COALESCE(SUM(CASE WHEN donaciones.estado_pago = ? AND {$canales['efectivo']} THEN donaciones.monto ELSE 0 END), 0) as total_efectivo",
+                [Donacion::ESTADO_VALIDADO],
+            )
+            ->selectRaw(
+                "COALESCE(SUM(CASE WHEN donaciones.estado_pago = ? AND {$canales['qr']} THEN donaciones.monto ELSE 0 END), 0) as total_qr",
+                [Donacion::ESTADO_VALIDADO],
+            )
+            ->selectRaw(
+                'COUNT(CASE WHEN donaciones.estado_pago = ? THEN 1 END) as aportes_validados',
+                [Donacion::ESTADO_VALIDADO],
+            )
+            ->selectRaw(
+                'COUNT(CASE WHEN donaciones.estado_pago = ? THEN 1 END) as aportes_pendientes',
+                [Donacion::ESTADO_PENDIENTE],
+            );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function filaRecaudacionToArray(object $fila, array $extra = []): array
+    {
+        return array_merge($extra, [
+            'total_general' => (float) ($fila->total_general ?? 0),
+            'total_efectivo' => (float) ($fila->total_efectivo ?? 0),
+            'total_qr' => (float) ($fila->total_qr ?? 0),
+            'total_validado' => (float) ($fila->total_validado ?? 0),
+            'total_pendiente' => (float) ($fila->total_pendiente ?? 0),
+            'aportes_validados' => (int) ($fila->aportes_validados ?? 0),
+            'aportes_pendientes' => (int) ($fila->aportes_pendientes ?? 0),
+        ]);
+    }
+
+    /**
+     * Desglose de recaudación para el modal del dashboard (T-A4).
+     */
+    private function construirDetalleRecaudacion(?string $fechaInicio, ?string $fechaFin): array
+    {
+        $fila = $this->aplicarAgregadosRecaudacion(
+            $this->consultaDonacionesImpacto($fechaInicio, $fechaFin),
+        )->first();
+
+        return array_merge(
+            $this->filaRecaudacionToArray($fila ?? new \stdClass),
+            [
+                'por_emprendedor' => $this->construirDesglosePorEmprendedor($fechaInicio, $fechaFin),
+                'por_campana' => $this->construirDesglosePorCampana($fechaInicio, $fechaFin),
+            ],
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function construirDesglosePorEmprendedor(?string $fechaInicio, ?string $fechaFin): array
+    {
+        return $this->aplicarAgregadosRecaudacion(
+            $this->consultaDonacionesImpacto($fechaInicio, $fechaFin)
+                ->join('emprendedores', 'campanas.emprendedor_id', '=', 'emprendedores.id')
+                ->select([
+                    'emprendedores.id',
+                    'emprendedores.nombre',
+                    'emprendedores.apellidos',
+                    'emprendedores.estado',
+                ])
+                ->groupBy(
+                    'emprendedores.id',
+                    'emprendedores.nombre',
+                    'emprendedores.apellidos',
+                    'emprendedores.estado',
+                )
+                ->havingRaw('COALESCE(SUM(donaciones.monto), 0) > 0')
+                ->orderByDesc('total_validado'),
+        )
+            ->get()
+            ->map(fn ($fila) => $this->filaRecaudacionToArray($fila, [
+                'id' => (int) $fila->id,
+                'nombre' => trim($fila->nombre.' '.$fila->apellidos),
+                'estado' => $fila->estado,
+            ]))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function construirDesglosePorCampana(?string $fechaInicio, ?string $fechaFin): array
+    {
+        return $this->aplicarAgregadosRecaudacion(
+            $this->consultaDonacionesImpacto($fechaInicio, $fechaFin)
+                ->join('emprendedores', 'campanas.emprendedor_id', '=', 'emprendedores.id')
+                ->select([
+                    'campanas.id',
+                    'campanas.titulo',
+                    'campanas.estado',
+                    'emprendedores.nombre as emprendedor_nombre',
+                    'emprendedores.apellidos as emprendedor_apellidos',
+                ])
+                ->groupBy(
+                    'campanas.id',
+                    'campanas.titulo',
+                    'campanas.estado',
+                    'emprendedores.nombre',
+                    'emprendedores.apellidos',
+                )
+                ->havingRaw('COALESCE(SUM(donaciones.monto), 0) > 0')
+                ->orderByDesc('total_validado'),
+        )
+            ->get()
+            ->map(fn ($fila) => $this->filaRecaudacionToArray($fila, [
+                'id' => (int) $fila->id,
+                'titulo' => $fila->titulo,
+                'estado' => $fila->estado,
+                'emprendedor' => trim($fila->emprendedor_nombre.' '.$fila->emprendedor_apellidos),
+            ]))
+            ->values()
+            ->all();
     }
 
     /**
