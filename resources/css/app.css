@@ -109,14 +109,31 @@
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .barra-progreso-fill {
-        transition-duration: 0.01ms !important;
-    }
+.barra-progreso-track {
+    background: linear-gradient(180deg, #f7f6f4 0%, #fde9d6 100%);
+    box-shadow:
+        inset 0 1px 4px rgba(118, 56, 15, 0.12),
+        0 1px 0 rgba(255, 255, 255, 0.8);
+}
 
-    .barra-progreso-shimmer {
-        animation: none !important;
-    }
+.barra-progreso-fill {
+    background: linear-gradient(
+        90deg,
+        #d96d1c 0%,
+        #f07e26 45%,
+        #f3924f 100%
+    );
+    box-shadow:
+        0 0 12px rgba(240, 126, 38, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.barra-progreso-fill--completa {
+    background: linear-gradient(90deg, #059669 0%, #10b981 45%, #34d399 100%);
+    box-shadow:
+        0 0 14px rgba(16, 185, 129, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 @keyframes barra-progreso-shimmer {
@@ -138,4 +155,33 @@
         transparent 100%
     );
     animation: barra-progreso-shimmer 2.8s ease-in-out infinite;
+}
+
+@keyframes barra-progreso-badge-pop {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.6;
+    }
+    70% {
+        transform: scale(1.06);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.barra-progreso-badge {
+    animation: barra-progreso-badge-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .barra-progreso-fill {
+        transition-duration: 0.01ms !important;
+    }
+
+    .barra-progreso-shimmer,
+    .barra-progreso-badge {
+        animation: none !important;
+    }
 }

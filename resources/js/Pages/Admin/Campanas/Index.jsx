@@ -1,4 +1,5 @@
 import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
+import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import {
     adminBackdropShort,
     adminListCardHeader,
@@ -197,17 +198,13 @@ export default function Index({ campanas }) {
                                                                 : '—'}
                                                         </span>
                                                     </div>
-                                                    <div className="mt-3">
-                                                        <div className="mb-1 flex justify-between text-[10px] font-semibold uppercase tracking-wide text-wayna-700/80">
-                                                            <span>Avance</span>
-                                                            <span className="tabular-nums">{p}%</span>
-                                                        </div>
-                                                        <div className="h-1.5 overflow-hidden rounded-full bg-wayna-100">
-                                                            <div
-                                                                className="h-full rounded-full bg-gradient-to-r from-wayna-500 to-wayna-400 transition-all duration-500"
-                                                                style={{ width: `${p}%` }}
-                                                            />
-                                                        </div>
+                                                    <div className="mt-3 max-w-md">
+                                                        <BarraProgresoMeta
+                                                            montoRecaudado={c.monto_recaudado}
+                                                            meta={c.meta_apoyo}
+                                                            porcentaje={p}
+                                                            variant="inline"
+                                                        />
                                                     </div>
                                                 </td>
                                                 <td className="hidden whitespace-nowrap px-4 py-4 text-sm text-stone-700 md:table-cell">

@@ -1,3 +1,4 @@
+import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import DashboardGraficas from '@/Components/Admin/DashboardGraficas';
 import RecaudacionDetalleModal from '@/Components/Admin/RecaudacionDetalleModal';
 import {
@@ -88,9 +89,6 @@ export default function Dashboard({
             currency: 'BOB',
             minimumFractionDigits: 2,
         }).format(Number(monto || 0));
-
-    const formatearPorcentaje = (porcentaje) =>
-        `${Number(porcentaje || 0).toFixed(0)}%`;
 
     const obtenerNombreEmprendedor = (campana) => {
         if (!campana?.emprendedor) {
@@ -352,36 +350,22 @@ export default function Dashboard({
                                         key={campana.id}
                                         className="px-4 py-4 sm:px-5"
                                     >
-                                        <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                                            <div className="min-w-0">
-                                                <p className="text-[10px] font-bold uppercase text-wayna-600">
-                                                    {campana.estado}
-                                                </p>
-                                                <p className="truncate text-sm font-bold text-wayna-950">
-                                                    {campana.titulo}
-                                                </p>
-                                                <p className="truncate text-xs text-stone-500">
-                                                    {obtenerNombreEmprendedor(campana)}
-                                                </p>
-                                            </div>
-                                            <p className="shrink-0 text-sm font-bold text-wayna-900">
-                                                {formatearMonto(campana.monto_recaudado)}{' '}
-                                                <span className="font-normal text-stone-500">
-                                                    / {formatearMonto(campana.meta_apoyo)}
-                                                </span>
+                                        <div className="mb-3 min-w-0">
+                                            <p className="text-[10px] font-bold uppercase text-wayna-600">
+                                                {campana.estado}
+                                            </p>
+                                            <p className="truncate text-sm font-bold text-wayna-950">
+                                                {campana.titulo}
+                                            </p>
+                                            <p className="truncate text-xs text-stone-500">
+                                                {obtenerNombreEmprendedor(campana)}
                                             </p>
                                         </div>
-                                        <div className="h-2 overflow-hidden rounded-full bg-wayna-100">
-                                            <div
-                                                className="h-full rounded-full bg-gradient-to-r from-wayna-500 to-wayna-400"
-                                                style={{
-                                                    width: `${Math.min(Number(campana.porcentaje || 0), 100)}%`,
-                                                }}
-                                            />
-                                        </div>
-                                        <p className="mt-1 text-right text-[10px] font-semibold text-stone-500">
-                                            {formatearPorcentaje(campana.porcentaje)}
-                                        </p>
+                                        <BarraProgresoMeta
+                                            montoRecaudado={campana.monto_recaudado}
+                                            meta={campana.meta_apoyo}
+                                            porcentaje={campana.porcentaje}
+                                        />
                                     </div>
                                 ))}
                             </div>

@@ -1,3 +1,4 @@
+import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import Modal from '@/Components/Modal';
 import { Link } from '@inertiajs/react';
 
@@ -118,19 +119,14 @@ export default function EmprendedorQrModal({
 
                             {campanaActiva ? (
                                 <div>
-                                    <div className="mb-2 flex items-center justify-between gap-2 text-xs font-semibold text-stone-600">
-                                        <span>Progreso de la campaña</span>
-                                        <span className="text-wayna-800">
-                                            Bs {formatearBs(recaudado)} / Bs{' '}
-                                            {formatearBs(metaProgreso)} ({porcentaje}%)
-                                        </span>
-                                    </div>
-                                    <div className="h-3 overflow-hidden rounded-full bg-wayna-100 ring-1 ring-wayna-200/80">
-                                        <div
-                                            className="h-full rounded-full bg-gradient-to-r from-wayna-500 to-wayna-400 transition-all duration-500"
-                                            style={{ width: `${porcentaje}%` }}
-                                        />
-                                    </div>
+                                    <p className="mb-2 text-xs font-semibold text-stone-600">
+                                        Progreso de la campaña
+                                    </p>
+                                    <BarraProgresoMeta
+                                        montoRecaudado={recaudado}
+                                        meta={metaProgreso}
+                                        porcentaje={porcentaje}
+                                    />
                                 </div>
                             ) : (
                                 <p className="rounded-xl border border-dashed border-wayna-200 bg-surface-muted/80 px-4 py-3 text-sm text-stone-600">
