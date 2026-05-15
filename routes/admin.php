@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\DonacionController;
 use App\Http\Controllers\Admin\EmprendedorController;
 use App\Http\Controllers\Admin\TransaccionController;
+use App\Http\Controllers\Admin\ReporteController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -21,9 +23,8 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Admin/Dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [ReporteController::class, 'impacto'])
+            ->name('dashboard');
 
         /*
         |--------------------------------------------------------------------------
