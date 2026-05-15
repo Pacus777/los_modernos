@@ -129,6 +129,8 @@ class DonacionController extends Controller
 
     /**
      * Marca una donación pendiente como validada (T-38).
+     *
+     * monto_recaudado lo actualiza DonacionObserver al cambiar estado_pago (T-A19).
      */
     public function validar(Request $request, Donacion $donacion): RedirectResponse
     {

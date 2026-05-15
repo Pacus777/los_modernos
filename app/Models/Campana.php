@@ -25,8 +25,8 @@ class Campana extends Model
     | debería estar en estado "activa" a la vez. Eso se valida al crear/editar
     | campañas (admin); la base no impone un índice único parcial por motor.
     |
-    | monto_recaudado se mantiene alineado con donaciones validadas vía
-    | DonacionObserver al cambiar estado_pago.
+    | monto_recaudado lo actualiza únicamente DonacionObserver (T-A19) al
+    | validar o revertir donaciones; no duplicar lógica en servicios.
     |
     */
 
