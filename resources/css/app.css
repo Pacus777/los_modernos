@@ -78,6 +78,32 @@
         @apply border-b border-wayna-600/35 bg-wayna-500 text-white shadow-lg shadow-wayna-800/20;
     }
 
+    /* logo-blanco.png: el negro del PNG se funde con el naranja; el blanco queda visible */
+    .logo-wayna-on-brand img {
+        mix-blend-mode: lighten;
+    }
+
+    .admin-sidebar {
+        @apply flex flex-col overflow-x-hidden overflow-y-auto bg-gradient-to-b from-wayna-500 via-wayna-600 to-wayna-700 shadow-xl shadow-wayna-900/25 transition-[width] duration-300 ease-out;
+    }
+
+    .admin-sidebar-nav-label {
+        @apply max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out;
+    }
+
+    .admin-sidebar:hover .admin-sidebar-nav-label,
+    .admin-sidebar:focus-within .admin-sidebar-nav-label,
+    .group\/sidebar:hover .admin-sidebar-nav-label {
+        @apply max-w-[12rem] opacity-100;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .admin-sidebar,
+        .admin-sidebar-nav-label {
+            transition-duration: 0.01ms !important;
+        }
+    }
+
     .input-wayna {
         @apply block w-full rounded-2xl border-surface-200 bg-surface-card/90 px-4 py-2.5 text-stone-900 shadow-inner shadow-wayna-900/5 ring-1 ring-inset ring-black/[0.03] transition placeholder:text-stone-400 focus:border-wayna-500 focus:outline-none focus:ring-2 focus:ring-wayna-500/30;
     }
