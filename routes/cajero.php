@@ -2,15 +2,26 @@
 
 use App\Http\Controllers\Cajero\PendienteController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Rutas del panel cajero
+|--------------------------------------------------------------------------
+|
+| Estas rutas son accesibles para:
+| - cajero
+| - admin
+|
+| El cajero solo debe ver la pantalla de confirmación de pagos en efectivo.
+|
+*/
 
 Route::middleware(['auth', 'verified', 'check.role:admin,cajero'])
     ->prefix('cajero')
     ->name('cajero.')
     ->group(function () {
-        Route::get('/efectivo', function () {
-            return Inertia::render('Cajero/Efectivo');
-        })->name('efectivo');
+        Route::get('/efectivo', [PendienteController::class, 'index'])
+            ->name('efectivo');
 
         Route::get('/efectivo/pendientes', [PendienteController::class, 'index'])
             ->name('efectivo.pendientes');
