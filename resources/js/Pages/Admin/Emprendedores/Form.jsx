@@ -1,10 +1,9 @@
 import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
 import EmprendedorFormStepper, { PASOS_EMPRENDEDOR } from '@/Components/Admin/EmprendedorFormStepper';
 import {
     adminBackdropTall,
     adminFileInputClass,
-    adminFormFooterPrimaryBtn,
-    adminFormFooterSecondaryBtn,
     adminInputClass,
     adminLabelField,
     adminLabelUpper,
@@ -12,7 +11,7 @@ import {
     adminTextareaClass,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
 function formatearBs(valor) {
@@ -190,6 +189,16 @@ export default function Form({ modo, emprendedor }) {
                         <EmprendedorFormStepper pasoActual={paso} onSeleccionar={irAPaso} />
 
                         <form onSubmit={submit} encType="multipart/form-data">
+                            <AdminFormStepActions
+                                sticky
+                                cancelHref={route('admin.emprendedores.index')}
+                                paso={paso}
+                                totalPasos={PASOS_EMPRENDEDOR.length}
+                                processing={processing}
+                                onAnterior={irAnterior}
+                                onSiguiente={irSiguiente}
+                                guardarLabel="Guardar"
+                            />
                             <div className="min-h-[280px] bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
                                 {paso === 1 && (
                                     <div className={adminSectionCard}>
@@ -471,48 +480,15 @@ export default function Form({ modo, emprendedor }) {
                                 )}
                             </div>
 
-                            <div className="flex flex-col-reverse gap-3 border-t border-wayna-100 bg-white/95 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-                                <Link
-                                    href={route('admin.emprendedores.index')}
-                                    className={adminFormFooterSecondaryBtn}
-                                >
-                                    Cancelar
-                                </Link>
-                                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-3">
-                                    {paso > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={irAnterior}
-                                            disabled={processing}
-                                            className={adminFormFooterSecondaryBtn}
-                                        >
-                                            Anterior
-                                        </button>
-                                    )}
-                                    {paso < PASOS_EMPRENDEDOR.length ? (
-                                        <button
-                                            type="button"
-                                            onClick={irSiguiente}
-                                            disabled={processing}
-                                            className={adminFormFooterPrimaryBtn}
-                                        >
-                                            Siguiente
-                                        </button>
-                                    ) : (
-                                        <button
-                                            type="submit"
-                                            disabled={processing}
-                                            className={adminFormFooterPrimaryBtn}
-                                        >
-                                            {processing
-                                                ? 'Guardando…'
-                                                : esEdicion
-                                                  ? 'Confirmar y actualizar'
-                                                  : 'Confirmar y guardar'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            <AdminFormStepActions
+                                cancelHref={route('admin.emprendedores.index')}
+                                paso={paso}
+                                totalPasos={PASOS_EMPRENDEDOR.length}
+                                processing={processing}
+                                onAnterior={irAnterior}
+                                onSiguiente={irSiguiente}
+                                guardarLabel="Guardar"
+                            />
                         </form>
                     </div>
                 </div>

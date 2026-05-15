@@ -1,16 +1,15 @@
 import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
 import CampanaFormStepper, { PASOS_CAMPANA } from '@/Components/Admin/CampanaFormStepper';
 import {
     adminBackdropTall,
-    adminFormFooterPrimaryBtn,
-    adminFormFooterSecondaryBtn,
     adminInputClass,
     adminLabelField,
     adminLabelUpper,
     adminSectionCard,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
 function fechaParaInput(val) {
@@ -200,6 +199,16 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                         <CampanaFormStepper pasoActual={paso} onSeleccionar={irAPaso} />
 
                         <form onSubmit={submit}>
+                            <AdminFormStepActions
+                                sticky
+                                cancelHref={route('admin.campanas.index')}
+                                paso={paso}
+                                totalPasos={PASOS_CAMPANA.length}
+                                processing={processing}
+                                onAnterior={irAnterior}
+                                onSiguiente={irSiguiente}
+                                guardarLabel="Guardar"
+                            />
                             <div className="min-h-[260px] bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
                                 {paso === 1 && (
                                     <div className={adminSectionCard}>
@@ -492,48 +501,15 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                 )}
                             </div>
 
-                            <div className="flex flex-col-reverse gap-3 border-t border-wayna-100 bg-white/95 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-                                <Link
-                                    href={route('admin.campanas.index')}
-                                    className={adminFormFooterSecondaryBtn}
-                                >
-                                    Cancelar
-                                </Link>
-                                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-3">
-                                    {paso > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={irAnterior}
-                                            disabled={processing}
-                                            className={adminFormFooterSecondaryBtn}
-                                        >
-                                            Anterior
-                                        </button>
-                                    )}
-                                    {paso < PASOS_CAMPANA.length ? (
-                                        <button
-                                            type="button"
-                                            onClick={irSiguiente}
-                                            disabled={processing}
-                                            className={adminFormFooterPrimaryBtn}
-                                        >
-                                            Siguiente
-                                        </button>
-                                    ) : (
-                                        <button
-                                            type="submit"
-                                            disabled={processing}
-                                            className={adminFormFooterPrimaryBtn}
-                                        >
-                                            {processing
-                                                ? 'Guardando…'
-                                                : esEdicion
-                                                  ? 'Confirmar y actualizar'
-                                                  : 'Confirmar y crear campaña'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            <AdminFormStepActions
+                                cancelHref={route('admin.campanas.index')}
+                                paso={paso}
+                                totalPasos={PASOS_CAMPANA.length}
+                                processing={processing}
+                                onAnterior={irAnterior}
+                                onSiguiente={irSiguiente}
+                                guardarLabel="Guardar"
+                            />
                         </form>
                     </div>
                 </div>
