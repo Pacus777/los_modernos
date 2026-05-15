@@ -185,3 +185,29 @@
         animation: none !important;
     }
 }
+
+/* T-A9: impresión del modal QR emprendedor */
+@media print {
+    body.printing-emprendedor-qr * {
+        visibility: hidden !important;
+    }
+
+    body.printing-emprendedor-qr #emprendedor-qr-print,
+    body.printing-emprendedor-qr #emprendedor-qr-print * {
+        visibility: visible !important;
+    }
+
+    body.printing-emprendedor-qr #emprendedor-qr-print {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 99999 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+        background: #fff !important;
+        overflow: visible !important;
+    }
+
+    body.printing-emprendedor-qr .no-print-qr {
+        display: none !important;
+    }
+}

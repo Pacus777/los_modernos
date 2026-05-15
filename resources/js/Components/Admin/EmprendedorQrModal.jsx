@@ -1,6 +1,9 @@
 import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import Modal from '@/Components/Modal';
+import { descargarDataUrl, exportarTarjetaQrPng } from '@/utils/exportQrTarjetaCanvas';
+import { textosTarjetaQr } from '@/utils/qrTarjetaTextos';
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 
 function formatearBs(valor) {
     const n = Number(valor);
@@ -13,8 +16,18 @@ function formatearBs(valor) {
     });
 }
 
+function slugArchivo(nombre) {
+    return nombre
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
 /**
- * Modal de perfil + QR del emprendedor (admin), inspirado en mockup Wayna.
+ * Modal de perfil + QR del emprendedor (admin).
+ * La descarga genera un PNG con tarjeta informativa; el modal se mantiene como antes.
  */
 export default function EmprendedorQrModal({
     show = false,
@@ -24,6 +37,8 @@ export default function EmprendedorQrModal({
     fotoSrc = null,
     editHref,
 }) {
+    const [exportando, setExportando] = useState(false);
+
     if (!show || !emprendedor || !qrSrc) {
         return null;
     }
@@ -47,9 +62,45 @@ export default function EmprendedorQrModal({
             ? 'bg-wayna-100 text-wayna-900 ring-1 ring-wayna-300/70'
             : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200';
 
+    const descargarQr = async (locale) => {
+        setExportando(true);
+        const textos = textosTarjetaQr(locale, campanaActiva?.titulo);
+        const base = slugArchivo(nombreCompleto) || 'emprendedor';
+
+        try {
+            const dataUrl = await exportarTarjetaQrPng({
+                qrSrc,
+                nombreCompleto,
+                titulo: textos.titulo,
+                subtitulo: textos.subtitulo,
+                marca: textos.marca,
+            });
+            descargarDataUrl(
+                dataUrl,
+                `tarjeta-qr-wayna-${base}-${textos.sufijoArchivo}.png`,
+            );
+        } catch {
+            const enlace = document.createElement('a');
+            enlace.href = qrSrc;
+            enlace.download = `qr-wayna-${base}-${textos.sufijoArchivo}.png`;
+            document.body.appendChild(enlace);
+            enlace.click();
+            enlace.remove();
+        } finally {
+            setExportando(false);
+        }
+    };
+
+    const imprimirQr = () => {
+        document.body.classList.add('printing-emprendedor-qr');
+        const limpiar = () => document.body.classList.remove('printing-emprendedor-qr');
+        window.addEventListener('afterprint', limpiar, { once: true });
+        window.print();
+    };
+
     return (
         <Modal show={show} onClose={onClose} maxWidth="2xl">
-            <div className="overflow-hidden">
+            <div id="emprendedor-qr-print" className="overflow-hidden">
                 <div className="header-wayna-gradient px-5 py-4 sm:px-6">
                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/85">
                         QR del emprendedor
@@ -141,7 +192,7 @@ export default function EmprendedorQrModal({
                                 <Link
                                     href={editHref}
                                     onClick={onClose}
-                                    className="w-full rounded-xl bg-wayna-500 px-4 py-2 text-center text-sm font-bold text-white shadow-sm transition hover:bg-wayna-600"
+                                    className="no-print-qr w-full rounded-xl bg-wayna-500 px-4 py-2 text-center text-sm font-bold text-white shadow-sm transition hover:bg-wayna-600"
                                 >
                                     Editar
                                 </Link>
@@ -156,10 +207,41 @@ export default function EmprendedorQrModal({
                             <p className="text-center text-xs text-stone-500">
                                 Escaneá para abrir el perfil público
                             </p>
+                            <div className="no-print-qr flex w-full flex-col gap-2">
+                                <p className="text-center text-[10px] font-bold uppercase tracking-wide text-stone-500">
+                                    Descargar tarjeta
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => descargarQr('es')}
+                                        disabled={exportando}
+                                        className="btn-wayna-primary text-xs sm:text-sm"
+                                    >
+                                        {exportando ? '…' : 'Español'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => descargarQr('en')}
+                                        disabled={exportando}
+                                        className="btn-wayna-primary text-xs sm:text-sm"
+                                    >
+                                        {exportando ? '…' : 'English'}
+                                    </button>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={imprimirQr}
+                                    disabled={exportando}
+                                    className="btn-wayna-secondary w-full text-sm"
+                                >
+                                    Imprimir
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="mt-6 flex justify-center border-t border-wayna-100 pt-4">
+                    <div className="no-print-qr mt-6 flex justify-center border-t border-wayna-100 pt-4">
                         <button
                             type="button"
                             onClick={onClose}
