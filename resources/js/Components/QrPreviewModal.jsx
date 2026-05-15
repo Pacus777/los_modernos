@@ -36,7 +36,7 @@ export default function QrPreviewModal({
                         <img
                             src={src}
                             alt={title}
-                            className="h-44 w-44 max-w-full object-contain sm:h-48 sm:w-48"
+                            className="mx-auto h-[min(13rem,70vw)] w-[min(13rem,70vw)] max-w-full object-contain sm:h-48 sm:w-48"
                         />
                     </div>
                 </div>
@@ -45,7 +45,7 @@ export default function QrPreviewModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="btn-wayna-primary w-full sm:w-auto"
+                        className="btn-wayna-primary touch-target w-full sm:w-auto"
                     >
                         Cerrar
                     </button>

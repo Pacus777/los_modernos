@@ -41,8 +41,18 @@
         @apply inline-flex items-center justify-center rounded-2xl border border-surface-200 bg-surface-card px-5 py-3 text-sm font-bold text-wayna-900 shadow-sm transition hover:border-wayna-300 hover:bg-wayna-50;
     }
 
+    .table-scroll-region {
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .touch-target {
+        @apply min-h-11;
+    }
+
     .btn-wayna-chip {
-        @apply rounded-xl border border-surface-200 bg-surface-card px-3 py-3 text-sm font-bold text-stone-700 transition hover:border-wayna-300 hover:bg-wayna-50;
+        @apply min-h-11 rounded-xl border border-surface-200 bg-surface-card px-3 py-3 text-sm font-bold text-stone-700 transition hover:border-wayna-300 hover:bg-wayna-50;
     }
 
     .btn-wayna-chip-selected {

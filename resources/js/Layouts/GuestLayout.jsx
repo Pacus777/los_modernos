@@ -6,7 +6,12 @@ import WaynaNavBar from '@/Components/WaynaNavBar';
  *
  * @param {'card'|'full'} variant
  */
-export default function GuestLayout({ children, variant = 'card', navHref = '/' }) {
+export default function GuestLayout({
+    children,
+    variant = 'card',
+    navHref = '/',
+    contentClassName = '',
+}) {
     if (variant === 'full') {
         return (
             <div className="min-h-screen bg-surface antialiased">
@@ -14,7 +19,9 @@ export default function GuestLayout({ children, variant = 'card', navHref = '/' 
                     <LanguageSelector variant="on-brand" />
                 </WaynaNavBar>
 
-                <main className="mx-auto w-full max-w-lg px-4 py-6 sm:max-w-xl sm:px-6 lg:max-w-2xl">
+                <main
+                    className={`mx-auto w-full max-w-lg px-4 py-6 sm:max-w-xl sm:px-6 lg:max-w-2xl ${contentClassName}`.trim()}
+                >
                     {children}
                 </main>
             </div>

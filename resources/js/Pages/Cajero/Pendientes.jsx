@@ -5,8 +5,18 @@ import {
     adminTableHeadRow,
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
+import PendienteEfectivoCard from '@/Components/Cajero/PendienteEfectivoCard';
+import TableScrollRegion from '@/Components/TableScrollRegion';
 import CajeroLayout from '@/Layouts/CajeroLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
+
+function nombreEmprendedor(row) {
+    const e = row.campana?.emprendedor;
+    if (!e) {
+        return '—';
+    }
+    return `${e.nombre ?? ''} ${e.apellidos ?? ''}`.trim() || '—';
+}
 
 /**
  * Donaciones en efectivo pendientes de confirmación (T-39, paso 3).
@@ -52,7 +62,32 @@ export default function Pendientes({ pendientes }) {
                 )}
 
                 <div className={adminListCardOuter}>
-                    <div className="overflow-x-auto">
+                    <div className="space-y-3 p-4 md:hidden">
+                        {filas.length === 0 ? (
+                            <p className="py-8 text-center text-sm text-stone-500">
+                                No hay donaciones en efectivo pendientes.
+                            </p>
+                        ) : (
+                            filas.map((row) => (
+                                <PendienteEfectivoCard
+                                    key={row.id}
+                                    donacion={row}
+                                    nombreEmprendedor={nombreEmprendedor(row)}
+                                    montoFormateado={Number(row.monto).toFixed(2)}
+                                    fechaFormateada={
+                                        row.created_at
+                                            ? new Date(row.created_at).toLocaleString(
+                                                  'es-BO',
+                                              )
+                                            : null
+                                    }
+                                    modo="enlace"
+                                />
+                            ))
+                        )}
+                    </div>
+
+                    <TableScrollRegion className="hidden md:block">
                         <table className="min-w-full divide-y divide-wayna-100 text-left text-sm">
                             <thead className={adminTableHeadRow}>
                                 <tr>
@@ -148,7 +183,7 @@ export default function Pendientes({ pendientes }) {
                                                         'cajero.efectivo.confirmar',
                                                         row.id,
                                                     )}
-                                                    className="inline-flex rounded-lg bg-wayna-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-wayna-700"
+                                                    className="touch-target inline-flex min-h-11 items-center rounded-lg bg-wayna-500 px-3 py-2 text-xs font-semibold text-white hover:bg-wayna-700"
                                                 >
                                                     Confirmar
                                                 </Link>
@@ -158,7 +193,7 @@ export default function Pendientes({ pendientes }) {
                                 )}
                             </tbody>
                         </table>
-                    </div>
+                    </TableScrollRegion>
 
                     {pendientes?.links &&
                         pendientes.links.length > 3 && (

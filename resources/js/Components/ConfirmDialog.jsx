@@ -59,7 +59,7 @@ export default function ConfirmDialog({
                         type="button"
                         onClick={onClose}
                         disabled={processing}
-                        className="rounded-xl border border-surface-200 bg-surface px-4 py-2.5 text-sm font-bold text-wayna-900 transition hover:bg-wayna-50 disabled:opacity-60"
+                        className="touch-target w-full rounded-xl border border-surface-200 bg-surface px-4 py-2.5 text-sm font-bold text-wayna-900 transition hover:bg-wayna-50 disabled:opacity-60 sm:w-auto"
                     >
                         {cancelLabel}
                     </button>
@@ -67,7 +67,7 @@ export default function ConfirmDialog({
                         type="button"
                         onClick={handleConfirm}
                         disabled={processing}
-                        className={CONFIRM_STYLES[variant] ?? CONFIRM_STYLES.danger}
+                        className={`touch-target w-full sm:w-auto ${CONFIRM_STYLES[variant] ?? CONFIRM_STYLES.danger}`}
                     >
                         {processing ? 'Procesando…' : confirmLabel}
                     </button>

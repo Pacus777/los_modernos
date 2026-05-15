@@ -15,7 +15,7 @@ export default function CajeroLayout({ header, children }) {
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="rounded-full border border-white/60 bg-white/10 px-4 py-1.5 text-sm font-bold text-white transition hover:bg-white hover:text-wayna-700"
+                        className="touch-target min-h-11 rounded-full border border-white/60 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-wayna-700"
                     >
                         Salir
                     </Link>

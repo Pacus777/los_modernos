@@ -155,7 +155,7 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
                 </div>
             )}
 
-            <div className="mt-4 grid grid-cols-4 gap-2">
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {montosRapidos.map((monto) => (
                     <button
                         key={monto}
@@ -228,7 +228,7 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
                     </p>
 
                     {tipoPagos.length > 1 ? (
-                        <div className="mt-2 grid grid-cols-2 gap-2">
+                        <div className="mt-2 grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
                             {tipoPagos.map((tipoPago) => (
                                 <button
                                     key={tipoPago.id}
@@ -278,7 +278,7 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
             <button
                 type="submit"
                 disabled={!puedeEnviar}
-                className={`btn-wayna-primary mt-5 w-full ${
+                className={`btn-wayna-primary touch-target mt-5 min-h-11 w-full ${
                     puedeEnviar ? '' : 'cursor-not-allowed !bg-stone-300 !shadow-none hover:!bg-stone-300'
                 }`}
             >

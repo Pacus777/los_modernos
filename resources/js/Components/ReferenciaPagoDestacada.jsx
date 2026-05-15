@@ -52,7 +52,7 @@ export default function ReferenciaPagoDestacada({
             <button
                 type="button"
                 onClick={copiar}
-                className="btn-wayna-secondary mt-4 text-xs sm:text-sm"
+                className="btn-wayna-secondary touch-target mt-4 min-h-11 w-full text-xs sm:w-auto sm:text-sm"
             >
                 {copiado
                     ? t('tourist.confirmation.referenceCopied')

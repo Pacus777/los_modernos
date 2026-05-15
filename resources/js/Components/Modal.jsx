@@ -31,7 +31,7 @@ export default function Modal({
             <Dialog
                 as="div"
                 id="modal"
-                className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6"
+                className="fixed inset-0 z-50 overflow-y-auto p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-6"
                 onClose={close}
             >
                 <TransitionChild
@@ -55,7 +55,7 @@ export default function Modal({
                 >
                     <div className="flex min-h-full w-full items-center justify-center">
                         <DialogPanel
-                            className={`relative z-10 mx-auto flex w-full max-h-[min(85dvh,calc(100dvh-3rem))] min-h-0 flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/[0.04] ${maxWidthClass}`}
+                            className={`relative z-10 mx-auto flex w-full max-h-[min(90dvh,calc(100dvh-1.5rem))] min-h-0 max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/[0.04] sm:max-w-none ${maxWidthClass}`}
                         >
                             {children}
                         </DialogPanel>

@@ -47,7 +47,7 @@ export default function Confirmacion() {
             <Head title={t('tourist.confirmation.headTitle')} />
 
             <section className="overflow-hidden rounded-3xl border border-wayna-100 bg-white shadow-xl shadow-wayna-900/10">
-                <div className="header-wayna-gradient border-b border-wayna-400/30 px-5 py-6">
+                <div className="header-wayna-gradient border-b border-wayna-400/30 px-4 py-5 sm:px-5 sm:py-6">
                     <h1 className="text-xl font-bold sm:text-2xl">
                         {t('tourist.confirmation.title')}
                     </h1>
@@ -56,7 +56,7 @@ export default function Confirmacion() {
                     </p>
                 </div>
 
-                <div className="space-y-6 p-5 sm:p-6">
+                <div className="space-y-6 p-4 sm:p-6">
                     {!tieneDatosDonacion ? (
                         <div className="rounded-2xl bg-wayna-50 px-4 py-6 text-center">
                             <p className="text-sm font-medium text-wayna-900">
@@ -89,13 +89,13 @@ export default function Confirmacion() {
                                     <button
                                         type="button"
                                         onClick={() => setQrAmpliado(true)}
-                                        className="rounded-2xl border-2 border-wayna-200 bg-white p-4 shadow-inner transition hover:border-wayna-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40"
+                                        className="touch-target rounded-2xl border-2 border-wayna-200 bg-white p-3 shadow-inner transition hover:border-wayna-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40 sm:p-4"
                                         aria-label={t('tourist.confirmation.qrAlt')}
                                     >
                                         <img
                                             src={qrUrl}
                                             alt=""
-                                            className="pointer-events-none h-56 w-56 max-w-full object-contain sm:h-64 sm:w-64"
+                                            className="pointer-events-none mx-auto h-[min(14rem,72vw)] w-[min(14rem,72vw)] max-w-full object-contain sm:h-64 sm:w-64"
                                         />
                                     </button>
                                     <p className="text-center text-xs font-semibold text-wayna-700">
@@ -112,7 +112,7 @@ export default function Confirmacion() {
                             <div className="flex flex-col gap-3 border-t border-wayna-100 pt-4 sm:flex-row sm:justify-center">
                                 <Link
                                     href={volverHref}
-                                    className="inline-flex flex-1 items-center justify-center rounded-xl border border-wayna-200 bg-white px-4 py-3 text-center text-sm font-semibold text-wayna-800 transition hover:bg-wayna-50 sm:flex-none"
+                                    className="touch-target inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-wayna-200 bg-white px-4 py-3 text-center text-sm font-semibold text-wayna-800 transition hover:bg-wayna-50 sm:flex-none"
                                 >
                                     {emprendedorId
                                         ? t('tourist.confirmation.backToProfile')
