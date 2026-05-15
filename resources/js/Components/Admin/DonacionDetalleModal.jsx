@@ -5,6 +5,7 @@ import {
     modalWaynaShell,
 } from '@/Components/Admin/adminUi';
 import Modal from '@/Components/Modal';
+import ReferenciaPagoDestacada from '@/Components/ReferenciaPagoDestacada';
 
 function formatearBs(valor) {
     const n = Number(valor);
@@ -92,6 +93,12 @@ export default function DonacionDetalleModal({ show = false, onClose, donacion }
                 </div>
 
                 <div className={`${modalWaynaBodyCompact} p-4 sm:p-5`}>
+                    <ReferenciaPagoDestacada
+                        referencia={donacion.referencia_pago}
+                        variant="admin"
+                        className="mb-4"
+                    />
+
                     <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3">
                         <span className="font-mono text-xl font-bold text-wayna-950">
                             Bs {formatearBs(donacion.monto)}
@@ -111,11 +118,6 @@ export default function DonacionDetalleModal({ show = false, onClose, donacion }
                         </CampoDetalle>
                         <CampoDetalle etiqueta="Método de pago">
                             {etiquetaMetodoPago(donacion)}
-                        </CampoDetalle>
-                        <CampoDetalle etiqueta="Referencia de pago">
-                            <span className="break-all font-mono text-xs sm:text-sm">
-                                {donacion.referencia_pago?.trim() || '—'}
-                            </span>
                         </CampoDetalle>
                         <CampoDetalle etiqueta="Fecha de registro" className="sm:col-span-2">
                             {donacion.created_at
@@ -163,3 +165,4 @@ export default function DonacionDetalleModal({ show = false, onClose, donacion }
         </Modal>
     );
 }
+

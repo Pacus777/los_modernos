@@ -1,4 +1,5 @@
 import QrPreviewModal from '@/Components/QrPreviewModal';
+import ReferenciaPagoDestacada from '@/Components/ReferenciaPagoDestacada';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -74,16 +75,7 @@ export default function Confirmacion() {
                                 {successMessage}
                             </p>
 
-                            {referencia && (
-                                <div className="rounded-2xl border border-wayna-100 bg-wayna-50/80 px-4 py-3 text-center">
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-wayna-800">
-                                        {t('tourist.confirmation.referenceLabel')}
-                                    </p>
-                                    <p className="mt-1 break-all font-mono text-sm font-semibold text-wayna-950">
-                                        {referencia}
-                                    </p>
-                                </div>
-                            )}
+                            <ReferenciaPagoDestacada referencia={referencia} variant="turista" />
 
                             {qrUrl && (
                                 <div className="flex flex-col items-center gap-3">

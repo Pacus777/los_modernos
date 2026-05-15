@@ -398,8 +398,10 @@ export default function Index({
                                                 {formatearMonto(donacion.monto)}
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-stone-700">
-                                                {donacion.referencia_pago || 'Sin referencia'}
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm">
+                                                <span className="font-mono text-xs font-bold tracking-wide text-wayna-900">
+                                                    {donacion.referencia_pago || 'Sin referencia'}
+                                                </span>
                                             </td>
                                         </tr>
                                     ))}

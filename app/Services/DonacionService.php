@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Donacion;
+use App\Support\ReferenciaPagoWayna;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use App\Models\Campana;
 use Illuminate\Validation\ValidationException;
 
@@ -42,8 +42,9 @@ class DonacionService
         */
 
         $resultado = DB::transaction(function () use ($data) {
-            $referenciaPago = $data['referencia_pago']
-                ?? 'WAYNA-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(5));
+            $referenciaPago = filled($data['referencia_pago'] ?? null)
+                ? trim((string) $data['referencia_pago'])
+                : ReferenciaPagoWayna::generar();
 
             $donacion = Donacion::create([
                 'campana_id' => $data['campana_id'],

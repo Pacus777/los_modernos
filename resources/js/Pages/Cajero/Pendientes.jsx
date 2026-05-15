@@ -118,7 +118,9 @@ export default function Pendientes({ pendientes }) {
                                                 </span>
                                             </td>
                                             <td className="max-w-[12rem] break-all px-4 py-3 align-top text-stone-700">
-                                                {row.referencia_pago ?? '—'}
+                                                <span className="font-mono text-xs font-bold tracking-wide text-wayna-900">
+                                                    {row.referencia_pago ?? '—'}
+                                                </span>
                                             </td>
                                             <td className="px-4 py-3 align-top text-stone-800">
                                                 {row.campana?.titulo ?? '—'}

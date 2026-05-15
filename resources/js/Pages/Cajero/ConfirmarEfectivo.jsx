@@ -47,8 +47,10 @@ export default function ConfirmarEfectivo({ donacion }) {
                         </div>
                         <div className="flex justify-between gap-4 py-2">
                             <dt className="text-stone-500">Referencia</dt>
-                            <dd className="break-all text-right text-stone-800">
-                                {donacion.referencia_pago ?? '—'}
+                            <dd className="break-all text-right">
+                                <span className="font-mono text-sm font-bold tracking-wide text-wayna-900">
+                                    {donacion.referencia_pago ?? '—'}
+                                </span>
                             </dd>
                         </div>
                         <div className="flex justify-between gap-4 py-2">
