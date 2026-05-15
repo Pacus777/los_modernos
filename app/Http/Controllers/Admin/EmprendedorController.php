@@ -11,8 +11,10 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\Admin\StoreEmprendedorRequest;
 use App\Http\Requests\Admin\UpdateEmprendedorRequest;
-use Illuminate\Support\Facades\Storage;
+use App\Services\ImageStorageService;
 use App\Services\QrCodeService;
+use Illuminate\Support\Facades\Storage;
+
 class EmprendedorController extends Controller
 {
     /*
@@ -93,8 +95,11 @@ class EmprendedorController extends Controller
     /**
      * Guarda un nuevo emprendedor en la base de datos.
      */
-    public function store(StoreEmprendedorRequest $request, QrCodeService $qrCodeService): RedirectResponse
-    {
+    public function store(
+        StoreEmprendedorRequest $request,
+        QrCodeService $qrCodeService,
+        ImageStorageService $imageStorageService,
+    ): RedirectResponse {
         /*
         |--------------------------------------------------------------------------
         | 1. Obtener datos validados
@@ -111,15 +116,16 @@ class EmprendedorController extends Controller
         | 2. Guardar fotografía si fue enviada
         |--------------------------------------------------------------------------
         |
-        | La imagen se guarda en el disco public y en la base de datos
-        | se almacena solo la ruta relativa.
+        | JPG/PNG/WebP se optimizan a WebP (T-A11) en disco public.
+        | En la base de datos se guarda solo la ruta relativa.
         |
         */
 
         if ($request->hasFile('fotografia')) {
-            $data['fotografia'] = $request
-                ->file('fotografia')
-                ->store('emprendedores/fotografias', 'public');
+            $data['fotografia'] = $imageStorageService->storePublicImageAsWebp(
+                $request->file('fotografia'),
+                'emprendedores/fotografias',
+            );
         }
 
         /*
@@ -192,8 +198,11 @@ class EmprendedorController extends Controller
     /**
      * Actualiza los datos de un emprendedor.
      */
-    public function update(UpdateEmprendedorRequest $request, Emprendedor $emprendedor): RedirectResponse
-    {
+    public function update(
+        UpdateEmprendedorRequest $request,
+        Emprendedor $emprendedor,
+        ImageStorageService $imageStorageService,
+    ): RedirectResponse {
         /*
         |--------------------------------------------------------------------------
         | 1. Obtener datos validados
@@ -220,9 +229,10 @@ class EmprendedorController extends Controller
                 Storage::disk('public')->delete($emprendedor->fotografia);
             }
 
-            $data['fotografia'] = $request
-                ->file('fotografia')
-                ->store('emprendedores/fotografias', 'public');
+            $data['fotografia'] = $imageStorageService->storePublicImageAsWebp(
+                $request->file('fotografia'),
+                'emprendedores/fotografias',
+            );
         }
 
         /*
