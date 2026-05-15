@@ -9,6 +9,8 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Emprendedor;
+
 
 class ReporteController extends Controller
 {
@@ -193,4 +195,125 @@ class ReporteController extends Controller
             ],
         ]);
     }
+
+    /**
+ * Muestra el reporte paginado de donaciones.
+ *
+ * Filtros disponibles:
+ * - emprendedor_id
+ * - estado_pago
+ * - fecha_inicio
+ * - fecha_fin
+ *
+ * La información llega a React como props de Inertia.
+ * No se retorna JSON ni se usa fetch.
+ */
+    public function donaciones(Request $request): Response
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Validar filtros recibidos por URL
+        |--------------------------------------------------------------------------
+        |
+        | Ejemplo de URL:
+        |
+        | /admin/reportes?emprendedor_id=2&estado_pago=validado
+        | /admin/reportes?fecha_inicio=2026-05-01&fecha_fin=2026-05-19
+        |
+        */
+
+        $filtros = $request->validate([
+            'emprendedor_id' => ['nullable', 'integer', 'exists:emprendedores,id'],
+            'estado_pago' => ['nullable', 'string', 'in:pendiente,validado,rechazado'],
+            'fecha_inicio' => ['nullable', 'date'],
+            'fecha_fin' => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Consultar donaciones con relaciones necesarias
+        |--------------------------------------------------------------------------
+        |
+        | Donacion no tiene emprendedor_id directo.
+        | La relación correcta es:
+        |
+        | Donacion -> Campana -> Emprendedor
+        |
+        | Por eso filtramos emprendedor usando whereHas('campana').
+        |
+        */
+
+        $donaciones = Donacion::query()
+            ->with([
+                'campana.emprendedor',
+                'tipoPago',
+                'visitante',
+            ])
+            ->when($filtros['emprendedor_id'] ?? null, function ($query, $emprendedorId) {
+                $query->whereHas('campana', function ($campanaQuery) use ($emprendedorId) {
+                    $campanaQuery->where('emprendedor_id', $emprendedorId);
+                });
+            })
+            ->when($filtros['estado_pago'] ?? null, function ($query, $estadoPago) {
+                $query->where('estado_pago', $estadoPago);
+            })
+            ->when($filtros['fecha_inicio'] ?? null, function ($query, $fechaInicio) {
+                $query->whereDate('created_at', '>=', $fechaInicio);
+            })
+            ->when($filtros['fecha_fin'] ?? null, function ($query, $fechaFin) {
+                $query->whereDate('created_at', '<=', $fechaFin);
+            })
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Datos para los filtros del frontend
+        |--------------------------------------------------------------------------
+        |
+        | La página React necesita la lista de emprendedores para el selector.
+        | No debe hacer fetch adicional.
+        |
+        */
+
+        $emprendedores = Emprendedor::query()
+            ->select('id', 'nombre', 'apellidos')
+            ->orderBy('nombre')
+            ->get()
+            ->map(function ($emprendedor) {
+                return [
+                    'id' => $emprendedor->id,
+                    'nombre_completo' => $emprendedor->nombreCompleto(),
+                ];
+            });
+
+        /*
+        |--------------------------------------------------------------------------
+        | 4. Retornar página Inertia
+        |--------------------------------------------------------------------------
+        |
+        | T-48 creará:
+        | resources/js/Pages/Admin/Reportes/Index.jsx
+        |
+        */
+
+        return Inertia::render('Admin/Reportes/Index', [
+            'donaciones' => $donaciones,
+            'emprendedores' => $emprendedores,
+            'estados' => [
+                Donacion::ESTADO_PENDIENTE,
+                Donacion::ESTADO_VALIDADO,
+                Donacion::ESTADO_RECHAZADO,
+            ],
+            'filtros' => [
+                'emprendedor_id' => $filtros['emprendedor_id'] ?? '',
+                'estado_pago' => $filtros['estado_pago'] ?? '',
+                'fecha_inicio' => $filtros['fecha_inicio'] ?? '',
+                'fecha_fin' => $filtros['fecha_fin'] ?? '',
+            ],
+        ]);
+    }
+
+
 }

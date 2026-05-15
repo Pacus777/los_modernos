@@ -64,4 +64,8 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
 
         Route::patch('donaciones/{donacion}/rechazar', [DonacionController::class, 'rechazar'])
             ->name('donaciones.rechazar');
+
+
+        Route::get('/reportes', [ReporteController::class, 'donaciones'])
+            ->name('reportes.index');
     });
