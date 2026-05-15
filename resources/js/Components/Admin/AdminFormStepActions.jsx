@@ -21,8 +21,8 @@ export default function AdminFormStepActions({
     const esUltimo = paso >= totalPasos;
 
     const barClass = sticky
-        ? 'sticky top-0 z-10 border-b border-wayna-100 bg-white/95 px-6 py-4 shadow-sm shadow-wayna-900/[0.04] backdrop-blur-sm sm:px-8'
-        : 'border-t border-wayna-100 bg-white/95 px-6 py-5 sm:px-8';
+        ? 'sticky top-0 z-10 border-b border-wayna-100 bg-white px-6 py-4 shadow-sm shadow-wayna-900/[0.04] sm:px-8'
+        : 'border-t border-wayna-100 bg-white px-6 py-5 sm:px-8';
 
     return (
         <div

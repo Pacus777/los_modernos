@@ -54,3 +54,21 @@ export const adminPaginationBtnIdle =
 
 export const adminFileInputClass =
     'mt-2 block w-full text-sm text-stone-700 file:mr-4 file:rounded-2xl file:border-0 file:bg-gradient-to-r file:from-wayna-50 file:to-surface-muted file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-wayna-800 hover:file:from-wayna-100 hover:file:to-wayna-50';
+
+/**
+ * Modales Wayna: el panel limita altura (Modal.jsx); el cuerpo hace scroll
+ * y cabecera/pie quedan visibles.
+ */
+export const modalWaynaShell =
+    'flex min-h-0 max-h-full w-full flex-col overflow-hidden bg-white';
+
+export const modalWaynaBody =
+    'min-h-0 flex-1 overflow-y-auto overscroll-contain bg-surface-card';
+
+/** Alias del cuerpo scrollable (fichas, listados). */
+export const modalWaynaBodyCompact = modalWaynaBody;
+
+export const modalWaynaHeader = 'header-wayna-gradient shrink-0 px-4 py-3 sm:px-5';
+
+export const modalWaynaFooter =
+    'shrink-0 border-t border-wayna-100 bg-white px-4 py-3 sm:px-5';

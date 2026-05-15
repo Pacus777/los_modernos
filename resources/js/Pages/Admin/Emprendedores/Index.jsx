@@ -11,6 +11,7 @@ import {
     adminTableHeadRow,
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
+import EmprendedorDetalleModal from '@/Components/Admin/EmprendedorDetalleModal';
 import EmprendedorQrModal from '@/Components/Admin/EmprendedorQrModal';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
@@ -45,6 +46,7 @@ function IconoPersonas({ className }) {
 export default function Index({ emprendedores }) {
     const { flash } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
+    const [detalle, setDetalle] = useState({ open: false, emprendedor: null });
     const [qrPreview, setQrPreview] = useState({
         open: false,
         emprendedor: null,
@@ -67,6 +69,14 @@ export default function Index({ emprendedores }) {
         });
     };
 
+    const abrirDetalle = (emprendedor) => {
+        setDetalle({ open: true, emprendedor });
+    };
+
+    const cerrarDetalle = () => {
+        setDetalle({ open: false, emprendedor: null });
+    };
+
     const verQrEmprendedor = (emprendedor) => {
         if (!emprendedor.qr_url) {
             return;
@@ -77,6 +87,15 @@ export default function Index({ emprendedores }) {
             qrSrc: `/storage/${emprendedor.qr_url}`,
             fotoSrc: obtenerUrlFotografia(emprendedor.fotografia),
         });
+    };
+
+    const verQrDesdeDetalle = (emprendedor) => {
+        cerrarDetalle();
+        verQrEmprendedor(emprendedor);
+    };
+
+    const detenerClic = (e) => {
+        e.stopPropagation();
     };
 
     const obtenerUrlFotografia = (fotografia) => {
@@ -143,7 +162,8 @@ export default function Index({ emprendedores }) {
                         <div className={adminListCardHeader}>
                             <h3 className="text-lg font-bold text-wayna-950">Directorio</h3>
                             <p className="mt-1 text-sm text-stone-600">
-                                Fotografía, meta de referencia y QR de perfil. Desactivá sin borrar el historial.
+                                Hacé clic en una fila para ver la ficha completa. Editá o desactivá desde las
+                                acciones.
                             </p>
                         </div>
 
@@ -186,7 +206,20 @@ export default function Index({ emprendedores }) {
                                     )}
 
                                     {emprendedores.data.map((emprendedor) => (
-                                        <tr key={emprendedor.id} className={adminTableRowHover}>
+                                        <tr
+                                            key={emprendedor.id}
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => abrirDetalle(emprendedor)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    abrirDetalle(emprendedor);
+                                                }
+                                            }}
+                                            className={`${adminTableRowHover} cursor-pointer`}
+                                            aria-label={`Ver ficha de ${emprendedor.nombre} ${emprendedor.apellidos}`}
+                                        >
                                             <td className="px-6 py-4 sm:px-8">
                                                 <div className="flex items-center gap-3">
                                                     {obtenerUrlFotografia(emprendedor.fotografia) ? (
@@ -223,7 +256,10 @@ export default function Index({ emprendedores }) {
                                                 </span>
                                             </td>
 
-                                            <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                            <td
+                                                className="whitespace-nowrap px-4 py-4 text-sm"
+                                                onClick={detenerClic}
+                                            >
                                                 {emprendedor.qr_url ? (
                                                     <button
                                                         type="button"
@@ -237,7 +273,10 @@ export default function Index({ emprendedores }) {
                                                 )}
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4 text-right sm:px-8">
+                                            <td
+                                                className="whitespace-nowrap px-6 py-4 text-right sm:px-8"
+                                                onClick={detenerClic}
+                                            >
                                                 <div className="flex flex-wrap justify-end gap-2">
                                                     <Link
                                                         href={route('admin.emprendedores.edit', emprendedor.id)}
@@ -283,6 +322,22 @@ export default function Index({ emprendedores }) {
                 </div>
             </div>
             <ConfirmDialogPortal />
+            <EmprendedorDetalleModal
+                show={detalle.open}
+                emprendedor={detalle.emprendedor}
+                fotoSrc={
+                    detalle.emprendedor
+                        ? obtenerUrlFotografia(detalle.emprendedor.fotografia)
+                        : null
+                }
+                qrSrc={
+                    detalle.emprendedor?.qr_url
+                        ? `/storage/${detalle.emprendedor.qr_url}`
+                        : null
+                }
+                onVerQr={verQrDesdeDetalle}
+                onClose={cerrarDetalle}
+            />
             <EmprendedorQrModal
                 show={qrPreview.open}
                 emprendedor={qrPreview.emprendedor}

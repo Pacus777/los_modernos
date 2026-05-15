@@ -1,4 +1,9 @@
 import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
+import {
+    modalWaynaBody,
+    modalWaynaFooter,
+    modalWaynaShell,
+} from '@/Components/Admin/adminUi';
 import Modal from '@/Components/Modal';
 import { descargarDataUrl, exportarTarjetaQrPng } from '@/utils/exportQrTarjetaCanvas';
 import { textosTarjetaQr } from '@/utils/qrTarjetaTextos';
@@ -46,7 +51,8 @@ export default function EmprendedorQrModal({
     const nombreCompleto =
         `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim() || 'Emprendedor';
 
-    const campanaActiva = emprendedor.campanas?.[0] ?? null;
+    const campanaActiva =
+        emprendedor.campanas?.find((c) => c.estado === 'activa') ?? null;
     const metaCampana = campanaActiva ? Number(campanaActiva.meta_apoyo) : 0;
     const recaudado = campanaActiva ? Number(campanaActiva.monto_recaudado) : 0;
     const metaReferencia = Number(emprendedor.meta_monto) || 0;
@@ -99,13 +105,13 @@ export default function EmprendedorQrModal({
     };
 
     return (
-        <Modal show={show} onClose={onClose} maxWidth="2xl">
-            <div id="emprendedor-qr-print" className="overflow-hidden">
-                <div className="header-wayna-gradient px-5 py-4 sm:px-6">
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/85">
+        <Modal show={show} onClose={onClose} maxWidth="xl">
+            <div id="emprendedor-qr-print" className={modalWaynaShell}>
+                <div className="header-wayna-gradient shrink-0 px-4 py-3 sm:px-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85">
                         QR del emprendedor
                     </p>
-                    <h2 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+                    <h2 className="mt-1 text-lg font-bold text-white sm:text-xl">
                         {nombreCompleto}
                     </h2>
                     {campanaActiva?.titulo ? (
@@ -115,17 +121,17 @@ export default function EmprendedorQrModal({
                     ) : null}
                 </div>
 
-                <div className="bg-surface-card p-5 sm:p-6">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
-                        <div className="flex shrink-0 flex-col items-center gap-3 lg:w-36">
+                <div className={`${modalWaynaBody} p-4 sm:p-5`}>
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
+                        <div className="flex shrink-0 flex-col items-center gap-2 lg:w-28">
                             {fotoSrc ? (
                                 <img
                                     src={fotoSrc}
                                     alt={nombreCompleto}
-                                    className="h-32 w-32 rounded-2xl object-cover shadow-md ring-2 ring-wayna-200"
+                                    className="h-28 w-28 rounded-2xl object-cover shadow-md ring-2 ring-wayna-200"
                                 />
                             ) : (
-                                <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-3xl font-black text-wayna-700 ring-2 ring-wayna-200">
+                                <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-3xl font-black text-wayna-700 ring-2 ring-wayna-200">
                                     {emprendedor.nombre?.charAt(0) ?? '?'}
                                 </div>
                             )}
@@ -152,7 +158,7 @@ export default function EmprendedorQrModal({
                                     <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
                                         Meta de referencia
                                     </p>
-                                    <p className="mt-1 font-mono text-lg font-bold text-wayna-950">
+                                    <p className="mt-1 font-mono text-base font-bold text-wayna-950">
                                         Bs {formatearBs(metaReferencia)}
                                     </p>
                                 </div>
@@ -160,7 +166,7 @@ export default function EmprendedorQrModal({
                                     <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
                                         {campanaActiva ? 'Meta campaña activa' : 'Recaudado'}
                                     </p>
-                                    <p className="mt-1 font-mono text-lg font-bold text-wayna-950">
+                                    <p className="mt-1 font-mono text-base font-bold text-wayna-950">
                                         {campanaActiva
                                             ? `Bs ${formatearBs(metaCampana)}`
                                             : `Bs ${formatearBs(recaudado)}`}
@@ -187,7 +193,7 @@ export default function EmprendedorQrModal({
                             )}
                         </div>
 
-                        <div className="flex flex-col items-center gap-3 lg:w-52 lg:border-l lg:border-wayna-100 lg:pl-6">
+                        <div className="flex flex-col items-center gap-2 lg:w-44 lg:border-l lg:border-wayna-100 lg:pl-4">
                             {editHref ? (
                                 <Link
                                     href={editHref}
@@ -197,11 +203,11 @@ export default function EmprendedorQrModal({
                                     Editar
                                 </Link>
                             ) : null}
-                            <div className="rounded-2xl border-2 border-wayna-200 bg-white p-3 shadow-inner">
+                            <div className="rounded-2xl border-2 border-wayna-200 bg-white p-2 shadow-inner">
                                 <img
                                     src={qrSrc}
                                     alt={`QR ${nombreCompleto}`}
-                                    className="h-40 w-40 object-contain sm:h-44 sm:w-44"
+                                    className="h-32 w-32 object-contain sm:h-36 sm:w-36"
                                 />
                             </div>
                             <p className="text-center text-xs text-stone-500">
@@ -240,16 +246,16 @@ export default function EmprendedorQrModal({
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="no-print-qr mt-6 flex justify-center border-t border-wayna-100 pt-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="btn-wayna-primary min-w-[10rem]"
-                        >
-                            Cerrar
-                        </button>
-                    </div>
+                <div className={`${modalWaynaFooter} no-print-qr flex justify-center`}>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="btn-wayna-primary min-w-[10rem]"
+                    >
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </Modal>

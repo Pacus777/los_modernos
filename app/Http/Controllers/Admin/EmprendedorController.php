@@ -58,10 +58,7 @@ class EmprendedorController extends Controller
 
         $emprendedores = Emprendedor::query()
             ->with([
-                'campanas' => fn ($q) => $q
-                    ->where('estado', Campana::ESTADO_ACTIVA)
-                    ->latest('id')
-                    ->limit(1),
+                'campanas' => fn ($q) => $q->latest('id'),
             ])
             ->latest()
             ->paginate(10)

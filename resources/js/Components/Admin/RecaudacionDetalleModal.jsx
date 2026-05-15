@@ -1,3 +1,4 @@
+import { modalWaynaBody, modalWaynaFooter, modalWaynaShell } from '@/Components/Admin/adminUi';
 import Modal from '@/Components/Modal';
 import { useState } from 'react';
 
@@ -102,7 +103,7 @@ function ListaDesglose({ items, vacio, renderItem }) {
     }
 
     return (
-        <div className="max-h-72 space-y-2 overflow-y-auto pr-1">{items.map(renderItem)}</div>
+        <div className="max-h-56 space-y-2 overflow-y-auto pr-1">{items.map(renderItem)}</div>
     );
 }
 
@@ -133,16 +134,16 @@ export default function RecaudacionDetalleModal({
     };
 
     return (
-        <Modal show={show} onClose={cerrar} maxWidth="2xl">
-            <div className="overflow-hidden rounded-lg">
-                <div className="header-wayna-gradient px-5 py-4">
+        <Modal show={show} onClose={cerrar} maxWidth="xl">
+            <div className={modalWaynaShell}>
+                <div className="header-wayna-gradient shrink-0 px-4 py-3 sm:px-5">
                     <h2 className="text-lg font-bold text-white">
                         Detalle de recaudación
                     </h2>
                     <p className="mt-1 text-sm text-white/85">Período: {periodo}</p>
                 </div>
 
-                <div className="space-y-4 bg-surface-card px-5 py-5">
+                <div className={`${modalWaynaBody} space-y-4 px-4 py-4 sm:px-5`}>
                     <div className="flex flex-wrap gap-2">
                         <TabBoton
                             activo={pestaña === 'resumen'}
@@ -252,15 +253,16 @@ export default function RecaudacionDetalleModal({
                         </div>
                     )}
 
-                    <div className="flex justify-end border-t border-wayna-100 pt-4">
-                        <button
-                            type="button"
-                            onClick={cerrar}
-                            className="rounded-xl border border-wayna-200 bg-white px-4 py-2.5 text-sm font-bold text-wayna-800 transition hover:bg-wayna-50"
-                        >
-                            Cerrar
-                        </button>
-                    </div>
+                </div>
+
+                <div className={`${modalWaynaFooter} flex justify-end`}>
+                    <button
+                        type="button"
+                        onClick={cerrar}
+                        className="rounded-xl border border-wayna-200 bg-white px-4 py-2.5 text-sm font-bold text-wayna-800 transition hover:bg-wayna-50"
+                    >
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </Modal>
