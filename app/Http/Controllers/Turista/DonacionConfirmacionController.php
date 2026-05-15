@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Turista;
 use App\Http\Controllers\Controller;
 use App\Models\Donacion;
 use App\Services\QrCodeService;
+use App\Support\PagoPendienteTurista;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,6 +37,7 @@ class DonacionConfirmacionController extends Controller
                 'referencia_pago' => $donacion->referencia_pago,
                 'monto' => (string) $donacion->monto,
                 'metodo' => $donacion->metodo,
+                'plazo_pago' => PagoPendienteTurista::paraConfirmacion($donacion),
             ],
             'emprendedor_id' => $donacion->campana?->emprendedor_id,
             'qr_pago_url' => $qrPagoUrl,

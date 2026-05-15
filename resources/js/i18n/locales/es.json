@@ -36,7 +36,12 @@
       "qrAlt": "Código QR para completar el pago Wayna",
       "helpDigital": "Escaneá este código con la cámara de tu celular. En el MVP de Wayna contiene los datos de tu donación; más adelante podrá enlazarse con tu app bancaria.",
       "helpCash": "Mostrá este código en el punto Wayna o al cajero para que confirme tu pago en efectivo.",
-      "backToProfile": "Volver al registro"
+      "backToProfile": "Volver al registro",
+      "timerActiveTitle": "Tiempo para completar el pago",
+      "timerActiveHint": "Tenés {{minutes}} minutos para finalizar el pago. Pasado ese plazo, tu aporte seguirá pendiente de confirmación.",
+      "timerExpiredTitle": "Pago pendiente vencido",
+      "timerExpiredBody": "Se agotó el tiempo sugerido para completar el pago. Tu donación sigue registrada y puede ser revisada manualmente por el equipo Wayna.",
+      "timerExpiredNote": "Si ya pagaste, conservá tu código de pago y consultá al cajero o al punto Wayna."
     },
     "profile": {
       "headTitle": "Apoya a {{name}}",

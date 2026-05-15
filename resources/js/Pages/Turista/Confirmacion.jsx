@@ -1,5 +1,6 @@
 import QrPreviewModal from '@/Components/QrPreviewModal';
 import ReferenciaPagoDestacada from '@/Components/ReferenciaPagoDestacada';
+import TemporizadorPagoPendiente from '@/Components/Turista/TemporizadorPagoPendiente';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -29,6 +30,8 @@ export default function Confirmacion() {
         flash.success ??
         t('tourist.confirmation.successFallback');
     const tieneDatosDonacion = Boolean(qrUrl || referencia);
+
+    const plazoPago = confirmacion?.plazo_pago ?? null;
 
     const metodo = confirmacion?.metodo ?? '';
     const esQrEfectivo =
@@ -74,6 +77,10 @@ export default function Confirmacion() {
                             <p className="text-center text-base leading-relaxed text-stone-700">
                                 {successMessage}
                             </p>
+
+                            {plazoPago && (
+                                <TemporizadorPagoPendiente plazoPago={plazoPago} />
+                            )}
 
                             <ReferenciaPagoDestacada referencia={referencia} variant="turista" />
 
