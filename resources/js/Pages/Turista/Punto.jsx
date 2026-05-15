@@ -1,6 +1,7 @@
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
+import ChatWidget from '@/Components/Turista/ChatWidget';
 
 /**
  * Página pública de punto físico.
@@ -27,7 +28,7 @@ export default function Punto({ punto, emprendedores = [] }) {
     };
 
     return (
-        <GuestLayout>
+        <GuestLayout variant="full">
             <Head title={`${punto?.nombre || 'Punto Wayna'} — Wayna`} />
 
             <main className="min-h-screen bg-gradient-to-b from-wayna-50 via-white to-white">
@@ -144,6 +145,21 @@ export default function Punto({ punto, emprendedores = [] }) {
                     </div>
                 </section>
             </main>
+
+            return (
+                <GuestLayout variant="full">
+                    <Head title={`${punto?.nombre || 'Punto Wayna'} — Wayna`} />
+
+                    <main className="min-h-screen bg-gradient-to-b from-wayna-50 via-white to-white">
+                        <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+                            {/* todo tu contenido actual */}
+                        </section>
+                    </main>
+
+                    <ChatWidget />
+                </GuestLayout>
+            );
+
         </GuestLayout>
     );
 }
