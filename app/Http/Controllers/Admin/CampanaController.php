@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateCampanaRequest;
 use App\Models\Campana;
 use App\Models\Emprendedor;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,6 +37,7 @@ class CampanaController extends Controller
             'modo' => 'crear',
             'campana' => null,
             'emprendedores' => $this->listaEmprendedores(),
+            'fechaHoy' => now()->toDateString(),
         ]);
     }
 
@@ -64,6 +66,7 @@ class CampanaController extends Controller
             'modo' => 'editar',
             'campana' => $campana,
             'emprendedores' => $this->listaEmprendedores(),
+            'fechaHoy' => now()->toDateString(),
         ]);
     }
 
@@ -104,17 +107,37 @@ class CampanaController extends Controller
     /**
      * Emprendedores para el selector del formulario (llegan en la misma respuesta Inertia).
      *
-     * @return \Illuminate\Support\Collection<int, array{id: int, label: string}>
+     * @return \Illuminate\Support\Collection<int, array{id: int, label: string, nombre: string, descripcion: string|null, estado: string}>
      */
     private function listaEmprendedores()
     {
         return Emprendedor::query()
             ->orderBy('nombre')
             ->orderBy('apellidos')
-            ->get(['id', 'nombre', 'apellidos'])
+            ->get(['id', 'nombre', 'apellidos', 'descripcion', 'estado'])
             ->map(fn (Emprendedor $e) => [
                 'id' => $e->id,
-                'label' => trim($e->nombre.' '.$e->apellidos),
+                'nombre' => trim($e->nombre.' '.$e->apellidos),
+                'descripcion' => ($d = trim((string) $e->descripcion)) !== '' ? $d : null,
+                'estado' => $e->estado,
+                'label' => $this->etiquetaEmprendedorParaSelector($e),
             ]);
+    }
+
+    private function etiquetaEmprendedorParaSelector(Emprendedor $e): string
+    {
+        $nombre = trim($e->nombre.' '.$e->apellidos);
+        $partes = [$nombre];
+
+        $descripcion = trim((string) $e->descripcion);
+        if ($descripcion !== '') {
+            $partes[] = Str::limit($descripcion, 55);
+        }
+
+        if ($e->estado !== 'activo') {
+            $partes[] = 'inactivo';
+        }
+
+        return implode(' · ', $partes);
     }
 }

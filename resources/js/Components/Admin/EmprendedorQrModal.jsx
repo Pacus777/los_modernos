@@ -7,6 +7,7 @@ import {
 import Modal from '@/Components/Modal';
 import { descargarDataUrl, exportarTarjetaQrPng } from '@/utils/exportQrTarjetaCanvas';
 import { textosTarjetaQr } from '@/utils/qrTarjetaTextos';
+import { campanaVigentePorFechas } from '@/utils/campanaVigente';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -52,7 +53,7 @@ export default function EmprendedorQrModal({
         `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim() || 'Emprendedor';
 
     const campanaActiva =
-        emprendedor.campanas?.find((c) => c.estado === 'activa') ?? null;
+        emprendedor.campanas?.find((c) => campanaVigentePorFechas(c)) ?? null;
     const metaCampana = campanaActiva ? Number(campanaActiva.meta_apoyo) : 0;
     const recaudado = campanaActiva ? Number(campanaActiva.monto_recaudado) : 0;
     const metaReferencia = Number(emprendedor.meta_monto) || 0;

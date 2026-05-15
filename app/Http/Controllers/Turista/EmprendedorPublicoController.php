@@ -31,7 +31,7 @@ class EmprendedorPublicoController extends Controller
             ->with([
                 'campanas' => function ($query) {
                     $query
-                        ->where('estado', Campana::ESTADO_ACTIVA)
+                        ->visibleEnPerfilTurista()
                         ->withSum([
                             'donaciones as monto_validado' => function ($query) {
                                 $query->where('estado_pago', Donacion::ESTADO_VALIDADO);

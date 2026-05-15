@@ -1,14 +1,19 @@
 import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import AdminFormField from '@/Components/Admin/AdminFormField';
 import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
+import AdminResumenEmprendedor from '@/Components/Admin/AdminResumenEmprendedor';
 import CampanaFormStepper, { PASOS_CAMPANA } from '@/Components/Admin/CampanaFormStepper';
 import {
     adminBackdropTall,
+    adminFormGrid2,
+    adminFormStack,
     adminInputClass,
-    adminLabelField,
+    adminInputMoneyWrap,
     adminLabelUpper,
     adminSectionCard,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { fechaLocalHoy } from '@/utils/campanaVigente';
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -39,8 +44,10 @@ function etiquetaEstado(estado) {
 /**
  * Formulario crear / editar campaña por pasos.
  */
-export default function Form({ modo, campana, emprendedores = [] }) {
+export default function Form({ modo, campana, emprendedores = [], fechaHoy: fechaHoyProp }) {
     const esEdicion = modo === 'editar';
+    const hoy = fechaHoyProp || fechaLocalHoy();
+    const fechaInicioOriginal = fechaParaInput(campana?.fecha_inicio);
     const [paso, setPaso] = useState(1);
     const [erroresPaso, setErroresPaso] = useState({});
 
@@ -48,15 +55,25 @@ export default function Form({ modo, campana, emprendedores = [] }) {
         emprendedor_id: campana?.emprendedor_id ?? '',
         titulo: campana?.titulo ?? '',
         meta_apoyo: campana?.meta_apoyo ?? '',
-        fecha_inicio: fechaParaInput(campana?.fecha_inicio),
+        fecha_inicio: fechaInicioOriginal || hoy,
         fecha_fin: fechaParaInput(campana?.fecha_fin),
         estado: campana?.estado ?? 'activa',
     });
 
+    const emprendedorSeleccionado = useMemo(
+        () => emprendedores.find((e) => String(e.id) === String(data.emprendedor_id)),
+        [data.emprendedor_id, emprendedores],
+    );
+
     const labelEmprendedor = useMemo(() => {
-        const opt = emprendedores.find((e) => String(e.id) === String(data.emprendedor_id));
-        return opt?.label ?? '—';
-    }, [data.emprendedor_id, emprendedores]);
+        if (!emprendedorSeleccionado) {
+            return '—';
+        }
+        if (emprendedorSeleccionado.descripcion) {
+            return `${emprendedorSeleccionado.nombre ?? emprendedorSeleccionado.label} — ${emprendedorSeleccionado.descripcion}`;
+        }
+        return emprendedorSeleccionado.nombre ?? emprendedorSeleccionado.label;
+    }, [emprendedorSeleccionado]);
 
     useEffect(() => {
         if (errors.emprendedor_id) {
@@ -89,10 +106,42 @@ export default function Form({ modo, campana, emprendedores = [] }) {
         }
 
         if (numeroPaso === 3) {
-            if (data.fecha_inicio && data.fecha_fin) {
-                if (new Date(data.fecha_fin) < new Date(data.fecha_inicio)) {
+            if (!data.fecha_inicio) {
+                locales.fecha_inicio = 'La fecha de inicio es obligatoria.';
+            } else if (!esEdicion && data.fecha_inicio < hoy) {
+                locales.fecha_inicio =
+                    'La fecha de inicio debe ser hoy o una fecha posterior.';
+            } else if (
+                esEdicion &&
+                data.fecha_inicio < hoy &&
+                data.fecha_inicio !== fechaInicioOriginal
+            ) {
+                locales.fecha_inicio =
+                    'La fecha de inicio no puede ser anterior a hoy.';
+            }
+
+            if (!data.fecha_fin) {
+                locales.fecha_fin = 'La fecha de fin es obligatoria.';
+            } else if (
+                data.fecha_inicio &&
+                data.fecha_fin &&
+                data.fecha_fin < data.fecha_inicio
+            ) {
+                locales.fecha_fin =
+                    'La fecha de fin debe ser igual o posterior a la de inicio.';
+            }
+
+            if (!data.estado) {
+                locales.estado = 'Debés elegir el estado de la campaña.';
+            }
+
+            if (data.estado === 'activa') {
+                if (data.fecha_inicio && data.fecha_inicio > hoy) {
+                    locales.estado =
+                        'No podés dejar la campaña activa si la fecha de inicio es futura.';
+                } else if (data.fecha_fin && data.fecha_fin < hoy) {
                     locales.fecha_fin =
-                        'La fecha de fin debe ser igual o posterior a la de inicio.';
+                        'La campaña ya venció; actualizá la fecha de fin o cambiá el estado.';
                 }
             }
         }
@@ -155,10 +204,7 @@ export default function Form({ modo, campana, emprendedores = [] }) {
 
     const error = (campo) => erroresPaso[campo] || errors[campo];
 
-    const fechasResumen =
-        data.fecha_inicio || data.fecha_fin
-            ? `${data.fecha_inicio || '—'} → ${data.fecha_fin || '—'}`
-            : 'Sin fechas definidas';
+    const fechasResumen = `${data.fecha_inicio || '—'} → ${data.fecha_fin || '—'}`;
 
     return (
         <AdminLayout
@@ -210,23 +256,39 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                 guardarLabel="Guardar"
                             />
                             <div className="min-h-[260px] bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
-                                {paso === 1 && (
+                                {paso >= 2 && paso <= 3 && emprendedorSeleccionado ? (
+                                    <AdminResumenEmprendedor
+                                        titulo="Emprendedor de esta campaña"
+                                        nombre={
+                                            emprendedorSeleccionado.nombre ??
+                                            emprendedorSeleccionado.label
+                                        }
+                                        descripcion={emprendedorSeleccionado.descripcion}
+                                        onCambiar={() => {
+                                            setErroresPaso({});
+                                            setPaso(1);
+                                        }}
+                                        textoCambiar="Cambiar emprendedor"
+                                    />
+                                ) : null}
+                                                                {paso === 1 && (
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Vinculación</p>
                                         <p className="mt-1 text-sm text-stone-600">
-                                            Elegí el emprendedor al que pertenece esta campaña de
-                                            apoyo.
+                                            Completá los campos marcados con{' '}
+                                            <span className="font-bold text-wayna-600">*</span>.
+                                            En la lista verás nombre y tipo de emprendimiento.
                                         </p>
-                                        <div className="mt-4 space-y-5">
-                                            <div>
-                                                <label
-                                                    htmlFor="emprendedor_id"
-                                                    className={adminLabelField}
-                                                >
-                                                    Emprendedor
-                                                </label>
+                                        <div className={`mt-4 ${adminFormStack}`}>
+                                            <AdminFormField
+                                                id="emprendedor_id"
+                                                label="Emprendedor"
+                                                required
+                                                error={error('emprendedor_id')}
+                                            >
                                                 <select
                                                     id="emprendedor_id"
+                                                    required
                                                     value={data.emprendedor_id}
                                                     onChange={(e) =>
                                                         setData('emprendedor_id', e.target.value)
@@ -242,13 +304,15 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                                         </option>
                                                     ))}
                                                 </select>
-                                                {error('emprendedor_id') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('emprendedor_id')}
-                                                    </p>
-                                                )}
-                                            </div>
-
+                                            </AdminFormField>
+                                            {emprendedorSeleccionado?.descripcion ? (
+                                                <p className="rounded-lg border border-wayna-100 bg-wayna-50/60 px-3 py-2 text-sm leading-relaxed text-stone-700">
+                                                    <span className="font-semibold text-wayna-800">
+                                                        Emprendimiento:{' '}
+                                                    </span>
+                                                    {emprendedorSeleccionado.descripcion}
+                                                </p>
+                                            ) : null}
                                             <div className="rounded-xl border border-wayna-200/80 bg-gradient-to-r from-wayna-50 to-surface-muted/60 px-4 py-3 text-sm leading-relaxed text-wayna-950">
                                                 <span className="font-bold text-wayna-800">
                                                     Regla Wayna:
@@ -268,45 +332,48 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Título y meta</p>
                                         <p className="mt-1 text-sm text-stone-600">
-                                            Lo que verán los turistas en el perfil y en el punto
-                                            de donación.
+                                            Completá los campos marcados con{' '}
+                                            <span className="font-bold text-wayna-600">*</span>.
+                                            Lo que verán los turistas en el perfil y en el punto de
+                                            donación.
                                         </p>
-                                        <div className="mt-4 space-y-5">
-                                            <div>
-                                                <label htmlFor="titulo" className={adminLabelField}>
-                                                    Título público
-                                                </label>
+                                        <div className={`mt-4 ${adminFormStack}`}>
+                                            <AdminFormField
+                                                id="titulo"
+                                                label="Título público"
+                                                required
+                                                error={error('titulo')}
+                                            >
                                                 <input
                                                     id="titulo"
                                                     type="text"
+                                                    required
                                                     value={data.titulo}
                                                     onChange={(e) =>
                                                         setData('titulo', e.target.value)
                                                     }
                                                     className={adminInputClass}
-                                                    placeholder="Ej. Apoyo a artesanías de la Chiquitanía"
+                                                    placeholder={
+                                                        emprendedorSeleccionado?.descripcion
+                                                            ? `Ej. Apoyo a ${emprendedorSeleccionado.descripcion}`
+                                                            : 'Ej. Apoyo a artesanías de la Chiquitanía'
+                                                    }
                                                 />
-                                                {error('titulo') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('titulo')}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            <div>
-                                                <label
-                                                    htmlFor="meta_apoyo"
-                                                    className={adminLabelField}
-                                                >
-                                                    Meta de apoyo (Bs)
-                                                </label>
-                                                <div className="relative mt-2">
+                                            </AdminFormField>
+                                            <AdminFormField
+                                                id="meta_apoyo"
+                                                label="Meta de apoyo (Bs)"
+                                                required
+                                                error={error('meta_apoyo')}
+                                            >
+                                                <div className={adminInputMoneyWrap}>
                                                     <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-bold text-wayna-600">
                                                         Bs
                                                     </span>
                                                     <input
                                                         id="meta_apoyo"
                                                         type="number"
+                                                        required
                                                         min="0.01"
                                                         step="0.01"
                                                         value={data.meta_apoyo}
@@ -317,14 +384,8 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                                         placeholder="0.00"
                                                     />
                                                 </div>
-                                                {error('meta_apoyo') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('meta_apoyo')}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            {esEdicion && campana && (
+                                            </AdminFormField>
+                                            {esEdicion && campana ? (
                                                 <div className="flex flex-col gap-2 rounded-xl border border-wayna-200 bg-wayna-50/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
                                                     <div>
                                                         <p className="text-xs font-bold uppercase tracking-wide text-wayna-800">
@@ -340,7 +401,7 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                                         {formatearBs(campana.monto_recaudado)}
                                                     </p>
                                                 </div>
-                                            )}
+                                            ) : null}
                                         </div>
                                     </div>
                                 )}
@@ -349,76 +410,78 @@ export default function Form({ modo, campana, emprendedores = [] }) {
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Fechas y estado</p>
                                         <p className="mt-1 text-sm text-stone-600">
-                                            Las fechas son opcionales. El estado define si la
-                                            campaña es visible para turistas.
+                                            Completá los campos marcados con{' '}
+                                            <span className="font-bold text-wayna-600">*</span>.
+                                            La fecha de inicio debe ser hoy o posterior al crear.
+                                            La fecha de fin no puede ser anterior al inicio.
                                         </p>
-                                        <div className="mt-4 grid gap-5 sm:grid-cols-2">
-                                            <div>
-                                                <label
-                                                    htmlFor="fecha_inicio"
-                                                    className={adminLabelField}
-                                                >
-                                                    Inicio (opcional)
-                                                </label>
-                                                <input
+                                        <div className={`mt-4 ${adminFormStack}`}>
+                                            <div className={adminFormGrid2}>
+                                                <AdminFormField
                                                     id="fecha_inicio"
-                                                    type="date"
-                                                    value={data.fecha_inicio}
-                                                    onChange={(e) =>
-                                                        setData('fecha_inicio', e.target.value)
-                                                    }
-                                                    className={adminInputClass}
-                                                />
-                                                {error('fecha_inicio') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('fecha_inicio')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <label
-                                                    htmlFor="fecha_fin"
-                                                    className={adminLabelField}
+                                                    label="Fecha de inicio"
+                                                    required
+                                                    error={error('fecha_inicio')}
                                                 >
-                                                    Fin (opcional)
-                                                </label>
-                                                <input
+                                                    <input
+                                                        id="fecha_inicio"
+                                                        type="date"
+                                                        required
+                                                        min={
+                                                            esEdicion &&
+                                                            fechaInicioOriginal &&
+                                                            fechaInicioOriginal < hoy
+                                                                ? fechaInicioOriginal
+                                                                : hoy
+                                                        }
+                                                        value={data.fecha_inicio}
+                                                        onChange={(e) =>
+                                                            setData('fecha_inicio', e.target.value)
+                                                        }
+                                                        className={adminInputClass}
+                                                    />
+                                                </AdminFormField>
+                                                <AdminFormField
                                                     id="fecha_fin"
-                                                    type="date"
-                                                    value={data.fecha_fin}
+                                                    label="Fecha de fin"
+                                                    required
+                                                    error={error('fecha_fin')}
+                                                >
+                                                    <input
+                                                        id="fecha_fin"
+                                                        type="date"
+                                                        required
+                                                        min={data.fecha_inicio || hoy}
+                                                        value={data.fecha_fin}
+                                                        onChange={(e) =>
+                                                            setData('fecha_fin', e.target.value)
+                                                        }
+                                                        className={adminInputClass}
+                                                    />
+                                                </AdminFormField>
+                                            </div>
+                                            <AdminFormField
+                                                id="estado"
+                                                label="Visibilidad para turistas"
+                                                required
+                                                error={error('estado')}
+                                            >
+                                                <select
+                                                    id="estado"
+                                                    required
+                                                    value={data.estado}
                                                     onChange={(e) =>
-                                                        setData('fecha_fin', e.target.value)
+                                                        setData('estado', e.target.value)
                                                     }
                                                     className={adminInputClass}
-                                                />
-                                                {error('fecha_fin') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('fecha_fin')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="mt-5">
-                                            <label htmlFor="estado" className={adminLabelField}>
-                                                Visibilidad para turistas
-                                            </label>
-                                            <select
-                                                id="estado"
-                                                value={data.estado}
-                                                onChange={(e) => setData('estado', e.target.value)}
-                                                className={adminInputClass}
-                                            >
-                                                <option value="activa">
-                                                    Activa (visible en perfil público)
-                                                </option>
-                                                <option value="inactiva">Inactiva</option>
-                                                <option value="finalizada">Finalizada</option>
-                                            </select>
-                                            {error('estado') && (
-                                                <p className="mt-2 text-sm font-medium text-red-600">
-                                                    {error('estado')}
-                                                </p>
-                                            )}
+                                                >
+                                                    <option value="activa">
+                                                        Activa (visible en perfil público)
+                                                    </option>
+                                                    <option value="inactiva">Inactiva</option>
+                                                    <option value="finalizada">Finalizada</option>
+                                                </select>
+                                            </AdminFormField>
                                         </div>
                                     </div>
                                 )}

@@ -34,7 +34,7 @@ class DonacionCampanaMontoRecaudadoTest extends TestCase
             'meta_apoyo' => 1000,
             'monto_recaudado' => 0,
             'fecha_inicio' => now()->toDateString(),
-            'fecha_fin' => null,
+            'fecha_fin' => now()->addMonth()->toDateString(),
             'estado' => Campana::ESTADO_ACTIVA,
         ]);
 

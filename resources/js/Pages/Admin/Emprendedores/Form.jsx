@@ -1,11 +1,15 @@
 import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import AdminFormField from '@/Components/Admin/AdminFormField';
 import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
+import AdminResumenEmprendedor from '@/Components/Admin/AdminResumenEmprendedor';
 import EmprendedorFormStepper, { PASOS_EMPRENDEDOR } from '@/Components/Admin/EmprendedorFormStepper';
 import {
     adminBackdropTall,
     adminFileInputClass,
+    adminFormGrid2,
+    adminFormStack,
     adminInputClass,
-    adminLabelField,
+    adminInputMoneyWrap,
     adminLabelUpper,
     adminSectionCard,
     adminTextareaClass,
@@ -80,11 +84,24 @@ export default function Form({ modo, emprendedor }) {
             }
         }
 
+        if (numeroPaso === 2) {
+            const desc = data.descripcion?.trim() ?? '';
+            if (!desc) {
+                locales.descripcion = 'La descripción del emprendimiento es obligatoria.';
+            } else if (desc.length < 10) {
+                locales.descripcion =
+                    'Escribí al menos 10 caracteres (qué produce o vende el emprendimiento).';
+            }
+        }
+
         if (numeroPaso === 3) {
+            if (!data.estado) {
+                locales.estado = 'Debés elegir un estado.';
+            }
             if (data.meta_monto === '' || data.meta_monto === null) {
                 locales.meta_monto = 'La meta económica es obligatoria.';
-            } else if (Number(data.meta_monto) < 0) {
-                locales.meta_monto = 'La meta no puede ser negativa.';
+            } else if (Number(data.meta_monto) < 0.01) {
+                locales.meta_monto = 'La meta debe ser mayor a cero.';
             }
         }
 
@@ -122,9 +139,11 @@ export default function Form({ modo, emprendedor }) {
     const submit = (e) => {
         e.preventDefault();
 
-        if (!validarPaso(1) || !validarPaso(3)) {
+        if (!validarPaso(1) || !validarPaso(2) || !validarPaso(3)) {
             if (!data.nombre.trim() || !data.apellidos.trim()) {
                 setPaso(1);
+            } else if (!data.descripcion?.trim() || data.descripcion.trim().length < 10) {
+                setPaso(2);
             } else {
                 setPaso(3);
             }
@@ -149,6 +168,7 @@ export default function Form({ modo, emprendedor }) {
 
     const error = (campo) => erroresPaso[campo] || errors[campo];
     const fotoMostrar = vistaPreviaNueva || fotografiaActual;
+    const nombreCompleto = `${data.nombre} ${data.apellidos}`.trim();
 
     return (
         <AdminLayout
@@ -200,21 +220,38 @@ export default function Form({ modo, emprendedor }) {
                                 guardarLabel="Guardar"
                             />
                             <div className="min-h-[280px] bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
+                                {paso >= 2 && paso <= 3 && nombreCompleto ? (
+                                    <AdminResumenEmprendedor
+                                        titulo="Emprendedor en registro"
+                                        nombre={nombreCompleto}
+                                        descripcion={
+                                            paso >= 3 ? data.descripcion?.trim() || null : null
+                                        }
+                                        onCambiar={() => {
+                                            setErroresPaso({});
+                                            setPaso(1);
+                                        }}
+                                        textoCambiar="Cambiar datos básicos"
+                                    />
+                                ) : null}
                                 {paso === 1 && (
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Datos básicos</p>
                                         <p className="mt-1 text-sm text-stone-600">
-                                            Nombre y apellidos visibles en el panel y en el perfil
-                                            público.
+                                            Completá los campos marcados con{' '}
+                                            <span className="font-bold text-wayna-600">*</span>.
                                         </p>
-                                        <div className="mt-4 grid gap-5 sm:grid-cols-2">
-                                            <div>
-                                                <label htmlFor="nombre" className={adminLabelField}>
-                                                    Nombre
-                                                </label>
+                                        <div className={`mt-4 ${adminFormGrid2}`}>
+                                            <AdminFormField
+                                                id="nombre"
+                                                label="Nombre"
+                                                required
+                                                error={error('nombre')}
+                                            >
                                                 <input
                                                     id="nombre"
                                                     type="text"
+                                                    required
                                                     value={data.nombre}
                                                     onChange={(e) =>
                                                         setData('nombre', e.target.value)
@@ -222,22 +259,17 @@ export default function Form({ modo, emprendedor }) {
                                                     className={adminInputClass}
                                                     placeholder="Ej. Camila"
                                                 />
-                                                {error('nombre') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('nombre')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <label
-                                                    htmlFor="apellidos"
-                                                    className={adminLabelField}
-                                                >
-                                                    Apellidos
-                                                </label>
+                                            </AdminFormField>
+                                            <AdminFormField
+                                                id="apellidos"
+                                                label="Apellidos"
+                                                required
+                                                error={error('apellidos')}
+                                            >
                                                 <input
                                                     id="apellidos"
                                                     type="text"
+                                                    required
                                                     value={data.apellidos}
                                                     onChange={(e) =>
                                                         setData('apellidos', e.target.value)
@@ -245,12 +277,7 @@ export default function Form({ modo, emprendedor }) {
                                                     className={adminInputClass}
                                                     placeholder="Ej. Sánchez López"
                                                 />
-                                                {error('apellidos') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('apellidos')}
-                                                    </p>
-                                                )}
-                                            </div>
+                                            </AdminFormField>
                                         </div>
                                     </div>
                                 )}
@@ -259,35 +286,32 @@ export default function Form({ modo, emprendedor }) {
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Historia y fotografía</p>
                                         <p className="mt-1 text-sm text-stone-600">
-                                            Contá la historia del emprendimiento y subí una foto
-                                            para el perfil turista.
+                                            Completá los campos marcados con{' '}
+                                            <span className="font-bold text-wayna-600">*</span>.
+                                            La foto es opcional.
                                         </p>
-                                        <div className="mt-4">
-                                            <label
-                                                htmlFor="descripcion"
-                                                className={adminLabelField}
-                                            >
-                                                Descripción / historia
-                                            </label>
-                                            <textarea
+                                        <div className={`mt-4 ${adminFormStack}`}>
+                                            <AdminFormField
                                                 id="descripcion"
-                                                rows={5}
-                                                value={data.descripcion}
-                                                onChange={(e) =>
-                                                    setData('descripcion', e.target.value)
-                                                }
-                                                className={adminTextareaClass}
-                                                placeholder="Historia o actividad que verá el turista en Wayna."
-                                            />
-                                            {error('descripcion') && (
-                                                <p className="mt-2 text-sm font-medium text-red-600">
-                                                    {error('descripcion')}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="mt-6">
-                                            {fotoMostrar && (
-                                                <div className="mb-4">
+                                                label="Descripción del emprendimiento"
+                                                required
+                                                hint="Qué produce o vende; lo verán los turistas en Wayna (mínimo 10 caracteres)."
+                                                error={error('descripcion')}
+                                            >
+                                                <textarea
+                                                    id="descripcion"
+                                                    rows={5}
+                                                    required
+                                                    value={data.descripcion}
+                                                    onChange={(e) =>
+                                                        setData('descripcion', e.target.value)
+                                                    }
+                                                    className={adminTextareaClass}
+                                                    placeholder="Ej. Artesanías en madera y tejidos de la Chiquitanía."
+                                                />
+                                            </AdminFormField>
+                                            {fotoMostrar ? (
+                                                <div>
                                                     <p className="mb-2 text-xs font-bold uppercase tracking-wide text-wayna-800">
                                                         {vistaPreviaNueva
                                                             ? 'Vista previa'
@@ -299,35 +323,31 @@ export default function Form({ modo, emprendedor }) {
                                                         className="h-36 w-36 rounded-2xl object-cover ring-2 ring-wayna-100 shadow-md"
                                                     />
                                                 </div>
-                                            )}
-                                            <label
-                                                htmlFor="fotografia"
-                                                className={adminLabelField}
-                                            >
-                                                {esEdicion
-                                                    ? 'Cambiar fotografía (opcional)'
-                                                    : 'Fotografía (opcional)'}
-                                            </label>
-                                            <input
+                                            ) : null}
+                                            <AdminFormField
                                                 id="fotografia"
-                                                type="file"
-                                                accept="image/jpeg,image/png,image/webp"
-                                                onChange={(e) =>
-                                                    setData(
-                                                        'fotografia',
-                                                        e.target.files?.[0] ?? null,
-                                                    )
+                                                label={
+                                                    esEdicion
+                                                        ? 'Cambiar fotografía'
+                                                        : 'Fotografía de perfil'
                                                 }
-                                                className={adminFileInputClass}
-                                            />
-                                            <p className="mt-2 text-xs text-stone-500">
-                                                JPG, PNG o WEBP. Máximo 2 MB.
-                                            </p>
-                                            {error('fotografia') && (
-                                                <p className="mt-2 text-sm font-medium text-red-600">
-                                                    {error('fotografia')}
-                                                </p>
-                                            )}
+                                                optional
+                                                hint="JPG, PNG o WEBP. Máximo 2 MB."
+                                                error={error('fotografia')}
+                                            >
+                                                <input
+                                                    id="fotografia"
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/webp"
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            'fotografia',
+                                                            e.target.files?.[0] ?? null,
+                                                        )
+                                                    }
+                                                    className={adminFileInputClass}
+                                                />
+                                            </AdminFormField>
                                         </div>
                                     </div>
                                 )}
@@ -336,16 +356,19 @@ export default function Form({ modo, emprendedor }) {
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Meta y estado</p>
                                         <p className="mt-1 text-sm text-stone-600">
-                                            Meta referencial de apoyo y visibilidad en el
-                                            sistema.
+                                            Completá los campos marcados con{' '}
+                                            <span className="font-bold text-wayna-600">*</span>.
                                         </p>
-                                        <div className="mt-4 grid gap-5 sm:grid-cols-2">
-                                            <div>
-                                                <label htmlFor="estado" className={adminLabelField}>
-                                                    Estado
-                                                </label>
+                                        <div className={`mt-4 ${adminFormStack}`}>
+                                            <AdminFormField
+                                                id="estado"
+                                                label="Estado"
+                                                required
+                                                error={error('estado')}
+                                            >
                                                 <select
                                                     id="estado"
+                                                    required
                                                     value={data.estado}
                                                     onChange={(e) =>
                                                         setData('estado', e.target.value)
@@ -357,27 +380,22 @@ export default function Form({ modo, emprendedor }) {
                                                     </option>
                                                     <option value="inactivo">Inactivo</option>
                                                 </select>
-                                                {error('estado') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('estado')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <label
-                                                    htmlFor="meta_monto"
-                                                    className={adminLabelField}
-                                                >
-                                                    Meta económica referencial (Bs)
-                                                </label>
-                                                <div className="relative mt-2">
+                                            </AdminFormField>
+                                            <AdminFormField
+                                                id="meta_monto"
+                                                label="Meta económica referencial (Bs)"
+                                                required
+                                                error={error('meta_monto')}
+                                            >
+                                                <div className={adminInputMoneyWrap}>
                                                     <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-bold text-wayna-600">
                                                         Bs
                                                     </span>
                                                     <input
                                                         id="meta_monto"
                                                         type="number"
-                                                        min="0"
+                                                        required
+                                                        min="0.01"
                                                         step="0.01"
                                                         value={data.meta_monto}
                                                         onChange={(e) =>
@@ -387,19 +405,14 @@ export default function Form({ modo, emprendedor }) {
                                                         placeholder="0.00"
                                                     />
                                                 </div>
-                                                {error('meta_monto') && (
-                                                    <p className="mt-2 text-sm font-medium text-red-600">
-                                                        {error('meta_monto')}
-                                                    </p>
-                                                )}
-                                            </div>
+                                            </AdminFormField>
                                         </div>
-                                        {esEdicion && emprendedor?.qr_url && (
+                                        {esEdicion && emprendedor?.qr_url ? (
                                             <div className="mt-5 rounded-2xl border border-wayna-200 bg-wayna-50/60 px-4 py-3 text-sm text-stone-600">
                                                 El código QR de perfil ya existe y se conserva al
                                                 guardar.
                                             </div>
-                                        )}
+                                        ) : null}
                                     </div>
                                 )}
 

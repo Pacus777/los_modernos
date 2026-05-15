@@ -3,15 +3,24 @@
  * Paleta: #f07e26 (wayna-500) · base #E8E6E0 (surface)
  */
 
-export const adminInputClass = 'input-wayna mt-2';
+export const adminInputClass = 'input-wayna w-full';
 
 export const adminSelectClass = adminInputClass;
 
-export const adminTextareaClass = 'input-wayna mt-2 min-h-[120px]';
+export const adminTextareaClass = 'input-wayna min-h-[120px] w-full';
 
 export const adminLabelUpper = 'section-heading';
 
-export const adminLabelField = 'text-sm font-semibold text-stone-800';
+export const adminLabelField = 'block text-sm font-semibold text-stone-800';
+
+/** Espaciado vertical entre campos del mismo paso. */
+export const adminFormStack = 'flex flex-col gap-5';
+
+/** Dos columnas en pantallas medianas (nombre/apellido, etc.). */
+export const adminFormGrid2 = 'grid grid-cols-1 gap-5 sm:grid-cols-2';
+
+/** Asterisco de campo obligatorio (usar dentro del label). */
+export const adminLabelRequiredMark = 'ml-0.5 font-bold text-wayna-600';
 
 export const adminSectionCard =
     'rounded-2xl border border-wayna-100 bg-surface-card/90 p-5 shadow-sm sm:p-6';
@@ -53,7 +62,10 @@ export const adminPaginationBtnIdle =
     'rounded-xl border border-wayna-200/80 bg-surface-card px-3 py-1.5 text-sm font-semibold text-wayna-900 transition hover:border-wayna-300 hover:bg-wayna-50';
 
 export const adminFileInputClass =
-    'mt-2 block w-full text-sm text-stone-700 file:mr-4 file:rounded-2xl file:border-0 file:bg-gradient-to-r file:from-wayna-50 file:to-surface-muted file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-wayna-800 hover:file:from-wayna-100 hover:file:to-wayna-50';
+    'block w-full text-sm text-stone-700 file:mr-4 file:rounded-2xl file:border-0 file:bg-gradient-to-r file:from-wayna-50 file:to-surface-muted file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-wayna-800 hover:file:from-wayna-100 hover:file:to-wayna-50';
+
+/** Contenedor con borde para prefijo monetario (Bs). */
+export const adminInputMoneyWrap = 'relative w-full';
 
 /**
  * Modales Wayna: el panel limita altura (Modal.jsx); el cuerpo hace scroll
