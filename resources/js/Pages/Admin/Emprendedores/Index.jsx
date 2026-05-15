@@ -15,6 +15,7 @@ import EmprendedorDetalleModal from '@/Components/Admin/EmprendedorDetalleModal'
 import EmprendedorQrModal from '@/Components/Admin/EmprendedorQrModal';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -238,11 +239,26 @@ export default function Index({ emprendedores }) {
                                                         <div className="truncate font-semibold text-wayna-950">
                                                             {emprendedor.nombre} {emprendedor.apellidos}
                                                         </div>
-                                                        {etiquetaTipoEmprendimiento(emprendedor.tipo_emprendimiento) ? (
-                                                            <span className="mt-0.5 inline-flex rounded-full bg-wayna-50 px-2 py-0.5 text-[10px] font-bold text-wayna-800 ring-1 ring-wayna-200/80">
-                                                                {etiquetaTipoEmprendimiento(emprendedor.tipo_emprendimiento)}
-                                                            </span>
-                                                        ) : null}
+                                                        <div className="mt-0.5 flex flex-wrap gap-1">
+                                                            {etiquetaTipoEmprendimiento(
+                                                                emprendedor.tipo_emprendimiento,
+                                                            ) ? (
+                                                                <span className="inline-flex rounded-full bg-wayna-50 px-2 py-0.5 text-[10px] font-bold text-wayna-800 ring-1 ring-wayna-200/80">
+                                                                    {etiquetaTipoEmprendimiento(
+                                                                        emprendedor.tipo_emprendimiento,
+                                                                    )}
+                                                                </span>
+                                                            ) : null}
+                                                            {etiquetaDepartamento(
+                                                                emprendedor.departamento,
+                                                            ) ? (
+                                                                <span className="inline-flex rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-bold text-stone-700 ring-1 ring-stone-200/80">
+                                                                    {etiquetaDepartamento(
+                                                                        emprendedor.departamento,
+                                                                    )}
+                                                                </span>
+                                                            ) : null}
+                                                        </div>
                                                         <div className="max-w-xs truncate text-sm text-stone-500">
                                                             {emprendedor.descripcion || 'Sin descripción'}
                                                         </div>

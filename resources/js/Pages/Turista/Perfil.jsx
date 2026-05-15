@@ -43,11 +43,18 @@ export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [
                         <h1 className="text-2xl font-bold text-white">
                             {nombreCompleto}
                         </h1>
-                        {emprendedor.tipo_emprendimiento_etiqueta ? (
-                            <span className="mt-2 inline-flex rounded-full bg-white/20 px-3 py-0.5 text-xs font-bold text-white ring-1 ring-white/30">
-                                {emprendedor.tipo_emprendimiento_etiqueta}
-                            </span>
-                        ) : null}
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                            {emprendedor.tipo_emprendimiento_etiqueta ? (
+                                <span className="inline-flex rounded-full bg-white/20 px-3 py-0.5 text-xs font-bold text-white ring-1 ring-white/30">
+                                    {emprendedor.tipo_emprendimiento_etiqueta}
+                                </span>
+                            ) : null}
+                            {emprendedor.departamento_etiqueta ? (
+                                <span className="inline-flex rounded-full bg-white/15 px-3 py-0.5 text-xs font-bold text-orange-50 ring-1 ring-white/25">
+                                    {emprendedor.departamento_etiqueta}
+                                </span>
+                            ) : null}
+                        </div>
                     </div>
                 </div>
 

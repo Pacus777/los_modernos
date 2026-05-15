@@ -266,6 +266,9 @@ export default function Form({ modo, campana, emprendedores = [], fechaHoy: fech
                                         tipoEtiqueta={
                                             emprendedorSeleccionado.tipo_emprendimiento_etiqueta
                                         }
+                                        departamentoEtiqueta={
+                                            emprendedorSeleccionado.departamento_etiqueta
+                                        }
                                         descripcion={emprendedorSeleccionado.descripcion}
                                         onCambiar={() => {
                                             setErroresPaso({});

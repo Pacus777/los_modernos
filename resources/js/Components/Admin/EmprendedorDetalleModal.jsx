@@ -5,6 +5,7 @@ import {
     modalWaynaShell,
 } from '@/Components/Admin/adminUi';
 import Modal from '@/Components/Modal';
+import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Link } from '@inertiajs/react';
 
@@ -97,16 +98,31 @@ export default function EmprendedorDetalleModal({
                         </div>
 
                         <div className="min-w-0 flex-1 space-y-4">
-                            {etiquetaTipoEmprendimiento(emprendedor.tipo_emprendimiento) ? (
-                                <div>
-                                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
-                                        Tipo de emprendimiento
-                                    </p>
-                                    <p className="mt-1 text-sm font-semibold text-wayna-950">
-                                        {etiquetaTipoEmprendimiento(
-                                            emprendedor.tipo_emprendimiento,
-                                        )}
-                                    </p>
+                            {etiquetaTipoEmprendimiento(emprendedor.tipo_emprendimiento) ||
+                            etiquetaDepartamento(emprendedor.departamento) ? (
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                    {etiquetaTipoEmprendimiento(emprendedor.tipo_emprendimiento) ? (
+                                        <div>
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
+                                                Tipo de emprendimiento
+                                            </p>
+                                            <p className="mt-1 text-sm font-semibold text-wayna-950">
+                                                {etiquetaTipoEmprendimiento(
+                                                    emprendedor.tipo_emprendimiento,
+                                                )}
+                                            </p>
+                                        </div>
+                                    ) : null}
+                                    {etiquetaDepartamento(emprendedor.departamento) ? (
+                                        <div>
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
+                                                Departamento
+                                            </p>
+                                            <p className="mt-1 text-sm font-semibold text-wayna-950">
+                                                {etiquetaDepartamento(emprendedor.departamento)}
+                                            </p>
+                                        </div>
+                                    ) : null}
                                 </div>
                             ) : null}
                             <div>

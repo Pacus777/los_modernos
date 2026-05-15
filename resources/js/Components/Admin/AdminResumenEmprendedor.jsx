@@ -5,6 +5,7 @@ export default function AdminResumenEmprendedor({
     titulo = 'Emprendedor',
     nombre,
     tipoEtiqueta = null,
+    departamentoEtiqueta = null,
     descripcion = null,
     onCambiar = null,
     textoCambiar = 'Cambiar',
@@ -20,10 +21,19 @@ export default function AdminResumenEmprendedor({
                     {titulo}
                 </p>
                 <p className="mt-1 text-sm font-bold text-wayna-950">{nombre}</p>
-                {tipoEtiqueta ? (
-                    <span className="mt-2 inline-flex rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800 ring-1 ring-wayna-200/80">
-                        {tipoEtiqueta}
-                    </span>
+                {tipoEtiqueta || departamentoEtiqueta ? (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                        {tipoEtiqueta ? (
+                            <span className="inline-flex rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800 ring-1 ring-wayna-200/80">
+                                {tipoEtiqueta}
+                            </span>
+                        ) : null}
+                        {departamentoEtiqueta ? (
+                            <span className="inline-flex rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-bold text-stone-800 ring-1 ring-stone-200/80">
+                                {departamentoEtiqueta}
+                            </span>
+                        ) : null}
+                    </div>
                 ) : null}
                 {descripcion ? (
                     <p className="mt-1 text-sm leading-relaxed text-stone-600">{descripcion}</p>

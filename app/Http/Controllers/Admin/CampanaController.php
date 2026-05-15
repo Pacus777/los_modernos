@@ -114,13 +114,15 @@ class CampanaController extends Controller
         return Emprendedor::query()
             ->orderBy('nombre')
             ->orderBy('apellidos')
-            ->get(['id', 'nombre', 'apellidos', 'descripcion', 'tipo_emprendimiento', 'estado'])
+            ->get(['id', 'nombre', 'apellidos', 'descripcion', 'tipo_emprendimiento', 'departamento', 'estado'])
             ->map(fn (Emprendedor $e) => [
                 'id' => $e->id,
                 'nombre' => trim($e->nombre.' '.$e->apellidos),
                 'descripcion' => ($d = trim((string) $e->descripcion)) !== '' ? $d : null,
                 'tipo_emprendimiento' => $e->tipo_emprendimiento?->value,
                 'tipo_emprendimiento_etiqueta' => $e->tipo_emprendimiento?->etiqueta(),
+                'departamento' => $e->departamento?->value,
+                'departamento_etiqueta' => $e->departamento?->etiqueta(),
                 'estado' => $e->estado,
                 'label' => $this->etiquetaEmprendedorParaSelector($e),
             ]);
@@ -133,6 +135,10 @@ class CampanaController extends Controller
 
         if ($e->tipo_emprendimiento !== null) {
             $partes[] = $e->tipo_emprendimiento->etiqueta();
+        }
+
+        if ($e->departamento !== null) {
+            $partes[] = $e->departamento->etiqueta();
         }
 
         $descripcion = trim((string) $e->descripcion);

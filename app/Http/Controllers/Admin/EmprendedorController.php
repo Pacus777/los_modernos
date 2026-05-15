@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
@@ -91,6 +92,7 @@ class EmprendedorController extends Controller
             'modo' => 'crear',
             'emprendedor' => null,
             'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
+            'departamentos' => Departamento::opcionesParaFormulario(),
         ]);
     }
 
@@ -192,6 +194,7 @@ class EmprendedorController extends Controller
             'modo' => 'editar',
             'emprendedor' => $emprendedor,
             'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
+            'departamentos' => Departamento::opcionesParaFormulario(),
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,6 +32,7 @@ class UpdateEmprendedorRequest extends FormRequest
             'apellidos' => ['required', 'string', 'max:120'],
             'descripcion' => ['required', 'string', 'min:10', 'max:5000'],
             'tipo_emprendimiento' => ['required', 'string', Rule::in(TipoEmprendimiento::valores())],
+            'departamento' => ['required', 'string', Rule::in(Departamento::valores())],
             'estado' => ['required', 'string', 'in:activo,inactivo'],
             'meta_monto' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
             'fotografia' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -51,6 +53,8 @@ class UpdateEmprendedorRequest extends FormRequest
             'meta_monto.min' => 'La meta debe ser mayor a cero.',
             'tipo_emprendimiento.required' => 'Debés elegir el tipo de emprendimiento.',
             'tipo_emprendimiento.in' => 'El tipo de emprendimiento seleccionado no es válido.',
+            'departamento.required' => 'Debés elegir el departamento.',
+            'departamento.in' => 'El departamento seleccionado no es válido.',
             'descripcion.required' => 'La descripción del emprendimiento es obligatoria.',
             'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
             'descripcion.max' => 'La descripción no puede superar los 5000 caracteres.',

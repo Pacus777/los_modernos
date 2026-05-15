@@ -51,6 +51,7 @@ class EmprendedorFotografiaWebpTest extends TestCase
             'nombre' => 'Camila',
             'apellidos' => 'Sanchez',
             'tipo_emprendimiento' => 'artesania',
+            'departamento' => 'la_paz',
             'descripcion' => 'Manillas artesanales hechas a mano en la región.',
             'meta_monto' => 4000,
             'estado' => 'activo',

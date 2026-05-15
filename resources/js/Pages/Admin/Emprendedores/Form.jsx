@@ -15,6 +15,7 @@ import {
     adminTextareaClass,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, router, useForm } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -30,7 +31,7 @@ function formatearBs(valor) {
 /**
  * Formulario crear / editar emprendedor por pasos (T-A7).
  */
-export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
+export default function Form({ modo, emprendedor, tiposEmprendimiento = [], departamentos = [] }) {
     const esEdicion = modo === 'editar';
     const [paso, setPaso] = useState(1);
     const [erroresPaso, setErroresPaso] = useState({});
@@ -43,6 +44,8 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
             emprendedor?.tipo_emprendimiento?.value ??
             emprendedor?.tipo_emprendimiento ??
             '',
+        departamento:
+            emprendedor?.departamento?.value ?? emprendedor?.departamento ?? '',
         estado: emprendedor?.estado || 'activo',
         meta_monto: emprendedor?.meta_monto ?? '',
         fotografia: null,
@@ -70,7 +73,12 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
     useEffect(() => {
         if (errors.nombre || errors.apellidos) {
             setPaso(1);
-        } else if (errors.descripcion || errors.fotografia || errors.tipo_emprendimiento) {
+        } else if (
+            errors.descripcion ||
+            errors.fotografia ||
+            errors.tipo_emprendimiento ||
+            errors.departamento
+        ) {
             setPaso(2);
         } else if (errors.estado || errors.meta_monto) {
             setPaso(3);
@@ -92,6 +100,9 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
         if (numeroPaso === 2) {
             if (!data.tipo_emprendimiento) {
                 locales.tipo_emprendimiento = 'Debés elegir el tipo de emprendimiento.';
+            }
+            if (!data.departamento) {
+                locales.departamento = 'Debés elegir el departamento.';
             }
             const desc = data.descripcion?.trim() ?? '';
             if (!desc) {
@@ -152,6 +163,7 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
                 setPaso(1);
             } else if (
                 !data.tipo_emprendimiento ||
+                !data.departamento ||
                 !data.descripcion?.trim() ||
                 data.descripcion.trim().length < 10
             ) {
@@ -239,6 +251,9 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
                                         tipoEtiqueta={etiquetaTipoEmprendimiento(
                                             data.tipo_emprendimiento,
                                         )}
+                                        departamentoEtiqueta={etiquetaDepartamento(
+                                            data.departamento,
+                                        )}
                                         descripcion={
                                             paso >= 3 ? data.descripcion?.trim() || null : null
                                         }
@@ -299,45 +314,76 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
 
                                 {paso === 2 && (
                                     <div className={adminSectionCard}>
-                                        <p className={adminLabelUpper}>Tipo, historia y fotografía</p>
+                                        <p className={adminLabelUpper}>Tipo, departamento y fotografía</p>
                                         <p className="mt-1 text-sm text-stone-600">
                                             Completá los campos marcados con{' '}
                                             <span className="font-bold text-wayna-600">*</span>.
                                             La foto es opcional.
                                         </p>
                                         <div className={`mt-4 ${adminFormStack}`}>
-                                            <AdminFormField
-                                                id="tipo_emprendimiento"
-                                                label="Tipo de emprendimiento o empresa"
-                                                required
-                                                hint="Clasificación para filtros, estadísticas y perfil turista."
-                                                error={error('tipo_emprendimiento')}
-                                            >
-                                                <select
+                                            <div className={adminFormGrid2}>
+                                                <AdminFormField
                                                     id="tipo_emprendimiento"
+                                                    label="Tipo de emprendimiento o empresa"
                                                     required
-                                                    value={data.tipo_emprendimiento}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            'tipo_emprendimiento',
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    className={adminInputClass}
+                                                    hint="Clasificación para filtros y estadísticas."
+                                                    error={error('tipo_emprendimiento')}
                                                 >
-                                                    <option value="">
-                                                        Seleccionar tipo…
-                                                    </option>
-                                                    {tiposEmprendimiento.map((opt) => (
-                                                        <option
-                                                            key={opt.value}
-                                                            value={opt.value}
-                                                        >
-                                                            {opt.label}
+                                                    <select
+                                                        id="tipo_emprendimiento"
+                                                        required
+                                                        value={data.tipo_emprendimiento}
+                                                        onChange={(e) =>
+                                                            setData(
+                                                                'tipo_emprendimiento',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        className={adminInputClass}
+                                                    >
+                                                        <option value="">
+                                                            Seleccionar tipo…
                                                         </option>
-                                                    ))}
-                                                </select>
-                                            </AdminFormField>
+                                                        {tiposEmprendimiento.map((opt) => (
+                                                            <option
+                                                                key={opt.value}
+                                                                value={opt.value}
+                                                            >
+                                                                {opt.label}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </AdminFormField>
+                                                <AdminFormField
+                                                    id="departamento"
+                                                    label="Departamento"
+                                                    required
+                                                    hint="Región para impacto nacional y reportes."
+                                                    error={error('departamento')}
+                                                >
+                                                    <select
+                                                        id="departamento"
+                                                        required
+                                                        value={data.departamento}
+                                                        onChange={(e) =>
+                                                            setData('departamento', e.target.value)
+                                                        }
+                                                        className={adminInputClass}
+                                                    >
+                                                        <option value="">
+                                                            Seleccionar departamento…
+                                                        </option>
+                                                        {departamentos.map((opt) => (
+                                                            <option
+                                                                key={opt.value}
+                                                                value={opt.value}
+                                                            >
+                                                                {opt.label}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </AdminFormField>
+                                            </div>
                                             <AdminFormField
                                                 id="descripcion"
                                                 label="Descripción del emprendimiento"
@@ -490,6 +536,15 @@ export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
                                                         {etiquetaTipoEmprendimiento(
                                                             data.tipo_emprendimiento,
                                                         ) || '—'}
+                                                    </dd>
+                                                </div>
+                                                <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">
+                                                    <dt className="text-xs font-bold uppercase text-wayna-700">
+                                                        Departamento
+                                                    </dt>
+                                                    <dd className="sm:col-span-2 text-sm font-semibold text-wayna-950">
+                                                        {etiquetaDepartamento(data.departamento) ||
+                                                            '—'}
                                                     </dd>
                                                 </div>
                                                 <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">

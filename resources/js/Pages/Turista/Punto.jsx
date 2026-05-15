@@ -1,4 +1,5 @@
 import GuestLayout from '@/Layouts/GuestLayout';
+import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
@@ -98,6 +99,9 @@ export default function Punto({ punto, emprendedores = [] }) {
                                 const tipoEtiqueta = etiquetaTipoEmprendimiento(
                                     emprendedor.tipo_emprendimiento,
                                 );
+                                const deptoEtiqueta = etiquetaDepartamento(
+                                    emprendedor.departamento,
+                                );
 
                                 return (
                                     <article
@@ -127,10 +131,19 @@ export default function Punto({ punto, emprendedores = [] }) {
                                                 {nombreCompleto}
                                             </h3>
 
-                                            {tipoEtiqueta ? (
-                                                <span className="mt-2 inline-flex w-fit rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800">
-                                                    {tipoEtiqueta}
-                                                </span>
+                                            {tipoEtiqueta || deptoEtiqueta ? (
+                                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                                    {tipoEtiqueta ? (
+                                                        <span className="inline-flex w-fit rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800">
+                                                            {tipoEtiqueta}
+                                                        </span>
+                                                    ) : null}
+                                                    {deptoEtiqueta ? (
+                                                        <span className="inline-flex w-fit rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-bold text-stone-800">
+                                                            {deptoEtiqueta}
+                                                        </span>
+                                                    ) : null}
+                                                </div>
                                             ) : null}
 
                                             <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-stone-600">
