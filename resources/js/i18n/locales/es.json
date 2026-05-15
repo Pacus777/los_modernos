@@ -73,7 +73,8 @@
       "instructionOther": "Seguí las indicaciones del punto Wayna para completar tu aporte.",
       "processing": "Procesando...",
       "confirmWithAmount": "Confirmar aporte de Bs {{amount}}",
-      "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado."
+      "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado.",
+      "exchangeRateHint": "Tipo de cambio referencial aproximado para turistas extranjeros."
     }
   },
   "admin": {

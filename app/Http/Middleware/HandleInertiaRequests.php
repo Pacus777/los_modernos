@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\TipoCambioTurista;
 use Closure;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -61,6 +62,8 @@ class HandleInertiaRequests extends Middleware
             'es' => 'Español',
             'en' => 'English',
         ],
+
+        'tipoCambio' => fn () => TipoCambioTurista::paraFrontend(),
 
         'flash' => [
             'success' => fn () => $request->session()->get('success'),

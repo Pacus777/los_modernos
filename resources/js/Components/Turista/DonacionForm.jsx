@@ -1,10 +1,12 @@
 import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
-import { useForm } from '@inertiajs/react';
+import { bolivianosAUsd, formatearUsd } from '@/utils/tipoCambioTurista';
+import { useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const tipoCambio = usePage().props.tipoCambio ?? { activo: false, usd_por_bs: 0 };
     const montosRapidos = [5, 10, 20, 50];
 
     const listaCampanas = useMemo(
@@ -95,6 +97,15 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
               ? 'border-wayna-200 bg-wayna-50 text-wayna-950'
               : 'border-stone-200 bg-stone-50 text-stone-800';
 
+    const equivalenteUsd = useMemo(() => {
+        if (!tipoCambio.activo) {
+            return null;
+        }
+        return bolivianosAUsd(data.monto, tipoCambio.usd_por_bs);
+    }, [data.monto, tipoCambio.activo, tipoCambio.usd_por_bs]);
+
+    const localeMoneda = i18n.language?.startsWith('en') ? 'en-US' : 'es-BO';
+
     return (
         <form
             onSubmit={submit}
@@ -181,6 +192,31 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
                 {errors.monto && (
                     <p className="mt-2 text-sm text-red-600">
                         {errors.monto}
+                    </p>
+                )}
+
+                {equivalenteUsd !== null && (
+                    <p
+                        className="mt-2 flex flex-wrap items-center gap-1.5 rounded-xl border border-sky-200/80 bg-sky-50/90 px-3 py-2.5 text-sm text-sky-950"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        <span className="font-semibold text-sky-900">
+                            Bs{' '}
+                            {Number(data.monto).toLocaleString('es-BO', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2,
+                            })}
+                        </span>
+                        <span className="text-sky-700" aria-hidden>
+                            ≈
+                        </span>
+                        <span className="font-bold text-sky-950">
+                            {formatearUsd(equivalenteUsd, localeMoneda)}
+                        </span>
+                        <span className="w-full text-[11px] font-medium text-sky-800/80">
+                            {t('tourist.donationForm.exchangeRateHint')}
+                        </span>
                     </p>
                 )}
             </div>

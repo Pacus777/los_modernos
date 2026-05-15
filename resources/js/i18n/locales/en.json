@@ -73,7 +73,8 @@
       "instructionOther": "Follow the instructions at the Wayna desk to complete your contribution.",
       "processing": "Processing...",
       "confirmWithAmount": "Confirm contribution of Bs {{amount}}",
-      "pendingNote": "Your contribution will be registered as pending until it is confirmed."
+      "pendingNote": "Your contribution will be registered as pending until it is confirmed.",
+      "exchangeRateHint": "Approximate reference exchange rate for foreign visitors."
     }
   },
   "admin": {
