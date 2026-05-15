@@ -3,6 +3,7 @@ import {
     IconDonaciones,
     IconEmprendedores,
     IconPanel,
+    IconPuntos,
 } from '@/Components/Admin/AdminNavIcons';
 import { WaynaBrand } from '@/Components/ApplicationLogo';
 import { Link, usePage } from '@inertiajs/react';
@@ -20,6 +21,12 @@ const NAV_ITEMS = [
         routeName: 'admin.emprendedores.index',
         match: 'admin.emprendedores.*',
         Icon: IconEmprendedores,
+    },
+    {
+        label: 'Puntos físicos',
+        routeName: 'admin.puntos.index',
+        match: 'admin.puntos.*',
+        Icon: IconPuntos,
     },
     {
         label: 'Campañas',
