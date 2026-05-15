@@ -22,7 +22,7 @@ class DonacionController extends Controller
                 'campana_id' => [
                     'required',
                     Rule::exists('campanas', 'id')->where(
-                        fn ($query) => $query->visibleEnPerfilTurista(),
+                        fn ($query) => Campana::applyVisibilidadPerfilTurista($query),
                     ),
                 ],
                 'tipo_pago_id' => ['required', 'exists:tipos_pago,id'],

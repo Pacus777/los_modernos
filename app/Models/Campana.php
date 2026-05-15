@@ -61,22 +61,32 @@ class Campana extends Model
 
     /**
      * Campaña con estado activa y dentro del rango de fechas (T-A12).
+     * Aplicable a Eloquent y a Query\Builder (p. ej. Rule::exists()->where()).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder  $query
      */
-    public function scopeVisibleEnPerfilTurista(Builder $query, ?Carbon $fecha = null): Builder
+    public static function applyVisibilidadPerfilTurista($query, ?Carbon $fecha = null): void
     {
         $fecha ??= now()->startOfDay();
         $dia = $fecha->toDateString();
 
-        return $query
+        $query
             ->where('estado', self::ESTADO_ACTIVA)
-            ->where(function (Builder $q) use ($dia): void {
+            ->where(function ($q) use ($dia): void {
                 $q->whereNull('fecha_inicio')
                     ->orWhereDate('fecha_inicio', '<=', $dia);
             })
-            ->where(function (Builder $q) use ($dia): void {
+            ->where(function ($q) use ($dia): void {
                 $q->whereNull('fecha_fin')
                     ->orWhereDate('fecha_fin', '>=', $dia);
             });
+    }
+
+    public function scopeVisibleEnPerfilTurista(Builder $query, ?Carbon $fecha = null): Builder
+    {
+        self::applyVisibilidadPerfilTurista($query, $fecha);
+
+        return $query;
     }
 
     public function estaVisibleEnPerfilTurista(?Carbon $fecha = null): bool

@@ -84,6 +84,7 @@ class EmprendedorPublicoController extends Controller
             'progreso' => $progreso,
 
             'tipoPagos' => TipoPago::query()
+                ->where('activo', true)
                 ->select('id', 'nombre', 'codigo')
                 ->orderBy('id')
                 ->get(),

@@ -32,7 +32,8 @@
       "referenceLabel": "Referencia de pago",
       "qrAlt": "Código QR para completar el pago Wayna",
       "helpDigital": "Escaneá este código con la cámara de tu celular. En el MVP de Wayna contiene los datos de tu donación; más adelante podrá enlazarse con tu app bancaria.",
-      "helpCash": "Mostrá este código en el punto Wayna o al cajero para que confirme tu pago en efectivo."
+      "helpCash": "Mostrá este código en el punto Wayna o al cajero para que confirme tu pago en efectivo.",
+      "backToProfile": "Volver al registro"
     },
     "profile": {
       "headTitle": "Apoya a {{name}}",
@@ -60,6 +61,9 @@
       "otherAmount": "Otro monto",
       "amountPlaceholder": "Ej. 30",
       "paymentMethod": "Método de pago",
+      "instructionCash": "Entrega el monto al cajero y espera confirmación.",
+      "instructionQr": "Escanea el código con tu app bancaria.",
+      "instructionOther": "Seguí las indicaciones del punto Wayna para completar tu aporte.",
       "processing": "Procesando...",
       "confirmWithAmount": "Confirmar aporte de Bs {{amount}}",
       "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado."

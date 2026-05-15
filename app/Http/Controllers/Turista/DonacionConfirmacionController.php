@@ -23,6 +23,8 @@ class DonacionConfirmacionController extends Controller
             abort(404);
         }
 
+        $donacion->loadMissing('campana');
+
         $qrPagoUrl = $qrCodeService->urlPublicaQrPagoExistente($donacion)
             ?? $qrCodeService->generarQrPago($donacion);
 
@@ -35,6 +37,7 @@ class DonacionConfirmacionController extends Controller
                 'monto' => (string) $donacion->monto,
                 'metodo' => $donacion->metodo,
             ],
+            'emprendedor_id' => $donacion->campana?->emprendedor_id,
             'qr_pago_url' => $qrPagoUrl,
             'success' => $success,
         ]);

@@ -1,3 +1,4 @@
+import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
 import { useForm } from '@inertiajs/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,6 +67,33 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
         data.tipo_pago_id &&
         Number(data.monto) > 0 &&
         !processing;
+
+    const tipoPagoSeleccionado = useMemo(
+        () => tipoPagos.find((tp) => Number(tp.id) === Number(data.tipo_pago_id)) ?? null,
+        [tipoPagos, data.tipo_pago_id],
+    );
+
+    const claseMetodoPago = useMemo(
+        () => clasificarMetodoPago(tipoPagoSeleccionado, data.metodo),
+        [tipoPagoSeleccionado, data.metodo],
+    );
+
+    const instruccionMetodoPago = useMemo(() => {
+        if (claseMetodoPago === 'efectivo') {
+            return t('tourist.donationForm.instructionCash');
+        }
+        if (claseMetodoPago === 'qr') {
+            return t('tourist.donationForm.instructionQr');
+        }
+        return t('tourist.donationForm.instructionOther');
+    }, [claseMetodoPago, t]);
+
+    const estiloInstruccion =
+        claseMetodoPago === 'efectivo'
+            ? 'border-amber-200 bg-amber-50 text-amber-950'
+            : claseMetodoPago === 'qr'
+              ? 'border-wayna-200 bg-wayna-50 text-wayna-950'
+              : 'border-stone-200 bg-stone-50 text-stone-800';
 
     return (
         <form
@@ -157,29 +185,45 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
                 )}
             </div>
 
-            {tipoPagos.length > 1 && (
+            {tipoPagos.length > 0 && (
                 <div className="mt-4">
                     <p className="text-sm font-medium text-gray-700">
                         {t('tourist.donationForm.paymentMethod')}
                     </p>
 
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                        {tipoPagos.map((tipoPago) => (
-                            <button
-                                key={tipoPago.id}
-                                type="button"
-                                onClick={() => seleccionarTipoPago(tipoPago)}
-                                disabled={processing}
-                                className={
-                                    Number(data.tipo_pago_id) === Number(tipoPago.id)
-                                        ? 'btn-wayna-chip-selected'
-                                        : 'btn-wayna-chip'
-                                }
-                            >
-                                {tipoPago.nombre}
-                            </button>
-                        ))}
-                    </div>
+                    {tipoPagos.length > 1 ? (
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                            {tipoPagos.map((tipoPago) => (
+                                <button
+                                    key={tipoPago.id}
+                                    type="button"
+                                    onClick={() => seleccionarTipoPago(tipoPago)}
+                                    disabled={processing}
+                                    className={
+                                        Number(data.tipo_pago_id) === Number(tipoPago.id)
+                                            ? 'btn-wayna-chip-payment-selected'
+                                            : 'btn-wayna-chip-payment'
+                                    }
+                                >
+                                    {tipoPago.nombre}
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="mt-2 text-sm font-semibold text-wayna-800">
+                            {tipoPagos[0]?.nombre}
+                        </p>
+                    )}
+
+                    {tipoPagoSeleccionado && (
+                        <div
+                            className={`mt-3 rounded-xl border px-3 py-3 text-sm leading-relaxed ${estiloInstruccion}`}
+                            role="status"
+                            aria-live="polite"
+                        >
+                            {instruccionMetodoPago}
+                        </div>
+                    )}
 
                     {errors.tipo_pago_id && (
                         <p className="mt-2 text-sm text-red-600">

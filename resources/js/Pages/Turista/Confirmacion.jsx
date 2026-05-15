@@ -14,6 +14,11 @@ export default function Confirmacion() {
     const page = usePage();
     const flash = page.props.flash ?? {};
     const confirmacion = page.props.confirmacion ?? null;
+    const emprendedorId = page.props.emprendedor_id ?? null;
+
+    const volverHref = emprendedorId
+        ? route('turista.emprendedor.show', emprendedorId)
+        : '/';
 
     const qrUrl = page.props.qr_pago_url ?? flash.qr_pago_url;
     const referencia =
@@ -34,7 +39,7 @@ export default function Confirmacion() {
     const [qrAmpliado, setQrAmpliado] = useState(false);
 
     return (
-        <GuestLayout variant="full">
+        <GuestLayout variant="full" navHref={volverHref}>
             <Head title={t('tourist.confirmation.headTitle')} />
 
             <section className="overflow-hidden rounded-3xl border border-wayna-100 bg-white shadow-xl shadow-wayna-900/10">
@@ -107,10 +112,12 @@ export default function Confirmacion() {
 
                             <div className="flex flex-col gap-3 border-t border-wayna-100 pt-4 sm:flex-row sm:justify-center">
                                 <Link
-                                    href="/"
+                                    href={volverHref}
                                     className="inline-flex flex-1 items-center justify-center rounded-xl border border-wayna-200 bg-white px-4 py-3 text-center text-sm font-semibold text-wayna-800 transition hover:bg-wayna-50 sm:flex-none"
                                 >
-                                    {t('common.back')}
+                                    {emprendedorId
+                                        ? t('tourist.confirmation.backToProfile')
+                                        : t('common.back')}
                                 </Link>
                             </div>
                         </>

@@ -32,7 +32,8 @@
       "referenceLabel": "Payment reference",
       "qrAlt": "QR code to complete your Wayna payment",
       "helpDigital": "Scan this code with your phone camera. In the Wayna MVP it encodes your donation details; later it may link to your banking app.",
-      "helpCash": "Show this code at the Wayna desk or to the cashier so they can confirm your cash payment."
+      "helpCash": "Show this code at the Wayna desk or to the cashier so they can confirm your cash payment.",
+      "backToProfile": "Back to donation form"
     },
     "profile": {
       "headTitle": "Support {{name}}",
@@ -60,6 +61,9 @@
       "otherAmount": "Other amount",
       "amountPlaceholder": "e.g. 30",
       "paymentMethod": "Payment method",
+      "instructionCash": "Hand the amount to the cashier and wait for confirmation.",
+      "instructionQr": "Scan the code with your banking app.",
+      "instructionOther": "Follow the instructions at the Wayna desk to complete your contribution.",
       "processing": "Processing...",
       "confirmWithAmount": "Confirm contribution of Bs {{amount}}",
       "pendingNote": "Your contribution will be registered as pending until it is confirmed."
