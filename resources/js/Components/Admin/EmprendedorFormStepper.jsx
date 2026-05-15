@@ -3,7 +3,7 @@
  */
 export const PASOS_EMPRENDEDOR = [
     { id: 1, titulo: 'Datos básicos', corto: '1' },
-    { id: 2, titulo: 'Historia y foto', corto: '2' },
+    { id: 2, titulo: 'Tipo y historia', corto: '2' },
     { id: 3, titulo: 'Meta y estado', corto: '3' },
     { id: 4, titulo: 'Confirmación', corto: '4' },
 ];

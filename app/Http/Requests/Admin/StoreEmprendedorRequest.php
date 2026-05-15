@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\TipoEmprendimiento;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreEmprendedorRequest extends FormRequest
 {
@@ -35,6 +37,7 @@ class StoreEmprendedorRequest extends FormRequest
             'nombre' => ['required', 'string', 'max:100'],
             'apellidos' => ['required', 'string', 'max:120'],
             'descripcion' => ['required', 'string', 'min:10', 'max:5000'],
+            'tipo_emprendimiento' => ['required', 'string', Rule::in(TipoEmprendimiento::valores())],
             'estado' => ['required', 'string', 'in:activo,inactivo'],
             'meta_monto' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
 
@@ -63,6 +66,8 @@ class StoreEmprendedorRequest extends FormRequest
             'meta_monto.required' => 'La meta económica es obligatoria.',
             'meta_monto.numeric' => 'La meta económica debe ser un número.',
             'meta_monto.min' => 'La meta debe ser mayor a cero.',
+            'tipo_emprendimiento.required' => 'Debés elegir el tipo de emprendimiento.',
+            'tipo_emprendimiento.in' => 'El tipo de emprendimiento seleccionado no es válido.',
             'descripcion.required' => 'La descripción del emprendimiento es obligatoria.',
             'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
             'descripcion.max' => 'La descripción no puede superar los 5000 caracteres.',

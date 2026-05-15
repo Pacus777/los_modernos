@@ -5,6 +5,7 @@ import {
     modalWaynaShell,
 } from '@/Components/Admin/adminUi';
 import Modal from '@/Components/Modal';
+import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Link } from '@inertiajs/react';
 
 function formatearBs(valor) {
@@ -96,6 +97,18 @@ export default function EmprendedorDetalleModal({
                         </div>
 
                         <div className="min-w-0 flex-1 space-y-4">
+                            {etiquetaTipoEmprendimiento(emprendedor.tipo_emprendimiento) ? (
+                                <div>
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
+                                        Tipo de emprendimiento
+                                    </p>
+                                    <p className="mt-1 text-sm font-semibold text-wayna-950">
+                                        {etiquetaTipoEmprendimiento(
+                                            emprendedor.tipo_emprendimiento,
+                                        )}
+                                    </p>
+                                </div>
+                            ) : null}
                             <div>
                                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-wayna-700">
                                     Descripción

@@ -43,6 +43,11 @@ export default function Perfil({ emprendedor, campanaActiva, campanasActivas = [
                         <h1 className="text-2xl font-bold text-white">
                             {nombreCompleto}
                         </h1>
+                        {emprendedor.tipo_emprendimiento_etiqueta ? (
+                            <span className="mt-2 inline-flex rounded-full bg-white/20 px-3 py-0.5 text-xs font-bold text-white ring-1 ring-white/30">
+                                {emprendedor.tipo_emprendimiento_etiqueta}
+                            </span>
+                        ) : null}
                     </div>
                 </div>
 

@@ -50,7 +50,8 @@ class EmprendedorFotografiaWebpTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.emprendedores.store'), [
             'nombre' => 'Camila',
             'apellidos' => 'Sanchez',
-            'descripcion' => 'Manillas artesanales',
+            'tipo_emprendimiento' => 'artesania',
+            'descripcion' => 'Manillas artesanales hechas a mano en la región.',
             'meta_monto' => 4000,
             'estado' => 'activo',
             'fotografia' => UploadedFile::fake()->image('foto.png', 400, 400),

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TipoEmprendimiento;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Models\Emprendedor;
@@ -89,6 +90,7 @@ class EmprendedorController extends Controller
         return Inertia::render('Admin/Emprendedores/Form', [
             'modo' => 'crear',
             'emprendedor' => null,
+            'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
         ]);
     }
 
@@ -189,6 +191,7 @@ class EmprendedorController extends Controller
         return Inertia::render('Admin/Emprendedores/Form', [
             'modo' => 'editar',
             'emprendedor' => $emprendedor,
+            'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
         ]);
     }
 

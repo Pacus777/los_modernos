@@ -15,6 +15,7 @@ import {
     adminTextareaClass,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, router, useForm } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -29,7 +30,7 @@ function formatearBs(valor) {
 /**
  * Formulario crear / editar emprendedor por pasos (T-A7).
  */
-export default function Form({ modo, emprendedor }) {
+export default function Form({ modo, emprendedor, tiposEmprendimiento = [] }) {
     const esEdicion = modo === 'editar';
     const [paso, setPaso] = useState(1);
     const [erroresPaso, setErroresPaso] = useState({});
@@ -38,6 +39,10 @@ export default function Form({ modo, emprendedor }) {
         nombre: emprendedor?.nombre || '',
         apellidos: emprendedor?.apellidos || '',
         descripcion: emprendedor?.descripcion || '',
+        tipo_emprendimiento:
+            emprendedor?.tipo_emprendimiento?.value ??
+            emprendedor?.tipo_emprendimiento ??
+            '',
         estado: emprendedor?.estado || 'activo',
         meta_monto: emprendedor?.meta_monto ?? '',
         fotografia: null,
@@ -65,7 +70,7 @@ export default function Form({ modo, emprendedor }) {
     useEffect(() => {
         if (errors.nombre || errors.apellidos) {
             setPaso(1);
-        } else if (errors.descripcion || errors.fotografia) {
+        } else if (errors.descripcion || errors.fotografia || errors.tipo_emprendimiento) {
             setPaso(2);
         } else if (errors.estado || errors.meta_monto) {
             setPaso(3);
@@ -85,6 +90,9 @@ export default function Form({ modo, emprendedor }) {
         }
 
         if (numeroPaso === 2) {
+            if (!data.tipo_emprendimiento) {
+                locales.tipo_emprendimiento = 'Debés elegir el tipo de emprendimiento.';
+            }
             const desc = data.descripcion?.trim() ?? '';
             if (!desc) {
                 locales.descripcion = 'La descripción del emprendimiento es obligatoria.';
@@ -142,7 +150,11 @@ export default function Form({ modo, emprendedor }) {
         if (!validarPaso(1) || !validarPaso(2) || !validarPaso(3)) {
             if (!data.nombre.trim() || !data.apellidos.trim()) {
                 setPaso(1);
-            } else if (!data.descripcion?.trim() || data.descripcion.trim().length < 10) {
+            } else if (
+                !data.tipo_emprendimiento ||
+                !data.descripcion?.trim() ||
+                data.descripcion.trim().length < 10
+            ) {
                 setPaso(2);
             } else {
                 setPaso(3);
@@ -224,6 +236,9 @@ export default function Form({ modo, emprendedor }) {
                                     <AdminResumenEmprendedor
                                         titulo="Emprendedor en registro"
                                         nombre={nombreCompleto}
+                                        tipoEtiqueta={etiquetaTipoEmprendimiento(
+                                            data.tipo_emprendimiento,
+                                        )}
                                         descripcion={
                                             paso >= 3 ? data.descripcion?.trim() || null : null
                                         }
@@ -284,13 +299,45 @@ export default function Form({ modo, emprendedor }) {
 
                                 {paso === 2 && (
                                     <div className={adminSectionCard}>
-                                        <p className={adminLabelUpper}>Historia y fotografía</p>
+                                        <p className={adminLabelUpper}>Tipo, historia y fotografía</p>
                                         <p className="mt-1 text-sm text-stone-600">
                                             Completá los campos marcados con{' '}
                                             <span className="font-bold text-wayna-600">*</span>.
                                             La foto es opcional.
                                         </p>
                                         <div className={`mt-4 ${adminFormStack}`}>
+                                            <AdminFormField
+                                                id="tipo_emprendimiento"
+                                                label="Tipo de emprendimiento o empresa"
+                                                required
+                                                hint="Clasificación para filtros, estadísticas y perfil turista."
+                                                error={error('tipo_emprendimiento')}
+                                            >
+                                                <select
+                                                    id="tipo_emprendimiento"
+                                                    required
+                                                    value={data.tipo_emprendimiento}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            'tipo_emprendimiento',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className={adminInputClass}
+                                                >
+                                                    <option value="">
+                                                        Seleccionar tipo…
+                                                    </option>
+                                                    {tiposEmprendimiento.map((opt) => (
+                                                        <option
+                                                            key={opt.value}
+                                                            value={opt.value}
+                                                        >
+                                                            {opt.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </AdminFormField>
                                             <AdminFormField
                                                 id="descripcion"
                                                 label="Descripción del emprendimiento"
@@ -433,6 +480,16 @@ export default function Form({ modo, emprendedor }) {
                                                     </dt>
                                                     <dd className="sm:col-span-2 text-sm font-semibold text-wayna-950">
                                                         {data.nombre} {data.apellidos}
+                                                    </dd>
+                                                </div>
+                                                <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">
+                                                    <dt className="text-xs font-bold uppercase text-wayna-700">
+                                                        Tipo
+                                                    </dt>
+                                                    <dd className="sm:col-span-2 text-sm font-semibold text-wayna-950">
+                                                        {etiquetaTipoEmprendimiento(
+                                                            data.tipo_emprendimiento,
+                                                        ) || '—'}
                                                     </dd>
                                                 </div>
                                                 <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">

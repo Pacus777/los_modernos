@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TipoEmprendimiento;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -41,6 +42,7 @@ class Emprendedor extends Model
         'nombre',
         'apellidos',
         'descripcion',
+        'tipo_emprendimiento',
         'fotografia',
         'qr_url',
         'estado',
@@ -59,6 +61,7 @@ class Emprendedor extends Model
 
     protected $casts = [
         'meta_monto' => 'decimal:2',
+        'tipo_emprendimiento' => TipoEmprendimiento::class,
     ];
 
     /**

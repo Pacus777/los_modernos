@@ -263,6 +263,9 @@ export default function Form({ modo, campana, emprendedores = [], fechaHoy: fech
                                             emprendedorSeleccionado.nombre ??
                                             emprendedorSeleccionado.label
                                         }
+                                        tipoEtiqueta={
+                                            emprendedorSeleccionado.tipo_emprendimiento_etiqueta
+                                        }
                                         descripcion={emprendedorSeleccionado.descripcion}
                                         onCambiar={() => {
                                             setErroresPaso({});
@@ -271,7 +274,7 @@ export default function Form({ modo, campana, emprendedores = [], fechaHoy: fech
                                         textoCambiar="Cambiar emprendedor"
                                     />
                                 ) : null}
-                                                                {paso === 1 && (
+                                {paso === 1 && (
                                     <div className={adminSectionCard}>
                                         <p className={adminLabelUpper}>Vinculación</p>
                                         <p className="mt-1 text-sm text-stone-600">

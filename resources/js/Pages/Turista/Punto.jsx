@@ -1,4 +1,5 @@
 import GuestLayout from '@/Layouts/GuestLayout';
+import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '@/Components/Turista/ChatWidget';
@@ -94,6 +95,9 @@ export default function Punto({ punto, emprendedores = [] }) {
                             {emprendedores.map((emprendedor) => {
                                 const foto = obtenerFoto(emprendedor);
                                 const nombreCompleto = obtenerNombreCompleto(emprendedor);
+                                const tipoEtiqueta = etiquetaTipoEmprendimiento(
+                                    emprendedor.tipo_emprendimiento,
+                                );
 
                                 return (
                                     <article
@@ -122,6 +126,12 @@ export default function Punto({ punto, emprendedores = [] }) {
                                             <h3 className="mt-1 text-lg font-black text-wayna-950">
                                                 {nombreCompleto}
                                             </h3>
+
+                                            {tipoEtiqueta ? (
+                                                <span className="mt-2 inline-flex w-fit rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800">
+                                                    {tipoEtiqueta}
+                                                </span>
+                                            ) : null}
 
                                             <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-stone-600">
                                                 {emprendedor.descripcion ||

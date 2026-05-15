@@ -54,6 +54,8 @@ class EmprendedorPublicoController extends Controller
                 'nombre' => $emprendedor->nombre,
                 'apellidos' => $emprendedor->apellidos,
                 'descripcion' => $emprendedor->descripcion,
+                'tipo_emprendimiento' => $emprendedor->tipo_emprendimiento?->value,
+                'tipo_emprendimiento_etiqueta' => $emprendedor->tipo_emprendimiento?->etiqueta(),
                 'fotografia' => $emprendedor->fotografia,
                 'qr_url' => $emprendedor->qr_url,
                 'estado' => $emprendedor->estado,
