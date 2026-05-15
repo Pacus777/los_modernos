@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\RangoMonto;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\RevisionMasivaDonacionesRequest;
 use App\Models\Donacion;
 use App\Models\Emprendedor;
+use App\Services\DonacionRevisionMasivaService;
 use App\Services\TraceabilityService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +20,7 @@ class DonacionController extends Controller
 {
     public function __construct(
         protected TraceabilityService $traceabilityService,
+        protected DonacionRevisionMasivaService $revisionMasivaService,
     ) {
     }
 
@@ -176,5 +179,54 @@ class DonacionController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Donación rechazada.');
+    }
+
+    /**
+     * Validación o rechazo masivo de donaciones pendientes (T-A18).
+     */
+    public function revisionMasiva(RevisionMasivaDonacionesRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+        $accion = $validated['accion'];
+
+        $estadoNuevo = $accion === 'validar'
+            ? Donacion::ESTADO_VALIDADO
+            : Donacion::ESTADO_RECHAZADO;
+
+        $resultado = $this->revisionMasivaService->aplicar(
+            $validated['ids'],
+            $estadoNuevo,
+            $request->user()?->id,
+        );
+
+        if ($resultado['procesadas'] === 0) {
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Ninguna donación pendiente pudo procesarse. Es posible que ya hayan sido revisadas.',
+                );
+        }
+
+        $etiquetaAccion = $accion === 'validar' ? 'validadas' : 'rechazadas';
+        $monto = number_format($resultado['monto_total'], 2, '.', ',');
+
+        $mensaje = sprintf(
+            '%d donación(es) %s por un total de Bs %s.',
+            $resultado['procesadas'],
+            $etiquetaAccion,
+            $monto,
+        );
+
+        if ($resultado['omitidas'] > 0) {
+            $mensaje .= sprintf(
+                ' %d ya no estaban pendientes y se omitieron para evitar doble revisión.',
+                $resultado['omitidas'],
+            );
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', $mensaje);
     }
 }

@@ -7,9 +7,18 @@ import {
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { etiquetaRangoMonto } from '@/utils/rangoMonto';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+function formatearBs(valor) {
+    const n = Number(valor);
+    if (Number.isNaN(n)) {
+        return '0,00';
+    }
+    return n.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 const ESTADOS_PAGO = [
     { value: '', label: 'Todos' },
@@ -34,12 +43,15 @@ function badgeEstado(estado) {
 }
 
 /**
- * Donaciones — panel admin (T-38: listado y filtros; T-A17: detalle en modal).
+ * Donaciones — panel admin (T-38, T-A17, T-A18: listado, detalle y revisión masiva).
  */
 export default function Index({ donaciones, filters, emprendedores = [], rangosMonto = [] }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const [accionEnDonacionId, setAccionEnDonacionId] = useState(null);
+    const [revisionMasivaEnCurso, setRevisionMasivaEnCurso] = useState(false);
     const [detalle, setDetalle] = useState({ open: false, donacion: null });
+    const [seleccionadas, setSeleccionadas] = useState(() => new Set());
 
     const abrirDetalle = (donacion) => {
         setDetalle({ open: true, donacion });
@@ -109,6 +121,95 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
     };
 
     const filas = donaciones?.data ?? [];
+    const filasPendientes = useMemo(
+        () => filas.filter((row) => row.estado_pago === 'pendiente'),
+        [filas],
+    );
+    const idsPendientesPagina = useMemo(
+        () => filasPendientes.map((row) => row.id),
+        [filasPendientes],
+    );
+    const todasPendientesSeleccionadas =
+        idsPendientesPagina.length > 0 &&
+        idsPendientesPagina.every((id) => seleccionadas.has(id));
+    const cantidadSeleccionadas = seleccionadas.size;
+    const montoTotalSeleccionado = useMemo(
+        () =>
+            filas
+                .filter((row) => seleccionadas.has(row.id))
+                .reduce((suma, row) => suma + Number(row.monto || 0), 0),
+        [filas, seleccionadas],
+    );
+
+    useEffect(() => {
+        setSeleccionadas(new Set());
+    }, [
+        donaciones?.current_page,
+        filters.emprendedor_id,
+        filters.estado_pago,
+        filters.fecha_desde,
+        filters.fecha_hasta,
+        filters.rango_monto,
+    ]);
+
+    const alternarSeleccion = (id) => {
+        setSeleccionadas((prev) => {
+            const siguiente = new Set(prev);
+            if (siguiente.has(id)) {
+                siguiente.delete(id);
+            } else {
+                siguiente.add(id);
+            }
+            return siguiente;
+        });
+    };
+
+    const alternarTodasPendientesPagina = () => {
+        setSeleccionadas((prev) => {
+            const siguiente = new Set(prev);
+            if (todasPendientesSeleccionadas) {
+                idsPendientesPagina.forEach((id) => siguiente.delete(id));
+            } else {
+                idsPendientesPagina.forEach((id) => siguiente.add(id));
+            }
+            return siguiente;
+        });
+    };
+
+    const ejecutarRevisionMasiva = (accion) => {
+        const ids = Array.from(seleccionadas);
+        setRevisionMasivaEnCurso(true);
+
+        router.patch(
+            route('admin.donaciones.revision-masiva'),
+            { ids, accion },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setRevisionMasivaEnCurso(false);
+                    setSeleccionadas(new Set());
+                },
+            },
+        );
+    };
+
+    const solicitarRevisionMasiva = (accion) => {
+        const cantidad = cantidadSeleccionadas;
+        const total = formatearBs(montoTotalSeleccionado);
+        const esValidar = accion === 'validar';
+
+        requestConfirm({
+            title: esValidar ? 'Validar donaciones en bloque' : 'Rechazar donaciones en bloque',
+            message: `Vas a ${esValidar ? 'validar' : 'rechazar'} ${cantidad} donación${cantidad === 1 ? '' : 'es'} pendiente${cantidad === 1 ? '' : 's'} por un total de Bs ${total}. Solo se procesarán las que sigan pendientes; las ya revisadas se omitirán.`,
+            confirmLabel: esValidar ? 'Validar seleccionadas' : 'Rechazar seleccionadas',
+            variant: esValidar ? 'success' : 'danger',
+            onConfirm: ({ close, setProcessing }) => {
+                setProcessing(true);
+                close();
+                ejecutarRevisionMasiva(accion);
+            },
+        });
+    };
 
     return (
         <AdminLayout
@@ -122,8 +223,9 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                     </h2>
                     <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
                         Revisá aportes por emprendedor, estado, fechas y rango de monto.
-                        Hacé clic en una fila para ver el detalle completo. La lista está
-                        paginada y los filtros se conservan al cambiar de página.
+                        Seleccioná varias pendientes para validar o rechazar en bloque. Clic en
+                        una fila abre el detalle. La lista está paginada y los filtros se
+                        conservan al cambiar de página.
                     </p>
                 </div>
             }
@@ -294,10 +396,62 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                     </div>
                 ) : null}
 
+                {cantidadSeleccionadas > 0 ? (
+                    <div className="flex flex-col gap-3 border-b border-wayna-200 bg-wayna-100/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                        <p className="text-sm font-medium text-wayna-950">
+                            <span className="font-bold">{cantidadSeleccionadas}</span>{' '}
+                            seleccionada{cantidadSeleccionadas === 1 ? '' : 's'} · Total Bs{' '}
+                            <span className="font-bold">
+                                {formatearBs(montoTotalSeleccionado)}
+                            </span>
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                disabled={revisionMasivaEnCurso}
+                                onClick={() => solicitarRevisionMasiva('validar')}
+                                className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                            >
+                                Validar seleccionadas
+                            </button>
+                            <button
+                                type="button"
+                                disabled={revisionMasivaEnCurso}
+                                onClick={() => solicitarRevisionMasiva('rechazar')}
+                                className="rounded-lg border border-red-300 bg-white px-3 py-2 text-sm font-semibold text-red-800 hover:bg-red-50 disabled:opacity-50"
+                            >
+                                Rechazar seleccionadas
+                            </button>
+                            <button
+                                type="button"
+                                disabled={revisionMasivaEnCurso}
+                                onClick={() => setSeleccionadas(new Set())}
+                                className="rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm font-semibold text-wayna-900 hover:bg-wayna-50 disabled:opacity-50"
+                            >
+                                Limpiar selección
+                            </button>
+                        </div>
+                    </div>
+                ) : null}
+
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-wayna-100 text-left text-sm">
                         <thead className={adminTableHeadRow}>
                             <tr>
+                                <th className="w-10 px-3 py-3">
+                                    <input
+                                        type="checkbox"
+                                        className="rounded border-wayna-300 text-wayna-600 focus:ring-wayna-500"
+                                        checked={todasPendientesSeleccionadas}
+                                        disabled={
+                                            idsPendientesPagina.length === 0 ||
+                                            revisionMasivaEnCurso
+                                        }
+                                        onChange={alternarTodasPendientesPagina}
+                                        onClick={detenerClic}
+                                        aria-label="Seleccionar todas las pendientes de esta página"
+                                    />
+                                </th>
                                 <th className="px-4 py-3 font-semibold text-wayna-950">
                                     ID
                                 </th>
@@ -334,7 +488,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                             {filas.length === 0 ? (
                                 <tr>
                                     <td
-                                        colSpan={10}
+                                        colSpan={11}
                                         className="px-4 py-8 text-center text-sm text-stone-500"
                                     >
                                         No hay donaciones con los filtros
@@ -357,6 +511,24 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                         className={`${adminTableRowHover} cursor-pointer`}
                                         aria-label={`Ver detalle de donación ${row.id}`}
                                     >
+                                        <td
+                                            className="w-10 px-3 py-3 align-top"
+                                            onClick={detenerClic}
+                                        >
+                                            {row.estado_pago === 'pendiente' ? (
+                                                <input
+                                                    type="checkbox"
+                                                    className="rounded border-wayna-300 text-wayna-600 focus:ring-wayna-500"
+                                                    checked={seleccionadas.has(row.id)}
+                                                    disabled={revisionMasivaEnCurso}
+                                                    onChange={() => alternarSeleccion(row.id)}
+                                                    onClick={detenerClic}
+                                                    aria-label={`Seleccionar donación ${row.id}`}
+                                                />
+                                            ) : (
+                                                <span className="inline-block w-4" aria-hidden />
+                                            )}
+                                        </td>
                                         <td className="whitespace-nowrap px-4 py-3 align-top font-mono text-xs text-stone-800">
                                             #{row.id}
                                         </td>
@@ -457,6 +629,8 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                 onClose={cerrarDetalle}
                 donacion={detalle.donacion}
             />
+
+            <ConfirmDialogPortal />
         </AdminLayout>
     );
 }

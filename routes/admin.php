@@ -60,6 +60,9 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
         Route::get('donaciones', [DonacionController::class, 'index'])
             ->name('donaciones.index');
 
+        Route::patch('donaciones/revision-masiva', [DonacionController::class, 'revisionMasiva'])
+            ->name('donaciones.revision-masiva');
+
         Route::patch('donaciones/{donacion}/validar', [DonacionController::class, 'validar'])
             ->name('donaciones.validar');
 
