@@ -57,10 +57,14 @@ class ReporteController extends Controller
         $filtros = $request->validate([
             'fecha_inicio' => ['nullable', 'date'],
             'fecha_fin' => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
+            'ver_progreso' => ['nullable', 'boolean'],
         ]);
 
         $fechaInicio = $filtros['fecha_inicio'] ?? null;
         $fechaFin = $filtros['fecha_fin'] ?? null;
+        $cargarProgresoCampanas = $request->boolean('ver_progreso')
+            || $fechaInicio
+            || $fechaFin;
 
         /*
         |--------------------------------------------------------------------------
@@ -108,19 +112,78 @@ class ReporteController extends Controller
             ->where('estado', Campana::ESTADO_ACTIVA)
             ->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | 4. Progreso por campaña
-        |--------------------------------------------------------------------------
-        |
-        | Se calcula en servidor para que React solo muestre los datos.
-        |
-        | Si hay filtro de fecha, el progreso se calcula con donaciones
-        | validadas dentro de ese período.
-        |
-        */
+        $progresoCampanas = $cargarProgresoCampanas
+            ? $this->construirProgresoCampanas($fechaInicio, $fechaFin)
+            : collect();
 
-        $progresoCampanas = Campana::query()
+        $graficas = [
+            'evolucion' => $this->construirEvolucionTemporal(
+                clone $donacionesValidadas,
+                $fechaInicio,
+                $fechaFin,
+            ),
+            'campanas_por_estado' => $this->construirCampanasPorEstado(),
+            'por_metodo' => $this->construirRecaudacionPorMetodo(clone $donacionesValidadas),
+            'top_campanas' => $cargarProgresoCampanas
+                ? $this->construirTopCampanas($progresoCampanas)
+                : $this->construirTopCampanasRapido($fechaInicio, $fechaFin),
+        ];
+
+        return Inertia::render('Admin/Dashboard', [
+            'metricas' => [
+                'total_recaudado' => (float) $resumen->total_recaudado,
+                'numero_aportes' => (int) $resumen->numero_aportes,
+                'emprendedores_apoyados' => (int) $resumen->emprendedores_apoyados,
+                'campanas_activas' => $campanasActivas,
+            ],
+            'detalleRecaudacion' => $this->construirDetalleRecaudacion($fechaInicio, $fechaFin),
+            'progresoCampanas' => $progresoCampanas,
+            'mostrarProgresoCampanas' => $cargarProgresoCampanas,
+            'graficas' => $graficas,
+            'filtros' => [
+                'fecha_inicio' => $fechaInicio,
+                'fecha_fin' => $fechaFin,
+            ],
+        ]);
+    }
+
+    /**
+     * Progreso por campaña (T-A5): consulta pesada, solo bajo demanda.
+     *
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function construirProgresoCampanas(?string $fechaInicio, ?string $fechaFin): Collection
+    {
+        return $this->consultaProgresoCampanas($fechaInicio, $fechaFin)
+            ->orderByDesc('campanas.created_at')
+            ->get()
+            ->map(function ($campana) {
+                $meta = (float) $campana->meta_apoyo;
+                $recaudado = (float) $campana->monto_recaudado_filtrado;
+
+                return [
+                    'id' => $campana->id,
+                    'titulo' => $campana->titulo,
+                    'estado' => $campana->estado,
+                    'meta_apoyo' => $meta,
+                    'monto_recaudado' => $recaudado,
+                    'porcentaje' => $meta > 0
+                        ? min(100, round(($recaudado / $meta) * 100, 2))
+                        : 0,
+                    'emprendedor' => $campana->emprendedor
+                        ? [
+                            'id' => $campana->emprendedor->id,
+                            'nombre' => $campana->emprendedor->nombre,
+                            'apellidos' => $campana->emprendedor->apellidos,
+                        ]
+                        : null,
+                ];
+            });
+    }
+
+    private function consultaProgresoCampanas(?string $fechaInicio, ?string $fechaFin)
+    {
+        return Campana::query()
             ->with('emprendedor:id,nombre,apellidos')
             ->leftJoin('donaciones', function (JoinClause $join) use ($fechaInicio, $fechaFin) {
                 $join->on('donaciones.campana_id', '=', 'campanas.id')
@@ -152,8 +215,19 @@ class ReporteController extends Controller
                 'campanas.monto_recaudado',
                 'campanas.estado',
                 'campanas.created_at',
-            ])
-            ->orderByDesc('campanas.created_at')
+            ]);
+    }
+
+    /**
+     * Top 5 para gráficas sin cargar el listado completo de progreso.
+     *
+     * @return array<int, array{id: int, titulo: string, monto: float, porcentaje: float}>
+     */
+    private function construirTopCampanasRapido(?string $fechaInicio, ?string $fechaFin): array
+    {
+        return $this->consultaProgresoCampanas($fechaInicio, $fechaFin)
+            ->orderByRaw('COALESCE(SUM(donaciones.monto), 0) DESC')
+            ->limit(5)
             ->get()
             ->map(function ($campana) {
                 $meta = (float) $campana->meta_apoyo;
@@ -162,48 +236,14 @@ class ReporteController extends Controller
                 return [
                     'id' => $campana->id,
                     'titulo' => $campana->titulo,
-                    'estado' => $campana->estado,
-                    'meta_apoyo' => $meta,
-                    'monto_recaudado' => $recaudado,
+                    'monto' => $recaudado,
                     'porcentaje' => $meta > 0
                         ? min(100, round(($recaudado / $meta) * 100, 2))
                         : 0,
-                    'emprendedor' => $campana->emprendedor
-                        ? [
-                            'id' => $campana->emprendedor->id,
-                            'nombre' => $campana->emprendedor->nombre,
-                            'apellidos' => $campana->emprendedor->apellidos,
-                        ]
-                        : null,
                 ];
-            });
-
-        $graficas = [
-            'evolucion' => $this->construirEvolucionTemporal(
-                clone $donacionesValidadas,
-                $fechaInicio,
-                $fechaFin,
-            ),
-            'campanas_por_estado' => $this->construirCampanasPorEstado(),
-            'por_metodo' => $this->construirRecaudacionPorMetodo(clone $donacionesValidadas),
-            'top_campanas' => $this->construirTopCampanas($progresoCampanas),
-        ];
-
-        return Inertia::render('Admin/Dashboard', [
-            'metricas' => [
-                'total_recaudado' => (float) $resumen->total_recaudado,
-                'numero_aportes' => (int) $resumen->numero_aportes,
-                'emprendedores_apoyados' => (int) $resumen->emprendedores_apoyados,
-                'campanas_activas' => $campanasActivas,
-            ],
-            'detalleRecaudacion' => $this->construirDetalleRecaudacion($fechaInicio, $fechaFin),
-            'progresoCampanas' => $progresoCampanas,
-            'graficas' => $graficas,
-            'filtros' => [
-                'fecha_inicio' => $fechaInicio,
-                'fecha_fin' => $fechaFin,
-            ],
-        ]);
+            })
+            ->values()
+            ->all();
     }
 
     /**

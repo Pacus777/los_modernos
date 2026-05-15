@@ -6,7 +6,7 @@ import {
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function IconoFlecha({ className }) {
     return (
@@ -27,6 +27,7 @@ export default function Dashboard({
     metricas,
     detalleRecaudacion = {},
     progresoCampanas = [],
+    mostrarProgresoCampanas = false,
     graficas = {},
     filtros = {},
 }) {
@@ -35,7 +36,13 @@ export default function Dashboard({
     const [filtrosAbiertos, setFiltrosAbiertos] = useState(
         Boolean(filtros?.fecha_inicio || filtros?.fecha_fin),
     );
-    const [progresoAbierto, setProgresoAbierto] = useState(false);
+    const [progresoAbierto, setProgresoAbierto] = useState(mostrarProgresoCampanas);
+
+    useEffect(() => {
+        if (mostrarProgresoCampanas) {
+            setProgresoAbierto(true);
+        }
+    }, [mostrarProgresoCampanas]);
     const [graficasAbiertas, setGraficasAbiertas] = useState(true);
     const [modalRecaudacion, setModalRecaudacion] = useState(false);
 
@@ -46,6 +53,7 @@ export default function Dashboard({
             {
                 fecha_inicio: fechaInicio || undefined,
                 fecha_fin: fechaFin || undefined,
+                ver_progreso: fechaInicio || fechaFin ? 1 : undefined,
             },
             { preserveState: true, preserveScroll: true, replace: true },
         );
@@ -54,11 +62,24 @@ export default function Dashboard({
     const limpiarFiltros = () => {
         setFechaInicio('');
         setFechaFin('');
+        setProgresoAbierto(false);
         router.get(route('admin.dashboard'), {}, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
         });
+    };
+
+    const solicitarProgresoCampanas = () => {
+        router.get(
+            route('admin.dashboard'),
+            {
+                fecha_inicio: fechaInicio || filtros?.fecha_inicio || undefined,
+                fecha_fin: fechaFin || filtros?.fecha_fin || undefined,
+                ver_progreso: 1,
+            },
+            { preserveState: true, preserveScroll: true },
+        );
     };
 
     const formatearMonto = (monto) =>
@@ -285,29 +306,41 @@ export default function Dashboard({
                     </div>
 
                     <div className={adminListCardOuter}>
-                        <button
-                            type="button"
-                            onClick={() => setProgresoAbierto((v) => !v)}
-                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-wayna-50/50 sm:px-5"
-                            aria-expanded={progresoAbierto}
-                        >
+                        <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                             <div>
                                 <p className="text-sm font-bold text-wayna-950">
                                     Progreso por campaña
                                 </p>
-                                <p className="text-xs text-stone-600">
-                                    {progresoCampanas.length} campaña
-                                    {progresoCampanas.length === 1 ? '' : 's'} — ver detalle
+                                <p className="mt-0.5 text-xs text-stone-600">
+                                    {mostrarProgresoCampanas
+                                        ? `${progresoCampanas.length} campaña${progresoCampanas.length === 1 ? '' : 's'} con datos`
+                                        : 'Cargá el detalle solo cuando lo necesites'}
                                 </p>
                             </div>
-                            <span
-                                className={`shrink-0 text-wayna-700 transition ${progresoAbierto ? 'rotate-90' : ''}`}
-                            >
-                                <IconoFlecha className="h-5 w-5" />
-                            </span>
-                        </button>
+                            {!mostrarProgresoCampanas ? (
+                                <button
+                                    type="button"
+                                    onClick={solicitarProgresoCampanas}
+                                    className="shrink-0 rounded-xl bg-wayna-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-wayna-800"
+                                >
+                                    Ver progreso por campañas
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setProgresoAbierto((v) => !v)}
+                                    className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-wayna-200 bg-white px-3 py-2 text-sm font-bold text-wayna-800 transition hover:bg-wayna-50"
+                                    aria-expanded={progresoAbierto}
+                                >
+                                    {progresoAbierto ? 'Ocultar barras' : 'Mostrar barras'}
+                                    <IconoFlecha
+                                        className={`h-4 w-4 transition ${progresoAbierto ? 'rotate-90' : ''}`}
+                                    />
+                                </button>
+                            )}
+                        </div>
 
-                        {progresoAbierto && (
+                        {mostrarProgresoCampanas && progresoAbierto && (
                             <div className="max-h-[min(24rem,50vh)] divide-y divide-wayna-100 overflow-y-auto border-t border-wayna-100">
                                 {progresoCampanas.length === 0 && (
                                     <p className="px-5 py-8 text-center text-sm text-stone-600">
