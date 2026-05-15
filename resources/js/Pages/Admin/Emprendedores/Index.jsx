@@ -11,8 +11,11 @@ import {
     adminTableHeadRow,
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
+import QrPreviewModal from '@/Components/QrPreviewModal';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 function IconoMas({ className }) {
     return (
@@ -41,18 +44,32 @@ function IconoPersonas({ className }) {
  */
 export default function Index({ emprendedores }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
+    const [qrPreview, setQrPreview] = useState({ open: false, src: '', nombre: '' });
 
     const desactivarEmprendedor = (emprendedor) => {
-        const confirmar = window.confirm(
-            `¿Seguro que deseas desactivar a ${emprendedor.nombre} ${emprendedor.apellidos}?`
-        );
+        requestConfirm({
+            title: 'Desactivar emprendedor',
+            message: `¿Seguro que deseas desactivar a ${emprendedor.nombre} ${emprendedor.apellidos}? No se borra el historial; solo deja de aparecer como activo.`,
+            confirmLabel: 'Sí, desactivar',
+            variant: 'danger',
+            onConfirm: ({ close }) => {
+                close();
+                router.delete(route('admin.emprendedores.destroy', emprendedor.id), {
+                    preserveScroll: true,
+                });
+            },
+        });
+    };
 
-        if (!confirmar) {
+    const verQrEmprendedor = (emprendedor) => {
+        if (!emprendedor.qr_url) {
             return;
         }
-
-        router.delete(route('admin.emprendedores.destroy', emprendedor.id), {
-            preserveScroll: true,
+        setQrPreview({
+            open: true,
+            src: `/storage/${emprendedor.qr_url}`,
+            nombre: `${emprendedor.nombre} ${emprendedor.apellidos}`.trim(),
         });
     };
 
@@ -202,14 +219,13 @@ export default function Index({ emprendedores }) {
 
                                             <td className="whitespace-nowrap px-4 py-4 text-sm">
                                                 {emprendedor.qr_url ? (
-                                                    <a
-                                                        href={`/storage/${emprendedor.qr_url}`}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="font-bold text-wayna-600 underline decoration-wayna-300 decoration-2 underline-offset-2 hover:text-wayna-800"
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => verQrEmprendedor(emprendedor)}
+                                                        className="font-bold text-wayna-600 underline decoration-wayna-300 decoration-2 underline-offset-2 transition hover:text-wayna-800"
                                                     >
                                                         Ver QR
-                                                    </a>
+                                                    </button>
                                                 ) : (
                                                     <span className="text-stone-400">Pendiente</span>
                                                 )}
@@ -260,6 +276,14 @@ export default function Index({ emprendedores }) {
                     </div>
                 </div>
             </div>
+            <ConfirmDialogPortal />
+            <QrPreviewModal
+                show={qrPreview.open}
+                src={qrPreview.src}
+                title="QR del emprendedor"
+                subtitle={qrPreview.nombre}
+                onClose={() => setQrPreview({ open: false, src: '', nombre: '' })}
+            />
         </AdminLayout>
     );
 }

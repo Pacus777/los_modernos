@@ -1,5 +1,7 @@
+import QrPreviewModal from '@/Components/QrPreviewModal';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -28,6 +30,8 @@ export default function Confirmacion() {
             metodo.toLowerCase().includes('efectivo')) ||
         (typeof qrUrl === 'string' &&
             qrUrl.includes('/donaciones/qrs/efectivo/'));
+
+    const [qrAmpliado, setQrAmpliado] = useState(false);
 
     return (
         <GuestLayout variant="full">
@@ -78,13 +82,21 @@ export default function Confirmacion() {
 
                             {qrUrl && (
                                 <div className="flex flex-col items-center gap-3">
-                                    <div className="rounded-2xl border-2 border-wayna-200 bg-white p-4 shadow-inner">
+                                    <button
+                                        type="button"
+                                        onClick={() => setQrAmpliado(true)}
+                                        className="rounded-2xl border-2 border-wayna-200 bg-white p-4 shadow-inner transition hover:border-wayna-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40"
+                                        aria-label={t('tourist.confirmation.qrAlt')}
+                                    >
                                         <img
                                             src={qrUrl}
-                                            alt={t('tourist.confirmation.qrAlt')}
-                                            className="h-56 w-56 max-w-full object-contain sm:h-64 sm:w-64"
+                                            alt=""
+                                            className="pointer-events-none h-56 w-56 max-w-full object-contain sm:h-64 sm:w-64"
                                         />
-                                    </div>
+                                    </button>
+                                    <p className="text-center text-xs font-semibold text-wayna-700">
+                                        Tocá el QR para verlo en grande
+                                    </p>
                                     <p className="max-w-md text-center text-sm text-stone-600">
                                         {esQrEfectivo
                                             ? t('tourist.confirmation.helpCash')
@@ -105,6 +117,18 @@ export default function Confirmacion() {
                     )}
                 </div>
             </section>
+
+            <QrPreviewModal
+                show={qrAmpliado}
+                src={qrUrl}
+                title={t('tourist.confirmation.title')}
+                subtitle={
+                    esQrEfectivo
+                        ? t('tourist.confirmation.helpCash')
+                        : t('tourist.confirmation.helpDigital')
+                }
+                onClose={() => setQrAmpliado(false)}
+            />
         </GuestLayout>
     );
 }

@@ -1,4 +1,5 @@
 import CajeroLayout from '@/Layouts/CajeroLayout';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -11,6 +12,7 @@ import { useState } from 'react';
  */
 export default function Efectivo({ pendientes }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
 
     /*
     |--------------------------------------------------------------------------
@@ -33,26 +35,30 @@ export default function Efectivo({ pendientes }) {
     const confirmarPago = (donacion) => {
         const emprendedor = obtenerNombreEmprendedor(donacion);
 
-        const confirmar = window.confirm(
-            `¿Confirmar recepción de Bs. ${formatearMonto(donacion.monto)} para ${emprendedor}?`
-        );
+        requestConfirm({
+            title: 'Confirmar pago en efectivo',
+            message: `¿Confirmás que recibiste Bs. ${formatearMonto(donacion.monto)} en caja para ${emprendedor}? Esta acción registra el pago como validado.`,
+            confirmLabel: 'Sí, confirmar pago',
+            cancelLabel: 'Cancelar',
+            variant: 'success',
+            onConfirm: ({ close, setProcessing }) => {
+                setProcessing(true);
+                setProcesandoId(donacion.id);
 
-        if (!confirmar) {
-            return;
-        }
-
-        setProcesandoId(donacion.id);
-
-        router.post(
-            route('cajero.efectivo.confirmar.store', donacion.id),
-            {},
-            {
-                preserveScroll: true,
-                onFinish: () => {
-                    setProcesandoId(null);
-                },
-            }
-        );
+                router.post(
+                    route('cajero.efectivo.confirmar.store', donacion.id),
+                    {},
+                    {
+                        preserveScroll: true,
+                        onFinish: () => {
+                            setProcesandoId(null);
+                            setProcessing(false);
+                            close();
+                        },
+                    },
+                );
+            },
+        });
     };
 
     /**
@@ -244,6 +250,7 @@ export default function Efectivo({ pendientes }) {
                     </div>
                 </div>
             </div>
+            <ConfirmDialogPortal />
         </CajeroLayout>
     );
 }

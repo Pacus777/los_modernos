@@ -12,6 +12,7 @@ import {
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
 function IconoCampana({ className }) {
@@ -41,6 +42,7 @@ function IconoMas({ className }) {
  */
 export default function Index({ campanas }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
 
     const estiloEstado = (estado) => {
         const map = {
@@ -62,16 +64,20 @@ export default function Index({ campanas }) {
 
     const eliminarCampaña = (campana) => {
         const tieneDonaciones = (campana.donaciones_count ?? 0) > 0;
-        const msg = tieneDonaciones
-            ? 'Esta campaña tiene donaciones: se marcará como finalizada (no se borra el historial). ¿Continuar?'
-            : `¿Eliminar la campaña "${campana.titulo}"? Solo podés hacerlo si no tiene donaciones registradas.`;
 
-        if (!window.confirm(msg)) {
-            return;
-        }
-
-        router.delete(route('admin.campanas.destroy', campana.id), {
-            preserveScroll: true,
+        requestConfirm({
+            title: tieneDonaciones ? 'Finalizar campaña' : 'Eliminar campaña',
+            message: tieneDonaciones
+                ? `La campaña "${campana.titulo}" tiene donaciones registradas. Se marcará como finalizada y se conservará el historial.`
+                : `¿Eliminar la campaña "${campana.titulo}"? Solo se permite si no tiene donaciones registradas.`,
+            confirmLabel: tieneDonaciones ? 'Sí, finalizar' : 'Sí, eliminar',
+            variant: 'danger',
+            onConfirm: ({ close }) => {
+                close();
+                router.delete(route('admin.campanas.destroy', campana.id), {
+                    preserveScroll: true,
+                });
+            },
         });
     };
 
@@ -270,6 +276,7 @@ export default function Index({ campanas }) {
                     </div>
                 </div>
             </div>
+            <ConfirmDialogPortal />
         </AdminLayout>
     );
 }
