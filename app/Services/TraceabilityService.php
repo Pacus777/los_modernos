@@ -86,4 +86,65 @@ class TraceabilityService
             ],
         ]);
     }
+
+    /**
+     * Texto de la última revisión (admin o cajero) por donación, para el detalle en panel (T-A17).
+     *
+     * @param  list<int>  $donacionIds
+     * @return array<int, string>
+     */
+    public function observacionesValidacionPorDonaciones(array $donacionIds): array
+    {
+        if ($donacionIds === []) {
+            return [];
+        }
+
+        $destinos = array_map(
+            static fn (int $id): string => 'donacion:'.$id,
+            $donacionIds,
+        );
+
+        $transacciones = Transaccion::query()
+            ->whereIn('destino', $destinos)
+            ->whereIn('origen', ['admin', 'cajero'])
+            ->orderByDesc('created_at')
+            ->get();
+
+        $observaciones = [];
+
+        foreach ($transacciones as $transaccion) {
+            if (! preg_match('/^donacion:(\d+)$/', (string) $transaccion->destino, $coincidencias)) {
+                continue;
+            }
+
+            $donacionId = (int) $coincidencias[1];
+
+            if (isset($observaciones[$donacionId])) {
+                continue;
+            }
+
+            $observaciones[$donacionId] = $this->formatearObservacionValidacion($transaccion);
+        }
+
+        return $observaciones;
+    }
+
+    private function formatearObservacionValidacion(Transaccion $transaccion): string
+    {
+        $metadatos = is_array($transaccion->metadatos) ? $transaccion->metadatos : [];
+        $estadoAnterior = (string) ($metadatos['estado_anterior'] ?? '—');
+        $estadoNuevo = (string) ($metadatos['estado_nuevo'] ?? $transaccion->estado);
+
+        $actor = match ($transaccion->origen) {
+            'admin' => 'Administrador',
+            'cajero' => 'Cajero',
+            default => ucfirst((string) $transaccion->origen),
+        };
+
+        $fecha = $transaccion->created_at?->timezone('America/La_Paz')->format('d/m/Y H:i');
+
+        $texto = "{$actor}: {$estadoAnterior} → {$estadoNuevo}";
+
+        return $fecha ? "{$texto} ({$fecha})" : $texto;
+    }
 }

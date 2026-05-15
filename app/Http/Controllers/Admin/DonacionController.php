@@ -91,6 +91,16 @@ class DonacionController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $observaciones = $this->traceabilityService->observacionesValidacionPorDonaciones(
+            collect($donaciones->items())->pluck('id')->map(fn ($id) => (int) $id)->all(),
+        );
+
+        $donaciones->through(function (Donacion $donacion) use ($observaciones) {
+            $donacion->observacion_validacion = $observaciones[$donacion->id] ?? null;
+
+            return $donacion;
+        });
+
         return Inertia::render('Admin/Donaciones/Index', [
             'donaciones' => $donaciones,
             'filters' => $filters,

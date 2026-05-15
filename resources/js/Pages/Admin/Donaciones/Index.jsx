@@ -1,5 +1,6 @@
 import AdminPaginator from '@/Components/Admin/AdminPaginator';
 import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
+import DonacionDetalleModal from '@/Components/Admin/DonacionDetalleModal';
 import {
     adminListCardOuter,
     adminTableHeadRow,
@@ -33,11 +34,24 @@ function badgeEstado(estado) {
 }
 
 /**
- * Donaciones — panel admin (T-38 paso 3: listado y filtros).
+ * Donaciones — panel admin (T-38: listado y filtros; T-A17: detalle en modal).
  */
 export default function Index({ donaciones, filters, emprendedores = [], rangosMonto = [] }) {
     const { flash } = usePage().props;
     const [accionEnDonacionId, setAccionEnDonacionId] = useState(null);
+    const [detalle, setDetalle] = useState({ open: false, donacion: null });
+
+    const abrirDetalle = (donacion) => {
+        setDetalle({ open: true, donacion });
+    };
+
+    const cerrarDetalle = () => {
+        setDetalle({ open: false, donacion: null });
+    };
+
+    const detenerClic = (e) => {
+        e.stopPropagation();
+    };
 
     const patchAccion = (nombreRuta, donacionId) => {
         setAccionEnDonacionId(donacionId);
@@ -108,8 +122,8 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                     </h2>
                     <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
                         Revisá aportes por emprendedor, estado, fechas y rango de monto.
-                        La lista está paginada; los filtros se conservan al cambiar de
-                        página.
+                        Hacé clic en una fila para ver el detalle completo. La lista está
+                        paginada y los filtros se conservan al cambiar de página.
                     </p>
                 </div>
             }
@@ -331,7 +345,17 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                 filas.map((row) => (
                                     <tr
                                         key={row.id}
-                                        className={adminTableRowHover}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => abrirDetalle(row)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                abrirDetalle(row);
+                                            }
+                                        }}
+                                        className={`${adminTableRowHover} cursor-pointer`}
+                                        aria-label={`Ver detalle de donación ${row.id}`}
                                     >
                                         <td className="whitespace-nowrap px-4 py-3 align-top font-mono text-xs text-stone-800">
                                             #{row.id}
@@ -376,7 +400,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                                   ).toLocaleString('es-BO')
                                                 : '—'}
                                         </td>
-                                        <td className="px-4 py-3 align-top">
+                                        <td className="px-4 py-3 align-top" onClick={detenerClic}>
                                             {row.estado_pago === 'pendiente' ? (
                                                 <div className="flex flex-wrap gap-1.5">
                                                     <button
@@ -427,6 +451,13 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
 
                 <AdminPaginator paginator={donaciones} etiqueta="donaciones" />
             </div>
+
+            <DonacionDetalleModal
+                show={detalle.open}
+                onClose={cerrarDetalle}
+                donacion={detalle.donacion}
+            />
         </AdminLayout>
     );
 }
+
