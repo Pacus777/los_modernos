@@ -10,6 +10,7 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Punto;
 
 class QrCodeService
 {
@@ -171,5 +172,44 @@ class QrCodeService
         Storage::disk('public')->put($rutaQr, $resultado->getString());
 
         return Storage::url($rutaQr);
+    }
+
+
+    /**
+ * Genera el QR público de un punto físico.
+ *
+ * El QR apunta a:
+ *
+ * /punto/{slug}
+ *
+ * Ejemplo:
+ * http://127.0.0.1:8000/punto/mesa-principal-wayna
+ *
+ * En la base de datos se guarda:
+ * puntos/qrs/punto-1.png
+ */
+    public function generarQrPunto(Punto $punto): string
+    {
+        $urlPunto = url("/punto/{$punto->slug}");
+
+        $rutaQr = "puntos/qrs/punto-{$punto->id}.png";
+
+        $builder = new \Endroid\QrCode\Builder\Builder(
+            writer: new \Endroid\QrCode\Writer\PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $urlPunto,
+            encoding: new \Endroid\QrCode\Encoding\Encoding('UTF-8'),
+            errorCorrectionLevel: \Endroid\QrCode\ErrorCorrectionLevel::High,
+            size: 400,
+            margin: 10,
+            roundBlockSizeMode: \Endroid\QrCode\RoundBlockSizeMode::Margin,
+        );
+
+        $resultado = $builder->build();
+
+        \Storage::disk('public')->put($rutaQr, $resultado->getString());
+
+        return $rutaQr;
     }
 }

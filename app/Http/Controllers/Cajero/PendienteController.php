@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Cajero;
 
 use App\Http\Controllers\Controller;
 use App\Models\Donacion;
-use App\Services\TraceabilityService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Services\DonacionService;
+use Illuminate\Validation\ValidationException;
 
 class PendienteController extends Controller
 {
     public function __construct(
-        protected TraceabilityService $traceabilityService,
+        protected DonacionService $donacionService,
     ) {
     }
 
@@ -39,7 +39,7 @@ class PendienteController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('Cajero/Pendientes', [
+        return Inertia::render('Cajero/Efectivo', [
             'pendientes' => $pendientes,
         ]);
     }
@@ -68,33 +68,29 @@ class PendienteController extends Controller
     /**
      * Confirma recepción del efectivo: pendiente → validado (T-39 paso 4).
      */
+    /**
+ * Confirma recepción del efectivo: pendiente → validado.
+ *
+ * La lógica real no vive aquí.
+ * Se delega a DonacionService para que la validación actualice también
+ * la campaña y registre trazabilidad.
+ */
     public function confirmar(Request $request, Donacion $donacion): RedirectResponse
     {
-        $donacion->loadMissing(['tipoPago']);
-
-        if (! $this->permiteConfirmacionCajero($donacion)) {
-            return redirect()
-                ->route('cajero.efectivo.pendientes')
-                ->with(
-                    'error',
-                    'Esta donación no está pendiente en efectivo o ya fue procesada.',
-                );
-        }
-
-        DB::transaction(function () use ($request, $donacion): void {
-            $anterior = $donacion->estado_pago;
-            $donacion->update(['estado_pago' => Donacion::ESTADO_VALIDADO]);
-            $this->traceabilityService->registrarRevisionDonacionPorCajero(
-                $donacion->fresh(),
-                $anterior,
-                Donacion::ESTADO_VALIDADO,
+        try {
+            $this->donacionService->confirmarPagoEfectivo(
+                $donacion,
                 $request->user()?->id,
             );
-        });
 
-        return redirect()
-            ->route('cajero.efectivo.pendientes')
-            ->with('success', 'Pago en efectivo confirmado en caja.');
+            return redirect()
+                ->route('cajero.efectivo.pendientes')
+                ->with('success', 'Pago en efectivo confirmado en caja.');
+        } catch (ValidationException $e) {
+            return redirect()
+                ->route('cajero.efectivo.pendientes')
+                ->with('error', $e->errors()['donacion'][0] ?? 'No se pudo confirmar la donación.');
+        }
     }
 
     /**

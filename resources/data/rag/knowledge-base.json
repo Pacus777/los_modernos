@@ -1,0 +1,570 @@
+    {
+    "version": "1.0.0",
+    "project": "WAYNA",
+    "description": "Base de conocimiento inicial del agente conversacional WAYNA para el MVP.",
+    "default_language": "es",
+    "supported_languages": ["es", "en"],
+    "items": [
+        {
+        "id": "donacion_001",
+        "category": "proceso_donacion",
+        "intent": "como_donar",
+        "keywords": [
+            "donar",
+            "aportar",
+            "apoyo",
+            "ayudar",
+            "contribuir",
+            "donation",
+            "donate",
+            "support",
+            "help",
+            "contribute",
+            "how to donate"
+        ],
+        "questions": {
+            "es": [
+            "¿Cómo puedo donar?",
+            "¿Cómo puedo apoyar a un emprendedor?",
+            "¿Cómo hago un aporte?",
+            "Quiero ayudar, ¿qué hago?",
+            "¿Cuál es el proceso para donar?"
+            ],
+            "en": [
+            "How can I donate?",
+            "How can I support an entrepreneur?",
+            "How do I make a contribution?",
+            "I want to help, what should I do?",
+            "What is the donation process?"
+            ]
+        },
+        "answers": {
+            "es": "Para donar, elige un emprendedor, revisa su historia, selecciona una campaña activa, escoge un monto y confirma el aporte. El sistema registrará tu donación como pendiente hasta que el pago sea verificado.",
+            "en": "To donate, choose an entrepreneur, read their story, select an active campaign, choose an amount, and confirm your contribution. The system will register your donation as pending until the payment is verified."
+        }
+        },
+        {
+        "id": "donacion_002",
+        "category": "proceso_donacion",
+        "intent": "estado_pendiente",
+        "keywords": [
+            "pendiente",
+            "validación",
+            "validar",
+            "confirmar",
+            "estado",
+            "pending",
+            "validation",
+            "verify",
+            "confirmation",
+            "status"
+        ],
+        "questions": {
+            "es": [
+            "¿Por qué mi donación está pendiente?",
+            "¿Qué significa pendiente?",
+            "¿Cuándo se valida mi aporte?",
+            "¿Mi donación ya fue confirmada?"
+            ],
+            "en": [
+            "Why is my donation pending?",
+            "What does pending mean?",
+            "When will my contribution be validated?",
+            "Has my donation been confirmed?"
+            ]
+        },
+        "answers": {
+            "es": "Una donación queda pendiente cuando fue registrada, pero todavía no fue confirmada por el admin o cajero. Cuando el pago se verifica, el estado cambia a validado y el aporte se suma al progreso de la campaña.",
+            "en": "A donation is pending when it has been registered but has not yet been confirmed by the admin or cashier. Once the payment is verified, the status changes to validated and the contribution is added to the campaign progress."
+        }
+        },
+        {
+        "id": "pago_001",
+        "category": "metodos_pago",
+        "intent": "metodos_disponibles",
+        "keywords": [
+            "pago",
+            "método",
+            "efectivo",
+            "qr",
+            "bancario",
+            "payment",
+            "method",
+            "cash",
+            "bank qr",
+            "qr payment"
+        ],
+        "questions": {
+            "es": [
+            "¿Qué métodos de pago existen?",
+            "¿Puedo pagar en efectivo?",
+            "¿Hay pago por QR?",
+            "¿Cómo puedo realizar el pago?"
+            ],
+            "en": [
+            "What payment methods are available?",
+            "Can I pay in cash?",
+            "Is there QR payment?",
+            "How can I make the payment?"
+            ]
+        },
+        "answers": {
+            "es": "En esta versión MVP, WAYNA permite registrar aportes por efectivo y QR bancario externo. Los pagos se validan manualmente por un admin o cajero antes de sumarse al avance de la campaña.",
+            "en": "In this MVP version, WAYNA supports contributions through cash and external bank QR payment. Payments are manually validated by an admin or cashier before being added to the campaign progress."
+        }
+        },
+        {
+        "id": "pago_002",
+        "category": "metodos_pago",
+        "intent": "pago_efectivo",
+        "keywords": [
+            "efectivo",
+            "caja",
+            "cajero",
+            "pagar en efectivo",
+            "cash",
+            "cashier",
+            "pay cash",
+            "physical payment"
+        ],
+        "questions": {
+            "es": [
+            "¿Cómo funciona el pago en efectivo?",
+            "¿A quién entrego el efectivo?",
+            "¿Qué pasa si pago en caja?",
+            "¿El cajero confirma mi pago?"
+            ],
+            "en": [
+            "How does cash payment work?",
+            "Who do I give the cash to?",
+            "What happens if I pay at the cashier?",
+            "Does the cashier confirm my payment?"
+            ]
+        },
+        "answers": {
+            "es": "Si eliges efectivo, el sistema registra tu aporte como pendiente. Luego debes entregar el monto físicamente al cajero o responsable. Cuando el cajero confirma el pago, la donación pasa a validada.",
+            "en": "If you choose cash, the system registers your contribution as pending. You must then give the amount physically to the cashier or person in charge. Once the cashier confirms the payment, the donation becomes validated."
+        }
+        },
+        {
+        "id": "pago_003",
+        "category": "metodos_pago",
+        "intent": "pago_qr_bancario",
+        "keywords": [
+            "qr",
+            "qr bancario",
+            "banco",
+            "app bancaria",
+            "escanear qr",
+            "bank qr",
+            "banking app",
+            "scan qr"
+        ],
+        "questions": {
+            "es": [
+            "¿Cómo pago con QR?",
+            "¿Debo escanear el QR con mi banco?",
+            "¿El QR es bancario?",
+            "¿Cómo funciona el QR de pago?"
+            ],
+            "en": [
+            "How do I pay with QR?",
+            "Should I scan the QR with my banking app?",
+            "Is it a bank QR?",
+            "How does the payment QR work?"
+            ]
+        },
+        "answers": {
+            "es": "Si eliges QR bancario, escanea el código mostrado con tu aplicación bancaria. En esta versión MVP, la verificación del pago se realiza manualmente por el admin o cajero.",
+            "en": "If you choose bank QR payment, scan the displayed code with your banking app. In this MVP version, payment verification is done manually by the admin or cashier."
+        }
+        },
+        {
+        "id": "campana_001",
+        "category": "campanas",
+        "intent": "que_es_campana",
+        "keywords": [
+            "campaña",
+            "meta",
+            "objetivo",
+            "recaudación",
+            "campaign",
+            "goal",
+            "target",
+            "fundraising"
+        ],
+        "questions": {
+            "es": [
+            "¿Qué es una campaña?",
+            "¿Qué significa meta de apoyo?",
+            "¿Para qué sirve la campaña?",
+            "¿Qué representa la barra de progreso?"
+            ],
+            "en": [
+            "What is a campaign?",
+            "What does support goal mean?",
+            "What is the campaign for?",
+            "What does the progress bar represent?"
+            ]
+        },
+        "answers": {
+            "es": "Una campaña es una meta de apoyo asociada a un emprendedor. La barra de progreso muestra cuánto se ha recaudado con donaciones validadas y cuánto falta para alcanzar la meta.",
+            "en": "A campaign is a support goal linked to an entrepreneur. The progress bar shows how much has been raised through validated donations and how much remains to reach the goal."
+        }
+        },
+        {
+        "id": "campana_002",
+        "category": "campanas",
+        "intent": "barra_progreso",
+        "keywords": [
+            "barra",
+            "progreso",
+            "porcentaje",
+            "avance",
+            "recaudado",
+            "progress",
+            "bar",
+            "percentage",
+            "raised"
+        ],
+        "questions": {
+            "es": [
+            "¿Por qué no sube la barra de progreso?",
+            "¿Cuándo se actualiza el avance?",
+            "¿Mi aporte se suma a la meta?",
+            "¿Cómo se calcula el progreso?"
+            ],
+            "en": [
+            "Why is the progress bar not increasing?",
+            "When is the progress updated?",
+            "Is my contribution added to the goal?",
+            "How is progress calculated?"
+            ]
+        },
+        "answers": {
+            "es": "La barra de progreso solo se actualiza cuando la donación fue validada. Las donaciones pendientes todavía no se suman a la meta para evitar mostrar montos no confirmados.",
+            "en": "The progress bar is updated only when the donation has been validated. Pending donations are not added to the goal yet to avoid showing unconfirmed amounts."
+        }
+        },
+        {
+        "id": "emprendedor_001",
+        "category": "emprendedores",
+        "intent": "que_es_emprendedor",
+        "keywords": [
+            "emprendedor",
+            "persona",
+            "historia",
+            "beneficiario",
+            "entrepreneur",
+            "story",
+            "beneficiary"
+        ],
+        "questions": {
+            "es": [
+            "¿Quién es el emprendedor?",
+            "¿A quién estoy apoyando?",
+            "¿Dónde veo la historia del emprendedor?",
+            "¿El aporte va al emprendedor?"
+            ],
+            "en": [
+            "Who is the entrepreneur?",
+            "Who am I supporting?",
+            "Where can I read the entrepreneur's story?",
+            "Does the contribution go to the entrepreneur?"
+            ]
+        },
+        "answers": {
+            "es": "Cada perfil muestra la información del emprendedor, su historia y sus campañas activas. El aporte queda asociado a la campaña elegida para apoyar su meta.",
+            "en": "Each profile shows the entrepreneur's information, story, and active campaigns. The contribution is linked to the selected campaign to support their goal."
+        }
+        },
+        {
+        "id": "qr_001",
+        "category": "codigos_qr",
+        "intent": "qr_emprendedor",
+        "keywords": [
+            "qr",
+            "código",
+            "escanear",
+            "perfil",
+            "emprendedor",
+            "scan",
+            "code",
+            "profile",
+            "entrepreneur qr"
+        ],
+        "questions": {
+            "es": [
+            "¿Para qué sirve el QR del emprendedor?",
+            "¿Qué pasa si escaneo el QR?",
+            "¿El QR me lleva al perfil?",
+            "¿Cómo veo el perfil del emprendedor?"
+            ],
+            "en": [
+            "What is the entrepreneur QR for?",
+            "What happens if I scan the QR?",
+            "Does the QR take me to the profile?",
+            "How do I view the entrepreneur profile?"
+            ]
+        },
+        "answers": {
+            "es": "El QR del emprendedor abre directamente su perfil público. Desde ahí puedes conocer su historia, ver sus campañas y registrar un aporte.",
+            "en": "The entrepreneur QR opens their public profile directly. From there, you can read their story, view their campaigns, and register a contribution."
+        }
+        },
+        {
+        "id": "qr_002",
+        "category": "codigos_qr",
+        "intent": "qr_punto",
+        "keywords": [
+            "punto",
+            "mesa",
+            "mostrador",
+            "ubicación",
+            "qr de punto",
+            "location",
+            "table",
+            "counter",
+            "point qr"
+        ],
+        "questions": {
+            "es": [
+            "¿Qué es un punto físico?",
+            "¿Por qué veo varios emprendedores?",
+            "¿Qué pasa si escaneo el QR de una mesa?",
+            "¿Cómo elijo a quién apoyar desde un punto?"
+            ],
+            "en": [
+            "What is a physical point?",
+            "Why do I see several entrepreneurs?",
+            "What happens if I scan a table QR?",
+            "How do I choose who to support from a point?"
+            ]
+        },
+        "answers": {
+            "es": "Un punto físico representa una ubicación real, como una mesa, feria o mostrador. Su QR muestra una lista de emprendedores activos asociados a ese lugar para que puedas elegir a quién apoyar.",
+            "en": "A physical point represents a real location, such as a table, fair booth, or counter. Its QR shows a list of active entrepreneurs linked to that place so you can choose who to support."
+        }
+        },
+        {
+        "id": "idioma_001",
+        "category": "idioma",
+        "intent": "cambiar_idioma",
+        "keywords": [
+            "idioma",
+            "español",
+            "inglés",
+            "traducir",
+            "language",
+            "spanish",
+            "english",
+            "translate"
+        ],
+        "questions": {
+            "es": [
+            "¿Puedo cambiar el idioma?",
+            "¿El sistema está en inglés?",
+            "¿Puedo ver la información en español?",
+            "¿Cómo cambio de idioma?"
+            ],
+            "en": [
+            "Can I change the language?",
+            "Is the system available in English?",
+            "Can I view the information in Spanish?",
+            "How do I switch languages?"
+            ]
+        },
+        "answers": {
+            "es": "Sí. WAYNA permite cambiar entre español e inglés en las pantallas del turista. El idioma seleccionado se mantiene durante la navegación.",
+            "en": "Yes. WAYNA allows switching between Spanish and English on tourist-facing screens. The selected language is kept during navigation."
+        }
+        },
+        {
+        "id": "seguridad_001",
+        "category": "seguridad",
+        "intent": "seguridad_aporte",
+        "keywords": [
+            "seguro",
+            "seguridad",
+            "confiable",
+            "validado",
+            "trazabilidad",
+            "safe",
+            "security",
+            "trust",
+            "verified",
+            "traceability"
+        ],
+        "questions": {
+            "es": [
+            "¿Es seguro donar?",
+            "¿Cómo sé que mi aporte se registró?",
+            "¿Hay trazabilidad?",
+            "¿El sistema guarda mi aporte?"
+            ],
+            "en": [
+            "Is it safe to donate?",
+            "How do I know my contribution was registered?",
+            "Is there traceability?",
+            "Does the system store my contribution?"
+            ]
+        },
+        "answers": {
+            "es": "WAYNA registra cada donación con una referencia y trazabilidad interna. El aporte primero queda pendiente y luego cambia a validado cuando el pago es confirmado por el admin o cajero.",
+            "en": "WAYNA records each donation with a reference and internal traceability. The contribution is first marked as pending and then changes to validated when the payment is confirmed by the admin or cashier."
+        }
+        },
+        {
+        "id": "admin_001",
+        "category": "funcionamiento_sistema",
+        "intent": "quien_valida",
+        "keywords": [
+            "admin",
+            "cajero",
+            "validar",
+            "confirmar",
+            "aprobar",
+            "cashier",
+            "validate",
+            "confirm",
+            "approve"
+        ],
+        "questions": {
+            "es": [
+            "¿Quién valida las donaciones?",
+            "¿Quién confirma el efectivo?",
+            "¿El admin revisa los pagos?",
+            "¿Qué hace el cajero?"
+            ],
+            "en": [
+            "Who validates donations?",
+            "Who confirms cash payments?",
+            "Does the admin review payments?",
+            "What does the cashier do?"
+            ]
+        },
+        "answers": {
+            "es": "Las donaciones pueden ser revisadas por el admin. En el caso de pagos en efectivo, el cajero o admin confirma físicamente la recepción del dinero desde el panel correspondiente.",
+            "en": "Donations can be reviewed by the admin. For cash payments, the cashier or admin physically confirms receipt of the money from the corresponding panel."
+        }
+        },
+        {
+        "id": "telegram_001",
+        "category": "notificaciones",
+        "intent": "notificacion_telegram",
+        "keywords": [
+            "telegram",
+            "notificación",
+            "mensaje",
+            "aviso",
+            "efectivo",
+            "notification",
+            "message",
+            "alert",
+            "cash"
+        ],
+        "questions": {
+            "es": [
+            "¿Para qué sirve Telegram?",
+            "¿El cajero recibe aviso?",
+            "¿Cómo se avisa un pago en efectivo?",
+            "¿Llega una notificación?"
+            ],
+            "en": [
+            "What is Telegram used for?",
+            "Does the cashier receive an alert?",
+            "How is a cash payment notified?",
+            "Is there a notification?"
+            ]
+        },
+        "answers": {
+            "es": "Cuando se registra una donación en efectivo, el sistema puede enviar una notificación por Telegram para avisar que existe un pago pendiente de confirmación física.",
+            "en": "When a cash donation is registered, the system can send a Telegram notification to alert that there is a payment pending physical confirmation."
+        }
+        },
+        {
+        "id": "problemas_001",
+        "category": "soporte",
+        "intent": "problema_pago",
+        "keywords": [
+            "problema",
+            "error",
+            "no funciona",
+            "no puedo donar",
+            "falló",
+            "problem",
+            "error",
+            "not working",
+            "cannot donate",
+            "failed"
+        ],
+        "questions": {
+            "es": [
+            "Tengo un problema para donar",
+            "No puedo realizar el aporte",
+            "El sistema no funciona",
+            "Me salió un error al donar"
+            ],
+            "en": [
+            "I have a problem donating",
+            "I cannot make a contribution",
+            "The system is not working",
+            "I got an error while donating"
+            ]
+        },
+        "answers": {
+            "es": "Si tienes problemas para registrar tu aporte, intenta recargar la página y verificar tu conexión. Si el problema continúa, solicita ayuda al responsable del punto o al personal de WAYNA.",
+            "en": "If you have trouble registering your contribution, try refreshing the page and checking your connection. If the issue continues, ask the person in charge of the point or WAYNA staff for help."
+        }
+        },
+        {
+        "id": "privacidad_001",
+        "category": "privacidad",
+        "intent": "datos_visitante",
+        "keywords": [
+            "datos",
+            "privacidad",
+            "información",
+            "visitante",
+            "personal",
+            "data",
+            "privacy",
+            "information",
+            "visitor",
+            "personal"
+        ],
+        "questions": {
+            "es": [
+            "¿Qué datos guarda el sistema?",
+            "¿Debo crear una cuenta?",
+            "¿Mis datos son privados?",
+            "¿Necesito registrarme para donar?"
+            ],
+            "en": [
+            "What data does the system store?",
+            "Do I need to create an account?",
+            "Is my data private?",
+            "Do I need to register to donate?"
+            ]
+        },
+        "answers": {
+            "es": "En el MVP, el turista no necesita crear una cuenta para realizar un aporte. El sistema registra la información necesaria para identificar la donación, su estado y la campaña apoyada.",
+            "en": "In the MVP, tourists do not need to create an account to make a contribution. The system records the information needed to identify the donation, its status, and the supported campaign."
+        }
+        },
+        {
+        "id": "sin_respuesta_001",
+        "category": "fallback",
+        "intent": "sin_respuesta",
+        "keywords": [],
+        "questions": {
+            "es": [],
+            "en": []
+        },
+        "answers": {
+            "es": "No encontré una respuesta exacta para tu pregunta. Puedes intentar escribirla con otras palabras o pedir ayuda al personal de WAYNA.",
+            "en": "I could not find an exact answer to your question. You can try asking in different words or ask WAYNA staff for help."
+        }
+        }
+    ]
+    }

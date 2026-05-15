@@ -3,6 +3,9 @@
 use App\Http\Controllers\Turista\DonacionConfirmacionController;
 use App\Http\Controllers\Turista\EmprendedorPublicoController;
 use App\Http\Controllers\Turista\DonacionController;
+use App\Http\Controllers\Turista\PuntoController;
+use App\Http\Controllers\Turista\ChatController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -33,3 +36,9 @@ Route::get('/emprendedor/{id}', [EmprendedorPublicoController::class, 'show'])
 
     Route::get('/donaciones/confirmacion/{donacion}', [DonacionConfirmacionController::class, 'show'])
         ->name('turista.donaciones.confirmacion');
+
+    Route::get('/punto/{slug}', [PuntoController::class, 'show'])
+        ->name('punto.show');
+
+    Route::post('/chat', [ChatController::class, 'store'])
+        ->name('chat.store');

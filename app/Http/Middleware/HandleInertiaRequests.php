@@ -47,15 +47,15 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-       return [
-         ...parent::share($request),
+        return [
+            ...parent::share($request),
 
         'auth' => [
             'user' => $request->user(),
             'role' => $request->user()?->role,
-         ],
+        ],
 
-         'locale' => $request->session()->get('locale', 'es'),
+        'locale' => $request->session()->get('locale', 'es'),
 
         'availableLocales' => [
             'es' => 'Español',
@@ -68,7 +68,8 @@ class HandleInertiaRequests extends Middleware
             'donacion_id' => fn () => $request->session()->get('donacion_id'),
             'referencia_pago' => fn () => $request->session()->get('referencia_pago'),
             'qr_pago_url' => fn () => $request->session()->get('qr_pago_url'),
+            'rag' => fn () => $request->session()->get('rag'),
         ],
-       ];
+    ];
     }
 }
