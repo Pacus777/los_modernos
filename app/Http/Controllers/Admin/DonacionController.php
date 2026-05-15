@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\RangoMonto;
 use App\Http\Controllers\Controller;
 use App\Models\Donacion;
+use App\Models\Emprendedor;
 use App\Services\TraceabilityService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,11 +24,13 @@ class DonacionController extends Controller
     /**
      * Listado paginado de donaciones para revisión en panel admin (T-38, paso 1).
      *
-     * Filtros vía query string: estado_pago, fecha_desde, fecha_hasta.
+     * Filtros vía query string: emprendedor_id, estado_pago, fechas, rango_monto.
+     * La paginación usa withQueryString() para conservar filtros al cambiar de página.
      */
     public function index(Request $request): Response
     {
         $validated = $request->validate([
+            'emprendedor_id' => ['nullable', 'integer', 'exists:emprendedores,id'],
             'estado_pago' => ['nullable', 'string', 'max:20'],
             'fecha_desde' => ['nullable', 'date'],
             'fecha_hasta' => ['nullable', 'date'],
@@ -47,7 +50,12 @@ class DonacionController extends Controller
 
         $rangoMonto = RangoMonto::desdeFiltro($validated['rango_monto'] ?? '')?->value ?? '';
 
+        $emprendedorId = isset($validated['emprendedor_id'])
+            ? (int) $validated['emprendedor_id']
+            : null;
+
         $filters = [
+            'emprendedor_id' => $emprendedorId ? (string) $emprendedorId : '',
             'estado_pago' => $estadoPago,
             'fecha_desde' => $validated['fecha_desde'] ?? '',
             'fecha_hasta' => $validated['fecha_hasta'] ?? '',
@@ -56,6 +64,13 @@ class DonacionController extends Controller
 
         $donaciones = Donacion::query()
             ->with(['campana.emprendedor', 'tipoPago', 'visitante'])
+            ->when(
+                $emprendedorId,
+                fn ($q) => $q->whereHas(
+                    'campana',
+                    fn ($c) => $c->where('emprendedor_id', $emprendedorId),
+                ),
+            )
             ->when(
                 filled($filters['estado_pago']),
                 fn ($q) => $q->where('estado_pago', $filters['estado_pago'])
@@ -73,19 +88,30 @@ class DonacionController extends Controller
                 fn ($q) => $rango->aplicarFiltro($q, 'monto'),
             )
             ->orderByDesc('created_at')
-            ->paginate(15)
+            ->paginate(12)
             ->withQueryString();
 
         return Inertia::render('Admin/Donaciones/Index', [
             'donaciones' => $donaciones,
-            'filters' => [
-                'estado_pago' => $filters['estado_pago'],
-                'fecha_desde' => $filters['fecha_desde'],
-                'fecha_hasta' => $filters['fecha_hasta'],
-                'rango_monto' => $filters['rango_monto'],
-            ],
+            'filters' => $filters,
+            'emprendedores' => $this->listaEmprendedoresParaFiltro(),
             'rangosMonto' => RangoMonto::opcionesFiltro(),
         ]);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, array{id: int, nombre_completo: string}>
+     */
+    private function listaEmprendedoresParaFiltro()
+    {
+        return Emprendedor::query()
+            ->orderBy('nombre')
+            ->orderBy('apellidos')
+            ->get(['id', 'nombre', 'apellidos'])
+            ->map(fn (Emprendedor $e) => [
+                'id' => $e->id,
+                'nombre_completo' => $e->nombreCompleto(),
+            ]);
     }
 
     /**

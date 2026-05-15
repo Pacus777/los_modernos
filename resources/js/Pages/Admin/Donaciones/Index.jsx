@@ -1,14 +1,13 @@
+import AdminPaginator from '@/Components/Admin/AdminPaginator';
 import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
 import {
     adminListCardOuter,
-    adminPaginationBtnActive,
-    adminPaginationBtnIdle,
     adminTableHeadRow,
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { etiquetaRangoMonto } from '@/utils/rangoMonto';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 const ESTADOS_PAGO = [
@@ -36,7 +35,7 @@ function badgeEstado(estado) {
 /**
  * Donaciones — panel admin (T-38 paso 3: listado y filtros).
  */
-export default function Index({ donaciones, filters, rangosMonto = [] }) {
+export default function Index({ donaciones, filters, emprendedores = [], rangosMonto = [] }) {
     const { flash } = usePage().props;
     const [accionEnDonacionId, setAccionEnDonacionId] = useState(null);
 
@@ -53,6 +52,7 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
     };
 
     const filterForm = useForm({
+        emprendedor_id: filters.emprendedor_id ?? '',
         estado_pago: filters.estado_pago ?? '',
         fecha_desde: filters.fecha_desde ?? '',
         fecha_hasta: filters.fecha_hasta ?? '',
@@ -61,6 +61,7 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
 
     useEffect(() => {
         filterForm.reset({
+            emprendedor_id: filters.emprendedor_id ?? '',
             estado_pago: filters.estado_pago ?? '',
             fecha_desde: filters.fecha_desde ?? '',
             fecha_hasta: filters.fecha_hasta ?? '',
@@ -80,6 +81,7 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
 
     const limpiarFiltros = () => {
         filterForm.reset({
+            emprendedor_id: '',
             estado_pago: '',
             fecha_desde: '',
             fecha_hasta: '',
@@ -105,9 +107,9 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
                         Donaciones
                     </h2>
                     <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-                        Revisá aportes por estado, fechas y rango de monto (bajo, medio,
-                        alto). Las donaciones pendientes pueden validarse o rechazarse
-                        desde la tabla.
+                        Revisá aportes por emprendedor, estado, fechas y rango de monto.
+                        La lista está paginada; los filtros se conservan al cambiar de
+                        página.
                     </p>
                 </div>
             }
@@ -135,7 +137,26 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
                         Rangos: bajo hasta Bs. 500 · medio Bs. 501–2.000 · alto más de
                         Bs. 2.000 (ayuda visual, no cálculo financiero).
                     </p>
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 lg:items-end">
+                        <div className="sm:col-span-2 xl:col-span-2">
+                            <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
+                                Emprendedor
+                            </label>
+                            <select
+                                value={filterForm.data.emprendedor_id}
+                                onChange={(e) =>
+                                    filterForm.setData('emprendedor_id', e.target.value)
+                                }
+                                className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                            >
+                                <option value="">Todos los emprendedores</option>
+                                {emprendedores.map((e) => (
+                                    <option key={e.id} value={String(e.id)}>
+                                        {e.nombre_completo}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-wayna-800">
                                 Rango de monto
@@ -227,6 +248,37 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
                         </button>
                     </div>
                 </form>
+
+                {donaciones?.total > 0 ? (
+                    <div className="border-b border-wayna-100 bg-white px-4 py-3 sm:px-6">
+                        <p className="text-sm text-stone-600">
+                            {donaciones.last_page > 1 ? (
+                                <>
+                                    Página{' '}
+                                    <span className="font-semibold text-wayna-950">
+                                        {donaciones.current_page}
+                                    </span>{' '}
+                                    de{' '}
+                                    <span className="font-semibold text-wayna-950">
+                                        {donaciones.last_page}
+                                    </span>
+                                    {' · '}
+                                </>
+                            ) : null}
+                            <span className="font-semibold text-wayna-950">
+                                {donaciones.total}
+                            </span>{' '}
+                            donación{donaciones.total === 1 ? '' : 'es'} en total
+                            {(filters.emprendedor_id ||
+                                filters.estado_pago ||
+                                filters.fecha_desde ||
+                                filters.fecha_hasta ||
+                                filters.rango_monto) && (
+                                <span className="text-wayna-700"> (con filtros activos)</span>
+                            )}
+                        </p>
+                    </div>
+                ) : null}
 
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-wayna-100 text-left text-sm">
@@ -373,24 +425,7 @@ export default function Index({ donaciones, filters, rangosMonto = [] }) {
                     </table>
                 </div>
 
-                {donaciones?.links && donaciones.links.length > 3 && (
-                    <div className="border-t border-wayna-100 bg-wayna-50/30 px-4 py-3 sm:px-6">
-                        <div className="flex flex-wrap gap-2">
-                            {donaciones.links.map((link, index) => (
-                                <Link
-                                    key={index}
-                                    href={link.url || '#'}
-                                    preserveScroll
-                                    preserveState
-                                    className={`${link.active ? adminPaginationBtnActive : adminPaginationBtnIdle} ${!link.url ? 'pointer-events-none opacity-40' : ''}`}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <AdminPaginator paginator={donaciones} etiqueta="donaciones" />
             </div>
         </AdminLayout>
     );
