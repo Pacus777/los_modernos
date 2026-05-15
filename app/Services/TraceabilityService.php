@@ -6,6 +6,9 @@ use App\Models\Donacion;
 use App\Models\Transaccion;
 use Illuminate\Support\Facades\App;
 
+/**
+ * Registro interno en `transacciones` (T-A20: activo aunque la vista no esté en el menú admin).
+ */
 class TraceabilityService
 {
     /**

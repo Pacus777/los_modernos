@@ -13,6 +13,9 @@ class TransaccionController extends Controller
     /**
      * Listado paginado de trazabilidad (PB-12 / T-36).
      *
+     * Vista reservada para superadmin (T-A20). Ruta comentada en routes/admin.php;
+     * el registro en BD continúa vía TraceabilityService.
+     *
      * Filtros vía query string: estado, origen, fecha_desde, fecha_hasta.
      */
     public function index(Request $request): Response

@@ -3,7 +3,6 @@ import {
     IconDonaciones,
     IconEmprendedores,
     IconPanel,
-    IconTrazabilidad,
 } from '@/Components/Admin/AdminNavIcons';
 import { WaynaBrand } from '@/Components/ApplicationLogo';
 import { Link, usePage } from '@inertiajs/react';
@@ -33,12 +32,6 @@ const NAV_ITEMS = [
         routeName: 'admin.donaciones.index',
         match: 'admin.donaciones.*',
         Icon: IconDonaciones,
-    },
-    {
-        label: 'Trazabilidad',
-        routeName: 'admin.transacciones.index',
-        match: 'admin.transacciones.*',
-        Icon: IconTrazabilidad,
     },
 ];
 

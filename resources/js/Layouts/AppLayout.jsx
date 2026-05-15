@@ -14,11 +14,6 @@ const adminNav = [
     },
     { label: 'Campañas', routeName: 'admin.campanas.index', href: null },
     { label: 'Donaciones', routeName: 'admin.donaciones.index', href: null },
-    {
-        label: 'Trazabilidad',
-        routeName: 'admin.trazabilidad.index',
-        href: null,
-    },
     { label: 'Reportes', routeName: 'admin.reportes.index', href: null },
 ];
 
