@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Models\Donacion;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Emprendedor;
+use Illuminate\Support\Collection;
 
 
 class ReporteController extends Controller
@@ -102,6 +104,10 @@ class ReporteController extends Controller
             ->selectRaw('COUNT(DISTINCT campanas.emprendedor_id) as emprendedores_apoyados')
             ->first();
 
+        $campanasActivas = Campana::query()
+            ->where('estado', Campana::ESTADO_ACTIVA)
+            ->count();
+
         /*
         |--------------------------------------------------------------------------
         | 4. Progreso por campaña
@@ -172,28 +178,179 @@ class ReporteController extends Controller
                 ];
             });
 
-        /*
-        |--------------------------------------------------------------------------
-        | 5. Retornar dashboard con props de Inertia
-        |--------------------------------------------------------------------------
-        |
-        | La página React no hará fetch.
-        | Solo recibirá metricas, filtros y progresoCampanas.
-        |
-        */
+        $graficas = [
+            'evolucion' => $this->construirEvolucionTemporal(
+                clone $donacionesValidadas,
+                $fechaInicio,
+                $fechaFin,
+            ),
+            'campanas_por_estado' => $this->construirCampanasPorEstado(),
+            'por_metodo' => $this->construirRecaudacionPorMetodo(clone $donacionesValidadas),
+            'top_campanas' => $this->construirTopCampanas($progresoCampanas),
+        ];
 
         return Inertia::render('Admin/Dashboard', [
             'metricas' => [
                 'total_recaudado' => (float) $resumen->total_recaudado,
                 'numero_aportes' => (int) $resumen->numero_aportes,
                 'emprendedores_apoyados' => (int) $resumen->emprendedores_apoyados,
+                'campanas_activas' => $campanasActivas,
             ],
             'progresoCampanas' => $progresoCampanas,
+            'graficas' => $graficas,
             'filtros' => [
                 'fecha_inicio' => $fechaInicio,
                 'fecha_fin' => $fechaFin,
             ],
         ]);
+    }
+
+    /**
+     * Serie temporal de recaudación y aportes (últimos 6 meses o rango filtrado).
+     *
+     * @return array<int, array{etiqueta: string, monto: float, aportes: int}>
+     */
+    private function construirEvolucionTemporal(
+        Builder $donacionesValidadas,
+        ?string $fechaInicio,
+        ?string $fechaFin,
+    ): array {
+        if ($fechaInicio && $fechaFin) {
+            $inicio = Carbon::parse($fechaInicio)->startOfDay();
+            $fin = Carbon::parse($fechaFin)->endOfDay();
+            $dias = (int) $inicio->diffInDays($fin);
+
+            if ($dias <= 31) {
+                $puntos = [];
+                for ($fecha = $inicio->copy(); $fecha->lte($fin); $fecha->addDay()) {
+                    $puntos[] = $this->puntoEvolucion(
+                        $donacionesValidadas,
+                        $fecha->copy()->startOfDay(),
+                        $fecha->copy()->endOfDay(),
+                        $fecha->format('d/m'),
+                    );
+                }
+
+                return $puntos;
+            }
+        }
+
+        $puntos = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $mes = now()->subMonths($i);
+            $puntos[] = $this->puntoEvolucion(
+                $donacionesValidadas,
+                $mes->copy()->startOfMonth(),
+                $mes->copy()->endOfMonth(),
+                $this->etiquetaMes($mes),
+            );
+        }
+
+        return $puntos;
+    }
+
+    /**
+     * @return array{etiqueta: string, monto: float, aportes: int}
+     */
+    private function puntoEvolucion(
+        Builder $donacionesValidadas,
+        Carbon $desde,
+        Carbon $hasta,
+        string $etiqueta,
+    ): array {
+        $fila = (clone $donacionesValidadas)
+            ->whereBetween('donaciones.created_at', [$desde, $hasta])
+            ->selectRaw('COALESCE(SUM(donaciones.monto), 0) as monto')
+            ->selectRaw('COUNT(donaciones.id) as aportes')
+            ->first();
+
+        return [
+            'etiqueta' => $etiqueta,
+            'monto' => (float) ($fila->monto ?? 0),
+            'aportes' => (int) ($fila->aportes ?? 0),
+        ];
+    }
+
+    private function etiquetaMes(Carbon $fecha): string
+    {
+        $abreviaturas = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+        return $abreviaturas[$fecha->month - 1].' '.$fecha->format('y');
+    }
+
+    /**
+     * @return array<int, array{estado: string, etiqueta: string, total: int}>
+     */
+    private function construirCampanasPorEstado(): array
+    {
+        $etiquetas = [
+            Campana::ESTADO_ACTIVA => 'Activas',
+            Campana::ESTADO_INACTIVA => 'Inactivas',
+            Campana::ESTADO_FINALIZADA => 'Finalizadas',
+        ];
+
+        return Campana::query()
+            ->selectRaw('estado, COUNT(*) as total')
+            ->groupBy('estado')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($fila) => [
+                'estado' => $fila->estado,
+                'etiqueta' => $etiquetas[$fila->estado] ?? ucfirst((string) $fila->estado),
+                'total' => (int) $fila->total,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{metodo: string, etiqueta: string, monto: float, aportes: int}>
+     */
+    private function construirRecaudacionPorMetodo(Builder $donacionesValidadas): array
+    {
+        return $donacionesValidadas
+            ->selectRaw('donaciones.metodo')
+            ->selectRaw('COALESCE(SUM(donaciones.monto), 0) as monto')
+            ->selectRaw('COUNT(donaciones.id) as aportes')
+            ->groupBy('donaciones.metodo')
+            ->orderByDesc('monto')
+            ->get()
+            ->map(fn ($fila) => [
+                'metodo' => $fila->metodo,
+                'etiqueta' => $this->etiquetaMetodoPago((string) $fila->metodo),
+                'monto' => (float) $fila->monto,
+                'aportes' => (int) $fila->aportes,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function etiquetaMetodoPago(string $metodo): string
+    {
+        $normalizado = str_replace(['_', '-'], ' ', strtolower(trim($metodo)));
+
+        return $normalizado !== ''
+            ? ucwords($normalizado)
+            : 'Sin método';
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $progresoCampanas
+     * @return array<int, array{id: int, titulo: string, monto: float, porcentaje: float}>
+     */
+    private function construirTopCampanas(Collection $progresoCampanas): array
+    {
+        return $progresoCampanas
+            ->sortByDesc('monto_recaudado')
+            ->take(5)
+            ->values()
+            ->map(fn ($campana) => [
+                'id' => $campana['id'],
+                'titulo' => $campana['titulo'],
+                'monto' => (float) $campana['monto_recaudado'],
+                'porcentaje' => (float) $campana['porcentaje'],
+            ])
+            ->all();
     }
 
     /**

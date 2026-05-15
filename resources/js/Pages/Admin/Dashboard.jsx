@@ -1,6 +1,6 @@
+import DashboardGraficas from '@/Components/Admin/DashboardGraficas';
 import {
     adminBackdropShort,
-    adminListCardHeader,
     adminListCardOuter,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
@@ -20,66 +20,87 @@ function IconoFlecha({ className }) {
 }
 
 /**
- * Panel principal admin WAYNA.
- *
- * Recibe métricas desde ReporteController@impacto mediante Inertia.
- * No usa fetch ni useEffect porque los datos llegan como props.
+ * Dashboard admin compacto (T-A3): métricas principales arriba; detalle bajo demanda.
  */
-export default function Dashboard({ metricas, progresoCampanas = [], filtros = {} }) {
+export default function Dashboard({
+    metricas,
+    progresoCampanas = [],
+    graficas = {},
+    filtros = {},
+}) {
     const [fechaInicio, setFechaInicio] = useState(filtros?.fecha_inicio || '');
     const [fechaFin, setFechaFin] = useState(filtros?.fecha_fin || '');
+    const [filtrosAbiertos, setFiltrosAbiertos] = useState(
+        Boolean(filtros?.fecha_inicio || filtros?.fecha_fin),
+    );
+    const [progresoAbierto, setProgresoAbierto] = useState(false);
+    const [graficasAbiertas, setGraficasAbiertas] = useState(true);
 
     const aplicarFiltros = (e) => {
         e.preventDefault();
-
         router.get(
             route('admin.dashboard'),
             {
                 fecha_inicio: fechaInicio || undefined,
                 fecha_fin: fechaFin || undefined,
             },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            }
+            { preserveState: true, preserveScroll: true, replace: true },
         );
     };
 
     const limpiarFiltros = () => {
         setFechaInicio('');
         setFechaFin('');
-
-        router.get(
-            route('admin.dashboard'),
-            {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            }
-        );
+        router.get(route('admin.dashboard'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
-    const formatearMonto = (monto) => {
-        return new Intl.NumberFormat('es-BO', {
+    const formatearMonto = (monto) =>
+        new Intl.NumberFormat('es-BO', {
             style: 'currency',
             currency: 'BOB',
             minimumFractionDigits: 2,
         }).format(Number(monto || 0));
-    };
 
-    const formatearPorcentaje = (porcentaje) => {
-        return `${Number(porcentaje || 0).toFixed(2)}%`;
-    };
+    const formatearPorcentaje = (porcentaje) =>
+        `${Number(porcentaje || 0).toFixed(0)}%`;
 
     const obtenerNombreEmprendedor = (campana) => {
         if (!campana?.emprendedor) {
-            return 'Emprendedor no identificado';
+            return 'Sin emprendedor';
         }
-
         return `${campana.emprendedor.nombre} ${campana.emprendedor.apellidos}`;
     };
+
+    const tarjetas = [
+        {
+            label: 'Recaudación validada',
+            valor: formatearMonto(metricas?.total_recaudado),
+            hint: 'Confirmada por admin o cajero',
+            className: 'from-white to-wayna-50/70',
+        },
+        {
+            label: 'Aportes',
+            valor: metricas?.numero_aportes ?? 0,
+            hint: 'Donaciones validadas',
+            className: 'from-white to-surface-muted/60',
+        },
+        {
+            label: 'Emprendedores apoyados',
+            valor: metricas?.emprendedores_apoyados ?? 0,
+            hint: 'Con al menos un aporte',
+            className: 'from-white to-emerald-50/40',
+        },
+        {
+            label: 'Campañas activas',
+            valor: metricas?.campanas_activas ?? 0,
+            hint: 'En curso ahora',
+            className: 'from-white to-wayna-50/50',
+        },
+    ];
 
     return (
         <AdminLayout
@@ -89,250 +110,261 @@ export default function Dashboard({ metricas, progresoCampanas = [], filtros = {
                         Wayna admin
                     </p>
                     <h2 className="mt-1 text-2xl font-bold tracking-tight text-wayna-950 sm:text-3xl">
-                        Dashboard de impacto
+                        Panel de impacto
                     </h2>
-                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-                        Revisa el total recaudado, los aportes validados y el avance de las campañas.
+                    <p className="mt-1 max-w-2xl text-sm text-stone-600">
+                        Resumen del sistema. Abrí el detalle solo si lo necesitás.
                     </p>
                 </div>
             }
         >
             <Head title="Dashboard — Wayna" />
 
-            <div className="relative py-8">
+            <div className="relative py-5 sm:py-6">
                 <div className={adminBackdropShort} aria-hidden />
 
-                <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                    {/* Filtros */}
-                    <div className={`${adminListCardOuter} mb-6`}>
-                        <div className={adminListCardHeader}>
-                            <h3 className="text-lg font-bold text-wayna-950">Filtro de impacto</h3>
-                            <p className="mt-1 text-sm text-stone-600">
-                                Consulta las métricas generales o filtra por un período específico.
-                            </p>
-                        </div>
+                <div className="relative mx-auto max-w-6xl space-y-4 px-4 sm:px-6 lg:px-8">
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        {tarjetas.map((t) => (
+                            <div
+                                key={t.label}
+                                className={`rounded-2xl border border-wayna-200/90 bg-gradient-to-br p-4 shadow-sm ${t.className}`}
+                            >
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-wayna-700">
+                                    {t.label}
+                                </p>
+                                <p className="mt-2 text-2xl font-black tracking-tight text-wayna-950 sm:text-3xl">
+                                    {t.valor}
+                                </p>
+                                <p className="mt-1 text-xs text-stone-600">{t.hint}</p>
+                            </div>
+                        ))}
+                    </div>
 
-                        <form
-                            onSubmit={aplicarFiltros}
-                            className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-4 lg:items-end"
+                    <div className={adminListCardOuter}>
+                        <button
+                            type="button"
+                            onClick={() => setGraficasAbiertas((v) => !v)}
+                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-wayna-50/50 sm:px-5"
+                            aria-expanded={graficasAbiertas}
                         >
                             <div>
-                                <label
-                                    htmlFor="fecha_inicio"
-                                    className="block text-sm font-bold text-wayna-950"
-                                >
-                                    Fecha inicio
-                                </label>
-                                <input
-                                    id="fecha_inicio"
-                                    type="date"
-                                    value={fechaInicio}
-                                    onChange={(e) => setFechaInicio(e.target.value)}
-                                    className="mt-1 block w-full rounded-xl border-wayna-200 bg-white text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                />
+                                <p className="text-sm font-bold text-wayna-950">
+                                    Gráficas de impacto
+                                </p>
+                                <p className="text-xs text-stone-600">
+                                    Tendencias, métodos de pago y top campañas
+                                </p>
                             </div>
+                            <span
+                                className={`shrink-0 text-wayna-700 transition ${graficasAbiertas ? 'rotate-90' : ''}`}
+                            >
+                                <IconoFlecha className="h-5 w-5" />
+                            </span>
+                        </button>
+                        {graficasAbiertas && (
+                            <div className="border-t border-wayna-100 px-4 py-4 sm:px-5">
+                                <DashboardGraficas graficas={graficas} />
+                            </div>
+                        )}
+                    </div>
 
+                    <div className={adminListCardOuter}>
+                        <button
+                            type="button"
+                            onClick={() => setFiltrosAbiertos((v) => !v)}
+                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-wayna-50/50 sm:px-5"
+                            aria-expanded={filtrosAbiertos}
+                        >
                             <div>
-                                <label
-                                    htmlFor="fecha_fin"
-                                    className="block text-sm font-bold text-wayna-950"
-                                >
-                                    Fecha fin
-                                </label>
-                                <input
-                                    id="fecha_fin"
-                                    type="date"
-                                    value={fechaFin}
-                                    onChange={(e) => setFechaFin(e.target.value)}
-                                    className="mt-1 block w-full rounded-xl border-wayna-200 bg-white text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
-                                />
+                                <p className="text-sm font-bold text-wayna-950">
+                                    Filtrar por período
+                                </p>
+                                <p className="text-xs text-stone-600">
+                                    {filtros?.fecha_inicio || filtros?.fecha_fin
+                                        ? `${filtros.fecha_inicio || '…'} → ${filtros.fecha_fin || '…'}`
+                                        : 'Sin filtro — métricas generales'}
+                                </p>
                             </div>
-
-                            <button
-                                type="submit"
-                                className="rounded-xl bg-wayna-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-wayna-800"
+                            <span
+                                className={`shrink-0 text-wayna-700 transition ${filtrosAbiertos ? 'rotate-90' : ''}`}
                             >
-                                Aplicar filtro
-                            </button>
+                                <IconoFlecha className="h-5 w-5" />
+                            </span>
+                        </button>
 
-                            <button
-                                type="button"
-                                onClick={limpiarFiltros}
-                                className="rounded-xl border border-wayna-200 bg-white px-4 py-2.5 text-sm font-bold text-wayna-800 transition hover:bg-wayna-50"
+                        {filtrosAbiertos && (
+                            <form
+                                onSubmit={aplicarFiltros}
+                                className="grid gap-3 border-t border-wayna-100 px-4 py-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-4 lg:items-end"
                             >
-                                Limpiar
-                            </button>
-                        </form>
-                    </div>
-
-                    {/* Métricas principales */}
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-wayna-50/60 p-5 shadow-sm">
-                            <p className="text-xs font-bold uppercase tracking-wide text-wayna-700">
-                                Recaudación validada
-                            </p>
-                            <p className="mt-3 text-3xl font-black tracking-tight text-wayna-950">
-                                {formatearMonto(metricas?.total_recaudado)}
-                            </p>
-                            <p className="mt-2 text-sm text-stone-600">
-                                Total confirmado por admin o cajero.
-                            </p>
-                        </div>
-
-                        <div className="rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-surface-muted/50 p-5 shadow-sm">
-                            <p className="text-xs font-bold uppercase tracking-wide text-wayna-700">
-                                Aportes
-                            </p>
-                            <p className="mt-3 text-3xl font-black tracking-tight text-wayna-950">
-                                {metricas?.numero_aportes || 0}
-                            </p>
-                            <p className="mt-2 text-sm text-stone-600">
-                                Donaciones validadas dentro del sistema.
-                            </p>
-                        </div>
-
-                        <div className="rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-emerald-50/50 p-5 shadow-sm sm:col-span-2 lg:col-span-1">
-                            <p className="text-xs font-bold uppercase tracking-wide text-wayna-700">
-                                Emprendedores apoyados
-                            </p>
-                            <p className="mt-3 text-3xl font-black tracking-tight text-wayna-950">
-                                {metricas?.emprendedores_apoyados || 0}
-                            </p>
-                            <p className="mt-2 text-sm text-stone-600">
-                                Emprendedores con al menos un aporte confirmado.
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Progreso por campaña */}
-                    <div className={`${adminListCardOuter} mt-6`}>
-                        <div className={adminListCardHeader}>
-                            <h3 className="text-lg font-bold text-wayna-950">Progreso por campaña</h3>
-                            <p className="mt-1 text-sm text-stone-600">
-                                Campañas ordenadas por creación, con avance calculado desde donaciones validadas.
-                            </p>
-                        </div>
-
-                        <div className="divide-y divide-wayna-100">
-                            {progresoCampanas.length === 0 && (
-                                <div className="px-6 py-10 text-center text-sm text-stone-600">
-                                    No hay campañas registradas o no existen datos para el período seleccionado.
+                                <div>
+                                    <label
+                                        htmlFor="fecha_inicio"
+                                        className="block text-xs font-bold text-wayna-950"
+                                    >
+                                        Desde
+                                    </label>
+                                    <input
+                                        id="fecha_inicio"
+                                        type="date"
+                                        value={fechaInicio}
+                                        onChange={(e) => setFechaInicio(e.target.value)}
+                                        className="mt-1 block w-full rounded-xl border-wayna-200 bg-white py-2 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                    />
                                 </div>
-                            )}
+                                <div>
+                                    <label
+                                        htmlFor="fecha_fin"
+                                        className="block text-xs font-bold text-wayna-950"
+                                    >
+                                        Hasta
+                                    </label>
+                                    <input
+                                        id="fecha_fin"
+                                        type="date"
+                                        value={fechaFin}
+                                        onChange={(e) => setFechaFin(e.target.value)}
+                                        className="mt-1 block w-full rounded-xl border-wayna-200 bg-white py-2 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="rounded-xl bg-wayna-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-wayna-800"
+                                >
+                                    Aplicar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={limpiarFiltros}
+                                    className="rounded-xl border border-wayna-200 bg-white px-4 py-2.5 text-sm font-bold text-wayna-800 transition hover:bg-wayna-50"
+                                >
+                                    Limpiar
+                                </button>
+                            </form>
+                        )}
+                    </div>
 
-                            {progresoCampanas.map((campana) => (
-                                <div key={campana.id} className="px-6 py-5 sm:px-8">
-                                    <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                                        <div>
-                                            <p className="text-xs font-bold uppercase tracking-wide text-wayna-700">
-                                                {campana.estado}
-                                            </p>
-                                            <h4 className="mt-1 text-base font-bold text-wayna-950">
-                                                {campana.titulo}
-                                            </h4>
-                                            <p className="mt-1 text-sm text-stone-600">
-                                                {obtenerNombreEmprendedor(campana)}
+                    <div className={adminListCardOuter}>
+                        <button
+                            type="button"
+                            onClick={() => setProgresoAbierto((v) => !v)}
+                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-wayna-50/50 sm:px-5"
+                            aria-expanded={progresoAbierto}
+                        >
+                            <div>
+                                <p className="text-sm font-bold text-wayna-950">
+                                    Progreso por campaña
+                                </p>
+                                <p className="text-xs text-stone-600">
+                                    {progresoCampanas.length} campaña
+                                    {progresoCampanas.length === 1 ? '' : 's'} — ver detalle
+                                </p>
+                            </div>
+                            <span
+                                className={`shrink-0 text-wayna-700 transition ${progresoAbierto ? 'rotate-90' : ''}`}
+                            >
+                                <IconoFlecha className="h-5 w-5" />
+                            </span>
+                        </button>
+
+                        {progresoAbierto && (
+                            <div className="max-h-[min(24rem,50vh)] divide-y divide-wayna-100 overflow-y-auto border-t border-wayna-100">
+                                {progresoCampanas.length === 0 && (
+                                    <p className="px-5 py-8 text-center text-sm text-stone-600">
+                                        No hay campañas o no hay datos en el período seleccionado.
+                                    </p>
+                                )}
+                                {progresoCampanas.map((campana) => (
+                                    <div
+                                        key={campana.id}
+                                        className="px-4 py-4 sm:px-5"
+                                    >
+                                        <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] font-bold uppercase text-wayna-600">
+                                                    {campana.estado}
+                                                </p>
+                                                <p className="truncate text-sm font-bold text-wayna-950">
+                                                    {campana.titulo}
+                                                </p>
+                                                <p className="truncate text-xs text-stone-500">
+                                                    {obtenerNombreEmprendedor(campana)}
+                                                </p>
+                                            </div>
+                                            <p className="shrink-0 text-sm font-bold text-wayna-900">
+                                                {formatearMonto(campana.monto_recaudado)}{' '}
+                                                <span className="font-normal text-stone-500">
+                                                    / {formatearMonto(campana.meta_apoyo)}
+                                                </span>
                                             </p>
                                         </div>
-
-                                        <div className="rounded-xl bg-wayna-50 px-4 py-2 text-left sm:text-right">
-                                            <p className="text-sm font-bold text-wayna-950">
-                                                {formatearMonto(campana.monto_recaudado)}
-                                            </p>
-                                            <p className="text-xs text-stone-600">
-                                                de {formatearMonto(campana.meta_apoyo)}
-                                            </p>
+                                        <div className="h-2 overflow-hidden rounded-full bg-wayna-100">
+                                            <div
+                                                className="h-full rounded-full bg-gradient-to-r from-wayna-500 to-wayna-400"
+                                                style={{
+                                                    width: `${Math.min(Number(campana.porcentaje || 0), 100)}%`,
+                                                }}
+                                            />
                                         </div>
+                                        <p className="mt-1 text-right text-[10px] font-semibold text-stone-500">
+                                            {formatearPorcentaje(campana.porcentaje)}
+                                        </p>
                                     </div>
-
-                                    <div className="h-3 overflow-hidden rounded-full bg-wayna-100">
-                                        <div
-                                            className="h-full rounded-full bg-wayna-700 transition-all duration-500"
-                                            style={{
-                                                width: `${Math.min(
-                                                    Number(campana.porcentaje || 0),
-                                                    100
-                                                )}%`,
-                                            }}
-                                        />
-                                    </div>
-
-                                    <div className="mt-2 flex items-center justify-between text-xs font-semibold text-stone-600">
-                                        <span>Avance de campaña</span>
-                                        <span>{formatearPorcentaje(campana.porcentaje)}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Accesos rápidos */}
-                    <div className={`${adminListCardOuter} mt-6`}>
-                        <div className={adminListCardHeader}>
-                            <h3 className="text-lg font-bold text-wayna-950">Accesos rápidos</h3>
-                            <p className="mt-1 text-sm text-stone-600">
-                                Módulos principales para continuar la gestión del sistema.
-                            </p>
-                        </div>
-
-                        <div className="grid gap-4 p-6 sm:grid-cols-2 sm:p-8">
+                    <div className={`${adminListCardOuter} p-4 sm:p-5`}>
+                        <p className="text-xs font-bold uppercase tracking-wide text-wayna-700">
+                            Accesos rápidos
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
                             <Link
                                 href={route('admin.emprendedores.index')}
-                                className="group flex flex-col rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-wayna-50/50 p-5 shadow-sm transition hover:border-wayna-300 hover:shadow-md"
+                                className="inline-flex items-center gap-1 rounded-xl border border-wayna-200 bg-white px-3 py-2 text-sm font-bold text-wayna-800 transition hover:border-wayna-300 hover:bg-wayna-50"
                             >
-                                <span className="text-xs font-bold uppercase tracking-wide text-wayna-700">
-                                    Directorio
-                                </span>
-                                <span className="mt-2 text-lg font-bold text-wayna-950">
-                                    Emprendedores
-                                </span>
-                                <span className="mt-1 flex-1 text-sm text-stone-600">
-                                    Altas, fotos, meta referencial y QR de perfil.
-                                </span>
-                                <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-wayna-700">
-                                    Ir
-                                    <IconoFlecha className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                                </span>
+                                Emprendedores
+                                <IconoFlecha className="h-4 w-4" />
                             </Link>
-
                             <Link
                                 href={route('admin.campanas.index')}
-                                className="group flex flex-col rounded-2xl border border-wayna-200/90 bg-gradient-to-br from-white to-surface-muted/40 p-5 shadow-sm transition hover:border-wayna-300 hover:shadow-md"
+                                className="inline-flex items-center gap-1 rounded-xl border border-wayna-200 bg-white px-3 py-2 text-sm font-bold text-wayna-800 transition hover:border-wayna-300 hover:bg-wayna-50"
                             >
-                                <span className="text-xs font-bold uppercase tracking-wide text-wayna-700">
-                                    Metas
-                                </span>
-                                <span className="mt-2 text-lg font-bold text-wayna-950">
-                                    Campañas
-                                </span>
-                                <span className="mt-1 flex-1 text-sm text-stone-600">
-                                    Vinculación a emprendedor, estado y fechas de la meta pública.
-                                </span>
-                                <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-wayna-700">
-                                    Ir
-                                    <IconoFlecha className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                                </span>
+                                Campañas
+                                <IconoFlecha className="h-4 w-4" />
+                            </Link>
+                            <Link
+                                href={route('admin.donaciones.index')}
+                                className="inline-flex items-center gap-1 rounded-xl border border-wayna-200 bg-white px-3 py-2 text-sm font-bold text-wayna-800 transition hover:border-wayna-300 hover:bg-wayna-50"
+                            >
+                                Donaciones
+                                <IconoFlecha className="h-4 w-4" />
+                            </Link>
+                            <Link
+                                href={route('admin.reportes.index')}
+                                className="inline-flex items-center gap-1 rounded-xl border border-wayna-200 bg-white px-3 py-2 text-sm font-bold text-wayna-800 transition hover:border-wayna-300 hover:bg-wayna-50"
+                            >
+                                Reportes
+                                <IconoFlecha className="h-4 w-4" />
                             </Link>
                         </div>
-
-                        <div className="border-t border-wayna-100 bg-wayna-50/40 px-6 py-4 sm:px-8">
-                            <p className="text-center text-sm text-stone-600">
-                                ¿Primera vez?{' '}
-                                <Link
-                                    href={route('admin.emprendedores.create')}
-                                    className="font-bold text-wayna-800 underline decoration-wayna-300 decoration-2 underline-offset-2 hover:text-wayna-950"
-                                >
-                                    Crear un emprendedor
-                                </Link>
-                                {' · '}
-                                <Link
-                                    href={route('admin.campanas.create')}
-                                    className="font-bold text-wayna-800 underline decoration-wayna-300 decoration-2 underline-offset-2 hover:text-wayna-950"
-                                >
-                                    Nueva campaña
-                                </Link>
-                            </p>
-                        </div>
+                        <p className="mt-3 text-center text-xs text-stone-600">
+                            <Link
+                                href={route('admin.emprendedores.create')}
+                                className="font-bold text-wayna-700 hover:text-wayna-900"
+                            >
+                                + Emprendedor
+                            </Link>
+                            {' · '}
+                            <Link
+                                href={route('admin.campanas.create')}
+                                className="font-bold text-wayna-700 hover:text-wayna-900"
+                            >
+                                + Campaña
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>
