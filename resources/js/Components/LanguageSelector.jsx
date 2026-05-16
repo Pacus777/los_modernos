@@ -1,6 +1,7 @@
 import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { initI18n } from '../i18n';
+import { initI18n } from '@/i18n';
+import { fallbackLanguage, idiomasDisponibles, idiomaEstaSoportado } from '@/i18n/languages';
 
 /**
  * @param {'default'|'on-brand'} variant — on-brand: sobre barra naranja #f07e26
@@ -9,14 +10,12 @@ export default function LanguageSelector({ variant = 'default' }) {
     const { props } = usePage();
     const [processing, setProcessing] = useState(false);
 
-    const currentLocale = props.locale || 'es';
-
-    const languages = {
-        es: 'ES',
-        en: 'EN',
-    };
+    const currentLocale = idiomaEstaSoportado(props.locale)
+        ? props.locale
+        : fallbackLanguage;
 
     const changeLanguage = (locale) => {
+        if (!idiomaEstaSoportado(locale)) return;
         if (locale === currentLocale || processing) return;
 
         setProcessing(true);
@@ -37,7 +36,11 @@ export default function LanguageSelector({ variant = 'default' }) {
         );
     };
 
-    const buttonClass = (active) => {
+    const buttonClass = (active, enabled) => {
+        if (!enabled) {
+            return 'cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400';
+        }
+
         if (variant === 'on-brand') {
             return active
                 ? 'border-white bg-white text-wayna-700 shadow-sm'
@@ -50,21 +53,29 @@ export default function LanguageSelector({ variant = 'default' }) {
     };
 
     return (
-        <div className="flex items-center gap-1.5 sm:gap-2">
-            {Object.entries(languages).map(([code, label]) => (
-                <button
-                    key={code}
-                    type="button"
-                    onClick={() => changeLanguage(code)}
-                    disabled={processing}
-                    aria-pressed={currentLocale === code}
-                    className={`rounded-full border px-3 py-1 text-xs font-bold transition sm:text-sm ${buttonClass(currentLocale === code)} ${
-                        processing ? 'cursor-not-allowed opacity-60' : ''
-                    }`}
-                >
-                    {label}
-                </button>
-            ))}
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {idiomasDisponibles.map((idioma) => {
+                const active = currentLocale === idioma.code;
+
+                return (
+                    <button
+                        key={idioma.code}
+                        type="button"
+                        onClick={() => changeLanguage(idioma.code)}
+                        disabled={processing || !idioma.enabled}
+                        aria-pressed={active}
+                        title={idioma.enabled ? idioma.label : `${idioma.label} próximamente`}
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold transition sm:text-sm ${buttonClass(
+                            active,
+                            idioma.enabled,
+                        )} ${processing ? 'opacity-60' : ''}`}
+                    >
+                        <span aria-hidden>{idioma.flag}</span>
+                        <span className="hidden sm:inline">{idioma.label}</span>
+                        <span className="sm:hidden">{idioma.shortLabel}</span>
+                    </button>
+                );
+            })}
         </div>
     );
 }

@@ -1,11 +1,14 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import es from './locales/es.json';
 import en from './locales/en.json';
+import es from './locales/es.json';
+import { fallbackLanguage, supportedLanguages } from './languages';
 
-const supportedLanguages = ['es', 'en'];
-const fallbackLanguage = 'es';
+const resources = {
+    es: { translation: es },
+    en: { translation: en },
+};
 
 export function initI18n(language = fallbackLanguage) {
     const currentLanguage = supportedLanguages.includes(language)
@@ -16,12 +19,10 @@ export function initI18n(language = fallbackLanguage) {
         i18n
             .use(initReactI18next)
             .init({
-                resources: {
-                    es: { translation: es },
-                    en: { translation: en },
-                },
+                resources,
                 lng: currentLanguage,
                 fallbackLng: fallbackLanguage,
+                supportedLngs: supportedLanguages,
                 interpolation: {
                     escapeValue: false,
                 },
