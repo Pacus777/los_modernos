@@ -1,4 +1,7 @@
+import PendienteEfectivoCard from '@/Components/Cajero/PendienteEfectivoCard';
+import TableScrollRegion from '@/Components/TableScrollRegion';
 import CajeroLayout from '@/Layouts/CajeroLayout';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -11,6 +14,7 @@ import { useState } from 'react';
  */
 export default function Efectivo({ pendientes }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
 
     /*
     |--------------------------------------------------------------------------
@@ -33,26 +37,30 @@ export default function Efectivo({ pendientes }) {
     const confirmarPago = (donacion) => {
         const emprendedor = obtenerNombreEmprendedor(donacion);
 
-        const confirmar = window.confirm(
-            `¿Confirmar recepción de Bs. ${formatearMonto(donacion.monto)} para ${emprendedor}?`
-        );
+        requestConfirm({
+            title: 'Confirmar pago en efectivo',
+            message: `¿Confirmás que recibiste Bs. ${formatearMonto(donacion.monto)} en caja para ${emprendedor}? Esta acción registra el pago como validado.`,
+            confirmLabel: 'Sí, confirmar pago',
+            cancelLabel: 'Cancelar',
+            variant: 'success',
+            onConfirm: ({ close, setProcessing }) => {
+                setProcessing(true);
+                setProcesandoId(donacion.id);
 
-        if (!confirmar) {
-            return;
-        }
-
-        setProcesandoId(donacion.id);
-
-        router.post(
-            route('cajero.efectivo.confirmar.store', donacion.id),
-            {},
-            {
-                preserveScroll: true,
-                onFinish: () => {
-                    setProcesandoId(null);
-                },
-            }
-        );
+                router.post(
+                    route('cajero.efectivo.confirmar.store', donacion.id),
+                    {},
+                    {
+                        preserveScroll: true,
+                        onFinish: () => {
+                            setProcesandoId(null);
+                            setProcessing(false);
+                            close();
+                        },
+                    },
+                );
+            },
+        });
     };
 
     /**
@@ -134,7 +142,27 @@ export default function Efectivo({ pendientes }) {
                             </p>
                         </div>
 
-                        <div className="overflow-x-auto">
+                        <div className="space-y-3 p-4 md:hidden">
+                            {pendientes.data.length === 0 && (
+                                <p className="py-6 text-center text-sm text-gray-500">
+                                    No hay pagos en efectivo pendientes.
+                                </p>
+                            )}
+                            {pendientes.data.map((donacion) => (
+                                <PendienteEfectivoCard
+                                    key={donacion.id}
+                                    donacion={donacion}
+                                    nombreEmprendedor={obtenerNombreEmprendedor(donacion)}
+                                    montoFormateado={formatearMonto(donacion.monto)}
+                                    fechaFormateada={formatearFecha(donacion.created_at)}
+                                    onConfirmar={confirmarPago}
+                                    confirmando={procesandoId === donacion.id}
+                                    modo="boton"
+                                />
+                            ))}
+                        </div>
+
+                        <TableScrollRegion className="hidden md:block">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -190,8 +218,10 @@ export default function Efectivo({ pendientes }) {
                                                 Bs. {formatearMonto(donacion.monto)}
                                             </td>
 
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
-                                                {donacion.referencia_pago || 'Sin referencia'}
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm">
+                                                <span className="font-mono text-xs font-bold tracking-wide text-wayna-900">
+                                                    {donacion.referencia_pago || 'Sin referencia'}
+                                                </span>
                                             </td>
 
                                             <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
@@ -203,7 +233,7 @@ export default function Efectivo({ pendientes }) {
                                                     type="button"
                                                     onClick={() => confirmarPago(donacion)}
                                                     disabled={procesandoId === donacion.id}
-                                                    className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                                    className="touch-target min-h-11 rounded-md bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
                                                 >
                                                     {procesandoId === donacion.id
                                                         ? 'Confirmando...'
@@ -214,7 +244,7 @@ export default function Efectivo({ pendientes }) {
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                        </TableScrollRegion>
 
                         {pendientes.links && pendientes.links.length > 3 && (
                             <div className="border-t border-gray-200 px-6 py-4">
@@ -244,6 +274,7 @@ export default function Efectivo({ pendientes }) {
                     </div>
                 </div>
             </div>
+            <ConfirmDialogPortal />
         </CajeroLayout>
     );
 }

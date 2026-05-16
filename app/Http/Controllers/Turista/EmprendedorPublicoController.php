@@ -31,7 +31,7 @@ class EmprendedorPublicoController extends Controller
             ->with([
                 'campanas' => function ($query) {
                     $query
-                        ->where('estado', Campana::ESTADO_ACTIVA)
+                        ->visibleEnPerfilTurista()
                         ->withSum([
                             'donaciones as monto_validado' => function ($query) {
                                 $query->where('estado_pago', Donacion::ESTADO_VALIDADO);
@@ -54,9 +54,20 @@ class EmprendedorPublicoController extends Controller
                 'nombre' => $emprendedor->nombre,
                 'apellidos' => $emprendedor->apellidos,
                 'descripcion' => $emprendedor->descripcion,
+                'tipo_emprendimiento' => $emprendedor->tipo_emprendimiento?->value,
+                'tipo_emprendimiento_etiqueta' => $emprendedor->tipo_emprendimiento?->etiqueta(),
+                'departamento' => $emprendedor->departamento?->value,
+                'departamento_etiqueta' => $emprendedor->departamento?->etiqueta(),
                 'fotografia' => $emprendedor->fotografia,
+                'foto_portada' => $emprendedor->urlFotoPerfil(),
                 'qr_url' => $emprendedor->qr_url,
                 'estado' => $emprendedor->estado,
+            ],
+
+            'medios' => [
+                'foto_empresa' => $emprendedor->urlFotoEmpresa(),
+                'galeria' => $emprendedor->urlsGaleriaPublica(),
+                'video' => $emprendedor->presentacionVideoPublico(),
             ],
 
             'campanaActiva' => $campanaActiva ? [
@@ -80,6 +91,7 @@ class EmprendedorPublicoController extends Controller
             'progreso' => $progreso,
 
             'tipoPagos' => TipoPago::query()
+                ->where('activo', true)
                 ->select('id', 'nombre', 'codigo')
                 ->orderBy('id')
                 ->get(),

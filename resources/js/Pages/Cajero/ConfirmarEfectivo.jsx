@@ -32,52 +32,54 @@ export default function ConfirmarEfectivo({ donacion }) {
                             efectivo en caja.
                         </p>
                     </div>
-                    <dl className="divide-y divide-wayna-100 px-5 py-3 text-sm">
-                        <div className="flex justify-between gap-4 py-2">
+                    <dl className="divide-y divide-wayna-100 px-4 py-3 text-sm sm:px-5">
+                        <div className="flex flex-col gap-1 py-2 sm:flex-row sm:justify-between sm:gap-4">
                             <dt className="text-stone-500">Donación</dt>
-                            <dd className="font-mono font-semibold text-wayna-950">
+                            <dd className="font-mono font-semibold text-wayna-950 sm:text-right">
                                 #{donacion.id}
                             </dd>
                         </div>
-                        <div className="flex justify-between gap-4 py-2">
+                        <div className="flex flex-col gap-1 py-2 sm:flex-row sm:justify-between sm:gap-4">
                             <dt className="text-stone-500">Monto</dt>
-                            <dd className="font-semibold text-wayna-950">
+                            <dd className="font-semibold text-wayna-950 sm:text-right">
                                 Bs {Number(donacion.monto).toFixed(2)}
                             </dd>
                         </div>
-                        <div className="flex justify-between gap-4 py-2">
-                            <dt className="text-stone-500">Referencia</dt>
-                            <dd className="break-all text-right text-stone-800">
-                                {donacion.referencia_pago ?? '—'}
+                        <div className="flex flex-col gap-1 py-2 sm:flex-row sm:justify-between sm:gap-4">
+                            <dt className="shrink-0 text-stone-500">Referencia</dt>
+                            <dd className="break-all sm:max-w-[65%] sm:text-right">
+                                <span className="font-mono text-sm font-bold tracking-wide text-wayna-900">
+                                    {donacion.referencia_pago ?? '—'}
+                                </span>
                             </dd>
                         </div>
-                        <div className="flex justify-between gap-4 py-2">
+                        <div className="flex flex-col gap-1 py-2 sm:flex-row sm:justify-between sm:gap-4">
                             <dt className="text-stone-500">Campaña</dt>
-                            <dd className="text-right text-stone-800">
+                            <dd className="text-stone-800 sm:max-w-[65%] sm:text-right">
                                 {donacion.campana?.titulo ?? '—'}
                             </dd>
                         </div>
-                        <div className="flex justify-between gap-4 py-2">
+                        <div className="flex flex-col gap-1 py-2 sm:flex-row sm:justify-between sm:gap-4">
                             <dt className="text-stone-500">Emprendedor</dt>
-                            <dd className="text-right text-stone-800">
+                            <dd className="text-stone-800 sm:text-right">
                                 {donacion.campana?.emprendedor?.nombre ?? '—'}
                             </dd>
                         </div>
                     </dl>
                     <form
                         onSubmit={enviar}
-                        className="flex flex-col gap-3 border-t border-wayna-100 bg-wayna-50/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                        className="flex flex-col gap-3 border-t border-wayna-100 bg-wayna-50/30 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
                     >
                         <Link
                             href={route('cajero.efectivo.pendientes')}
-                            className="text-center text-sm font-semibold text-wayna-700 hover:text-wayna-900 sm:text-left"
+                            className="touch-target flex min-h-11 items-center justify-center text-center text-sm font-semibold text-wayna-700 hover:text-wayna-900 sm:justify-start sm:text-left"
                         >
                             Cancelar
                         </Link>
                         <button
                             type="submit"
                             disabled={form.processing}
-                            className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+                            className="touch-target min-h-11 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
                         >
                             {form.processing
                                 ? 'Confirmando…'

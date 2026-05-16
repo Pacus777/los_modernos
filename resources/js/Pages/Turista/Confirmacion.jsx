@@ -1,5 +1,9 @@
+import QrPreviewModal from '@/Components/QrPreviewModal';
+import ReferenciaPagoDestacada from '@/Components/ReferenciaPagoDestacada';
+import TemporizadorPagoPendiente from '@/Components/Turista/TemporizadorPagoPendiente';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -12,6 +16,11 @@ export default function Confirmacion() {
     const page = usePage();
     const flash = page.props.flash ?? {};
     const confirmacion = page.props.confirmacion ?? null;
+    const emprendedorId = page.props.emprendedor_id ?? null;
+
+    const volverHref = emprendedorId
+        ? route('turista.emprendedor.show', emprendedorId)
+        : '/';
 
     const qrUrl = page.props.qr_pago_url ?? flash.qr_pago_url;
     const referencia =
@@ -22,6 +31,8 @@ export default function Confirmacion() {
         t('tourist.confirmation.successFallback');
     const tieneDatosDonacion = Boolean(qrUrl || referencia);
 
+    const plazoPago = confirmacion?.plazo_pago ?? null;
+
     const metodo = confirmacion?.metodo ?? '';
     const esQrEfectivo =
         (typeof metodo === 'string' &&
@@ -29,12 +40,14 @@ export default function Confirmacion() {
         (typeof qrUrl === 'string' &&
             qrUrl.includes('/donaciones/qrs/efectivo/'));
 
+    const [qrAmpliado, setQrAmpliado] = useState(false);
+
     return (
-        <GuestLayout variant="full">
+        <GuestLayout variant="full" navHref={volverHref}>
             <Head title={t('tourist.confirmation.headTitle')} />
 
             <section className="overflow-hidden rounded-3xl border border-wayna-100 bg-white shadow-xl shadow-wayna-900/10">
-                <div className="border-b border-wayna-100 bg-gradient-to-r from-wayna-600 to-wayna-500 px-5 py-6 text-white">
+                <div className="header-wayna-gradient border-b border-wayna-400/30 px-4 py-5 sm:px-5 sm:py-6">
                     <h1 className="text-xl font-bold sm:text-2xl">
                         {t('tourist.confirmation.title')}
                     </h1>
@@ -43,7 +56,7 @@ export default function Confirmacion() {
                     </p>
                 </div>
 
-                <div className="space-y-6 p-5 sm:p-6">
+                <div className="space-y-6 p-4 sm:p-6">
                     {!tieneDatosDonacion ? (
                         <div className="rounded-2xl bg-wayna-50 px-4 py-6 text-center">
                             <p className="text-sm font-medium text-wayna-900">
@@ -54,7 +67,7 @@ export default function Confirmacion() {
                             </p>
                             <Link
                                 href="/"
-                                className="mt-4 inline-flex items-center justify-center rounded-xl bg-wayna-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-wayna-700"
+                                className="btn-wayna-primary mt-4"
                             >
                                 {t('tourist.confirmation.emptyCta')}
                             </Link>
@@ -65,26 +78,29 @@ export default function Confirmacion() {
                                 {successMessage}
                             </p>
 
-                            {referencia && (
-                                <div className="rounded-2xl border border-wayna-100 bg-wayna-50/80 px-4 py-3 text-center">
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-wayna-800">
-                                        {t('tourist.confirmation.referenceLabel')}
-                                    </p>
-                                    <p className="mt-1 break-all font-mono text-sm font-semibold text-wayna-950">
-                                        {referencia}
-                                    </p>
-                                </div>
+                            {plazoPago && (
+                                <TemporizadorPagoPendiente plazoPago={plazoPago} />
                             )}
+
+                            <ReferenciaPagoDestacada referencia={referencia} variant="turista" />
 
                             {qrUrl && (
                                 <div className="flex flex-col items-center gap-3">
-                                    <div className="rounded-2xl border-2 border-wayna-200 bg-white p-4 shadow-inner">
+                                    <button
+                                        type="button"
+                                        onClick={() => setQrAmpliado(true)}
+                                        className="touch-target rounded-2xl border-2 border-wayna-200 bg-white p-3 shadow-inner transition hover:border-wayna-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40 sm:p-4"
+                                        aria-label={t('tourist.confirmation.qrAlt')}
+                                    >
                                         <img
                                             src={qrUrl}
-                                            alt={t('tourist.confirmation.qrAlt')}
-                                            className="h-56 w-56 max-w-full object-contain sm:h-64 sm:w-64"
+                                            alt=""
+                                            className="pointer-events-none mx-auto h-[min(14rem,72vw)] w-[min(14rem,72vw)] max-w-full object-contain sm:h-64 sm:w-64"
                                         />
-                                    </div>
+                                    </button>
+                                    <p className="text-center text-xs font-semibold text-wayna-700">
+                                        Tocá el QR para verlo en grande
+                                    </p>
                                     <p className="max-w-md text-center text-sm text-stone-600">
                                         {esQrEfectivo
                                             ? t('tourist.confirmation.helpCash')
@@ -95,16 +111,30 @@ export default function Confirmacion() {
 
                             <div className="flex flex-col gap-3 border-t border-wayna-100 pt-4 sm:flex-row sm:justify-center">
                                 <Link
-                                    href="/"
-                                    className="inline-flex flex-1 items-center justify-center rounded-xl border border-wayna-200 bg-white px-4 py-3 text-center text-sm font-semibold text-wayna-800 transition hover:bg-wayna-50 sm:flex-none"
+                                    href={volverHref}
+                                    className="touch-target inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-wayna-200 bg-white px-4 py-3 text-center text-sm font-semibold text-wayna-800 transition hover:bg-wayna-50 sm:flex-none"
                                 >
-                                    {t('common.back')}
+                                    {emprendedorId
+                                        ? t('tourist.confirmation.backToProfile')
+                                        : t('common.back')}
                                 </Link>
                             </div>
                         </>
                     )}
                 </div>
             </section>
+
+            <QrPreviewModal
+                show={qrAmpliado}
+                src={qrUrl}
+                title={t('tourist.confirmation.title')}
+                subtitle={
+                    esQrEfectivo
+                        ? t('tourist.confirmation.helpCash')
+                        : t('tourist.confirmation.helpDigital')
+                }
+                onClose={() => setQrAmpliado(false)}
+            />
         </GuestLayout>
     );
 }

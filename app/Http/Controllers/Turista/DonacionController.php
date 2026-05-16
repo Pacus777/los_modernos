@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Turista;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campana;
 use App\Services\DonacionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DonacionController extends Controller
 {
@@ -15,14 +17,24 @@ class DonacionController extends Controller
      */
     public function store(Request $request, DonacionService $donacionService): RedirectResponse
     {
-        $validated = $request->validate([
-            'campana_id' => ['required', 'exists:campanas,id'],
-            'tipo_pago_id' => ['required', 'exists:tipos_pago,id'],
-            'visitante_id' => ['nullable', 'exists:visitantes,id'],
-            'monto' => ['required', 'numeric', 'min:1', 'max:999999.99'],
-            'metodo' => ['required', 'string', 'max:50'],
-            'referencia_pago' => ['nullable', 'string', 'max:150'],
-        ]);
+        $validated = $request->validate(
+            [
+                'campana_id' => [
+                    'required',
+                    Rule::exists('campanas', 'id')->where(
+                        fn ($query) => Campana::applyVisibilidadPerfilTurista($query),
+                    ),
+                ],
+                'tipo_pago_id' => ['required', 'exists:tipos_pago,id'],
+                'visitante_id' => ['nullable', 'exists:visitantes,id'],
+                'monto' => ['required', 'numeric', 'min:1', 'max:999999.99'],
+                'metodo' => ['required', 'string', 'max:50'],
+                'referencia_pago' => ['nullable', 'string', 'max:150'],
+            ],
+            [
+                'campana_id.exists' => 'La campaña seleccionada no está disponible o ya venció.',
+            ],
+        );
 
         $resultado = $donacionService->registrar($validated);
 

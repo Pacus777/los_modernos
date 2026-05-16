@@ -29,10 +29,19 @@
       "emptyTitle": "We couldn’t find a recent donation",
       "emptyBody": "You may have opened this page directly, or the session may have expired.",
       "emptyCta": "Go to home",
-      "referenceLabel": "Payment reference",
+      "referenceLabel": "Payment code",
+      "referenceHint": "Use this code when paying or so the cashier can verify your contribution.",
+      "referenceCopy": "Copy code",
+      "referenceCopied": "Copied!",
       "qrAlt": "QR code to complete your Wayna payment",
       "helpDigital": "Scan this code with your phone camera. In the Wayna MVP it encodes your donation details; later it may link to your banking app.",
-      "helpCash": "Show this code at the Wayna desk or to the cashier so they can confirm your cash payment."
+      "helpCash": "Show this code at the Wayna desk or to the cashier so they can confirm your cash payment.",
+      "backToProfile": "Back to donation form",
+      "timerActiveTitle": "Time to complete payment",
+      "timerActiveHint": "You have {{minutes}} minutes to finish payment. After that, your contribution will remain pending confirmation.",
+      "timerExpiredTitle": "Pending payment window expired",
+      "timerExpiredBody": "The suggested time to complete payment has ended. Your donation is still on file and may be reviewed manually by the Wayna team.",
+      "timerExpiredNote": "If you already paid, keep your payment code and check with the cashier or Wayna desk."
     },
     "profile": {
       "headTitle": "Support {{name}}",
@@ -46,7 +55,14 @@
       "goal": "Goal",
       "noCampaignTitle": "No active campaign yet",
       "noCampaignBody": "To receive donations from this page, an administrator must create a campaign with status \"active\" for this entrepreneur. The goal shown above may be informational only until that campaign exists.",
-      "referenceMetaNote": "Goal reference (no active campaign)"
+      "referenceMetaNote": "Goal reference (no active campaign)",
+      "businessPhotoTitle": "Our business",
+      "businessPhotoAlt": "Business photo of {{name}}",
+      "galleryTitle": "Gallery",
+      "gallerySubtitle": "See more of their work and products.",
+      "galleryImageAlt": "Image {{index}} of {{name}}",
+      "videoTitle": "Video",
+      "videoUnsupported": "Your browser cannot play this video."
     },
     "barraProgreso": {
       "ariaLabel": "Progress toward the goal: {{pct}} percent"
@@ -60,9 +76,13 @@
       "otherAmount": "Other amount",
       "amountPlaceholder": "e.g. 30",
       "paymentMethod": "Payment method",
+      "instructionCash": "Hand the amount to the cashier and wait for confirmation.",
+      "instructionQr": "Scan the code with your banking app.",
+      "instructionOther": "Follow the instructions at the Wayna desk to complete your contribution.",
       "processing": "Processing...",
       "confirmWithAmount": "Confirm contribution of Bs {{amount}}",
-      "pendingNote": "Your contribution will be registered as pending until it is confirmed."
+      "pendingNote": "Your contribution will be registered as pending until it is confirmed.",
+      "exchangeRateHint": "Approximate reference exchange rate for foreign visitors."
     }
   },
   "admin": {

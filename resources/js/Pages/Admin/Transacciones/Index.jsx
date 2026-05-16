@@ -236,7 +236,7 @@ export default function Index({ transacciones, filters }) {
                         <button
                             type="submit"
                             disabled={filterForm.processing}
-                            className="rounded-lg bg-wayna-600 px-4 py-2 text-sm font-semibold text-white hover:bg-wayna-700 disabled:opacity-60"
+                            className="rounded-lg bg-wayna-500 px-4 py-2 text-sm font-semibold text-white hover:bg-wayna-700 disabled:opacity-60"
                         >
                             {t('admin.traceability.applyFilters')}
                         </button>

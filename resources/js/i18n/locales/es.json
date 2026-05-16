@@ -29,10 +29,19 @@
       "emptyTitle": "No encontramos una donación reciente",
       "emptyBody": "Es posible que hayas abierto esta página directamente o que la sesión haya expirado.",
       "emptyCta": "Ir al inicio",
-      "referenceLabel": "Referencia de pago",
+      "referenceLabel": "Código de pago",
+      "referenceHint": "Usá este código al pagar o para que el cajero verifique tu aporte.",
+      "referenceCopy": "Copiar código",
+      "referenceCopied": "¡Copiado!",
       "qrAlt": "Código QR para completar el pago Wayna",
       "helpDigital": "Escaneá este código con la cámara de tu celular. En el MVP de Wayna contiene los datos de tu donación; más adelante podrá enlazarse con tu app bancaria.",
-      "helpCash": "Mostrá este código en el punto Wayna o al cajero para que confirme tu pago en efectivo."
+      "helpCash": "Mostrá este código en el punto Wayna o al cajero para que confirme tu pago en efectivo.",
+      "backToProfile": "Volver al registro",
+      "timerActiveTitle": "Tiempo para completar el pago",
+      "timerActiveHint": "Tenés {{minutes}} minutos para finalizar el pago. Pasado ese plazo, tu aporte seguirá pendiente de confirmación.",
+      "timerExpiredTitle": "Pago pendiente vencido",
+      "timerExpiredBody": "Se agotó el tiempo sugerido para completar el pago. Tu donación sigue registrada y puede ser revisada manualmente por el equipo Wayna.",
+      "timerExpiredNote": "Si ya pagaste, conservá tu código de pago y consultá al cajero o al punto Wayna."
     },
     "profile": {
       "headTitle": "Apoya a {{name}}",
@@ -46,7 +55,14 @@
       "goal": "Meta",
       "noCampaignTitle": "Aún no hay campaña activa",
       "noCampaignBody": "Para recibir donaciones desde esta página, un administrador debe crear una campaña con estado «activa» para este emprendedor. La meta que ves arriba puede ser solo referencial hasta que exista esa campaña.",
-      "referenceMetaNote": "Referencia de meta (sin campaña vigente)"
+      "referenceMetaNote": "Referencia de meta (sin campaña vigente)",
+      "businessPhotoTitle": "Nuestro emprendimiento",
+      "businessPhotoAlt": "Foto del emprendimiento de {{name}}",
+      "galleryTitle": "Galería",
+      "gallerySubtitle": "Conocé más del trabajo y los productos.",
+      "galleryImageAlt": "Imagen {{index}} de {{name}}",
+      "videoTitle": "Video",
+      "videoUnsupported": "Tu navegador no puede reproducir este video."
     },
     "barraProgreso": {
       "ariaLabel": "Progreso hacia la meta: {{pct}} por ciento"
@@ -60,9 +76,13 @@
       "otherAmount": "Otro monto",
       "amountPlaceholder": "Ej. 30",
       "paymentMethod": "Método de pago",
+      "instructionCash": "Entrega el monto al cajero y espera confirmación.",
+      "instructionQr": "Escanea el código con tu app bancaria.",
+      "instructionOther": "Seguí las indicaciones del punto Wayna para completar tu aporte.",
       "processing": "Procesando...",
       "confirmWithAmount": "Confirmar aporte de Bs {{amount}}",
-      "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado."
+      "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado.",
+      "exchangeRateHint": "Tipo de cambio referencial aproximado para turistas extranjeros."
     }
   },
   "admin": {

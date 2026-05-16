@@ -5,6 +5,12 @@ namespace App\Observers;
 use App\Models\Campana;
 use App\Models\Donacion;
 
+/**
+ * Único responsable de actualizar campanas.monto_recaudado (T-A19).
+ *
+ * Los servicios y controladores solo cambian estado_pago; este observer
+ * incrementa o decrementa el monto al entrar o salir de "validado".
+ */
 class DonacionObserver
 {
     public function created(Donacion $donacion): void

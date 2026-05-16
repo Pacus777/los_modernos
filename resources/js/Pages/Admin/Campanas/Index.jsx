@@ -1,4 +1,6 @@
 import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
+import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
+import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import {
     adminBackdropShort,
     adminListCardHeader,
@@ -12,7 +14,10 @@ import {
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import { etiquetaRangoMonto } from '@/utils/rangoMonto';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 function IconoCampana({ className }) {
     return (
@@ -39,8 +44,38 @@ function IconoMas({ className }) {
 /**
  * Listado de campañas — panel admin WAYNA (T-32 / PB-13).
  */
-export default function Index({ campanas }) {
+export default function Index({ campanas, filters = {}, rangosMonto = [] }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
+
+    const filterForm = useForm({
+        rango_monto: filters.rango_monto ?? '',
+    });
+
+    useEffect(() => {
+        filterForm.reset({
+            rango_monto: filters.rango_monto ?? '',
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filters]);
+
+    const aplicarFiltros = (e) => {
+        e.preventDefault();
+        filterForm.get(route('admin.campanas.index'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const limpiarFiltros = () => {
+        filterForm.reset({ rango_monto: '' });
+        router.get(route('admin.campanas.index'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
     const estiloEstado = (estado) => {
         const map = {
@@ -62,16 +97,20 @@ export default function Index({ campanas }) {
 
     const eliminarCampaña = (campana) => {
         const tieneDonaciones = (campana.donaciones_count ?? 0) > 0;
-        const msg = tieneDonaciones
-            ? 'Esta campaña tiene donaciones: se marcará como finalizada (no se borra el historial). ¿Continuar?'
-            : `¿Eliminar la campaña "${campana.titulo}"? Solo podés hacerlo si no tiene donaciones registradas.`;
 
-        if (!window.confirm(msg)) {
-            return;
-        }
-
-        router.delete(route('admin.campanas.destroy', campana.id), {
-            preserveScroll: true,
+        requestConfirm({
+            title: tieneDonaciones ? 'Finalizar campaña' : 'Eliminar campaña',
+            message: tieneDonaciones
+                ? `La campaña "${campana.titulo}" tiene donaciones registradas. Se marcará como finalizada y se conservará el historial.`
+                : `¿Eliminar la campaña "${campana.titulo}"? Solo se permite si no tiene donaciones registradas.`,
+            confirmLabel: tieneDonaciones ? 'Sí, finalizar' : 'Sí, eliminar',
+            variant: 'danger',
+            onConfirm: ({ close }) => {
+                close();
+                router.delete(route('admin.campanas.destroy', campana.id), {
+                    preserveScroll: true,
+                });
+            },
         });
     };
 
@@ -127,6 +166,68 @@ export default function Index({ campanas }) {
                     </div>
 
                     <div className={adminListCardOuter}>
+                        <form
+                            onSubmit={aplicarFiltros}
+                            className="border-b border-wayna-100 bg-wayna-50/40 px-4 py-4 sm:px-6"
+                        >
+                            <p className="text-xs font-semibold uppercase tracking-wide text-wayna-800">
+                                Rango de meta (ayuda visual)
+                            </p>
+                            <p className="mt-1 text-xs text-stone-500">
+                                Bajo hasta Bs. 500 · Medio Bs. 501–2.000 · Alto más de Bs. 2.000
+                            </p>
+                            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+                                <div className="min-w-[14rem] flex-1 sm:max-w-xs">
+                                    <label
+                                        htmlFor="rango_monto_campanas"
+                                        className="block text-xs font-semibold uppercase tracking-wide text-wayna-800"
+                                    >
+                                        Filtrar por meta
+                                    </label>
+                                    <select
+                                        id="rango_monto_campanas"
+                                        value={filterForm.data.rango_monto}
+                                        onChange={(e) =>
+                                            filterForm.setData('rango_monto', e.target.value)
+                                        }
+                                        className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                                    >
+                                        <option value="">Todos los rangos</option>
+                                        {rangosMonto.map((opt) => (
+                                            <option key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        type="submit"
+                                        disabled={filterForm.processing}
+                                        className="rounded-lg bg-wayna-500 px-4 py-2 text-sm font-semibold text-white hover:bg-wayna-700 disabled:opacity-60"
+                                    >
+                                        Aplicar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={filterForm.processing}
+                                        onClick={limpiarFiltros}
+                                        className="rounded-lg border border-wayna-200 bg-white px-4 py-2 text-sm font-semibold text-wayna-900 hover:bg-wayna-50 disabled:opacity-60"
+                                    >
+                                        Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                            {filters.rango_monto ? (
+                                <p className="mt-2 text-xs text-wayna-800">
+                                    Filtro activo:{' '}
+                                    <span className="font-semibold">
+                                        {etiquetaRangoMonto(filters.rango_monto)}
+                                    </span>
+                                </p>
+                            ) : null}
+                        </form>
+
                         <div className={adminListCardHeader}>
                             <h3 className="text-lg font-bold text-wayna-950">Todas las campañas</h3>
                             <p className="mt-1 text-sm text-stone-600">
@@ -153,15 +254,18 @@ export default function Index({ campanas }) {
                                         <tr>
                                             <td colSpan="6" className="px-6 py-16 text-center sm:px-8">
                                                 <div className="mx-auto max-w-md rounded-2xl border border-dashed border-wayna-200 bg-wayna-50/50 px-6 py-10">
-                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-orange-100 text-wayna-600">
+                                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-wayna-100 to-surface-muted text-wayna-600">
                                                         <IconoCampana className="h-7 w-7" />
                                                     </div>
                                                     <p className="text-base font-semibold text-wayna-950">
-                                                        Aún no hay campañas
+                                                        {filters.rango_monto
+                                                            ? 'Sin campañas en este rango'
+                                                            : 'Aún no hay campañas'}
                                                     </p>
                                                     <p className="mt-2 text-sm leading-relaxed text-stone-600">
-                                                        Creá la primera campaña para que los turistas vean la meta
-                                                        en el perfil público.
+                                                        {filters.rango_monto
+                                                            ? 'Probá otro rango de meta o limpiá el filtro.'
+                                                            : 'Creá la primera campaña para que los turistas vean la meta en el perfil público.'}
                                                     </p>
                                                     <Link
                                                         href={route('admin.campanas.create')}
@@ -191,17 +295,13 @@ export default function Index({ campanas }) {
                                                                 : '—'}
                                                         </span>
                                                     </div>
-                                                    <div className="mt-3">
-                                                        <div className="mb-1 flex justify-between text-[10px] font-semibold uppercase tracking-wide text-wayna-700/80">
-                                                            <span>Avance</span>
-                                                            <span className="tabular-nums">{p}%</span>
-                                                        </div>
-                                                        <div className="h-1.5 overflow-hidden rounded-full bg-wayna-100">
-                                                            <div
-                                                                className="h-full rounded-full bg-gradient-to-r from-wayna-600 to-wayna-400 transition-all duration-500"
-                                                                style={{ width: `${p}%` }}
-                                                            />
-                                                        </div>
+                                                    <div className="mt-3 max-w-md">
+                                                        <BarraProgresoMeta
+                                                            montoRecaudado={c.monto_recaudado}
+                                                            meta={c.meta_apoyo}
+                                                            porcentaje={p}
+                                                            variant="inline"
+                                                        />
                                                     </div>
                                                 </td>
                                                 <td className="hidden whitespace-nowrap px-4 py-4 text-sm text-stone-700 md:table-cell">
@@ -213,8 +313,13 @@ export default function Index({ campanas }) {
                                                         <span className="text-stone-400">—</span>
                                                     )}
                                                 </td>
-                                                <td className="whitespace-nowrap px-4 py-4 text-right font-mono text-sm font-semibold text-wayna-900">
-                                                    Bs {Number(c.meta_apoyo).toFixed(2)}
+                                                <td className="whitespace-nowrap px-4 py-4 text-right">
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        <span className="font-mono text-sm font-semibold text-wayna-900">
+                                                            Bs {Number(c.meta_apoyo).toFixed(2)}
+                                                        </span>
+                                                        <AdminRangoMontoBadge monto={c.meta_apoyo} />
+                                                    </div>
                                                 </td>
                                                 <td className="whitespace-nowrap px-4 py-4 text-right font-mono text-sm text-stone-700">
                                                     Bs {Number(c.monto_recaudado).toFixed(2)}
@@ -270,6 +375,7 @@ export default function Index({ campanas }) {
                     </div>
                 </div>
             </div>
+            <ConfirmDialogPortal />
         </AdminLayout>
     );
 }

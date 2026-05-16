@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\RangoMonto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCampanaRequest;
 use App\Http\Requests\Admin\UpdateCampanaRequest;
 use App\Models\Campana;
 use App\Models\Emprendedor;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,17 +20,31 @@ class CampanaController extends Controller
     /**
      * Listado paginado de campañas para el panel admin (PB-13 / T-31).
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $validated = $request->validate([
+            'rango_monto' => ['nullable', 'string', Rule::in(RangoMonto::valores())],
+        ]);
+
+        $rangoMonto = RangoMonto::desdeFiltro($validated['rango_monto'] ?? '')?->value ?? '';
+
         $campanas = Campana::query()
             ->with('emprendedor:id,nombre,apellidos')
             ->withCount('donaciones')
+            ->when(
+                $rango = RangoMonto::desdeFiltro($rangoMonto),
+                fn ($q) => $rango->aplicarFiltro($q, 'meta_apoyo'),
+            )
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Admin/Campanas/Index', [
             'campanas' => $campanas,
+            'filters' => [
+                'rango_monto' => $rangoMonto,
+            ],
+            'rangosMonto' => RangoMonto::opcionesFiltro(),
         ]);
     }
 
@@ -36,6 +54,7 @@ class CampanaController extends Controller
             'modo' => 'crear',
             'campana' => null,
             'emprendedores' => $this->listaEmprendedores(),
+            'fechaHoy' => now()->toDateString(),
         ]);
     }
 
@@ -64,6 +83,7 @@ class CampanaController extends Controller
             'modo' => 'editar',
             'campana' => $campana,
             'emprendedores' => $this->listaEmprendedores(),
+            'fechaHoy' => now()->toDateString(),
         ]);
     }
 
@@ -104,17 +124,49 @@ class CampanaController extends Controller
     /**
      * Emprendedores para el selector del formulario (llegan en la misma respuesta Inertia).
      *
-     * @return \Illuminate\Support\Collection<int, array{id: int, label: string}>
+     * @return \Illuminate\Support\Collection<int, array{id: int, label: string, nombre: string, descripcion: string|null, estado: string}>
      */
     private function listaEmprendedores()
     {
         return Emprendedor::query()
             ->orderBy('nombre')
             ->orderBy('apellidos')
-            ->get(['id', 'nombre', 'apellidos'])
+            ->get(['id', 'nombre', 'apellidos', 'descripcion', 'tipo_emprendimiento', 'departamento', 'estado'])
             ->map(fn (Emprendedor $e) => [
                 'id' => $e->id,
-                'label' => trim($e->nombre.' '.$e->apellidos),
+                'nombre' => trim($e->nombre.' '.$e->apellidos),
+                'descripcion' => ($d = trim((string) $e->descripcion)) !== '' ? $d : null,
+                'tipo_emprendimiento' => $e->tipo_emprendimiento?->value,
+                'tipo_emprendimiento_etiqueta' => $e->tipo_emprendimiento?->etiqueta(),
+                'departamento' => $e->departamento?->value,
+                'departamento_etiqueta' => $e->departamento?->etiqueta(),
+                'estado' => $e->estado,
+                'label' => $this->etiquetaEmprendedorParaSelector($e),
             ]);
+    }
+
+    private function etiquetaEmprendedorParaSelector(Emprendedor $e): string
+    {
+        $nombre = trim($e->nombre.' '.$e->apellidos);
+        $partes = [$nombre];
+
+        if ($e->tipo_emprendimiento !== null) {
+            $partes[] = $e->tipo_emprendimiento->etiqueta();
+        }
+
+        if ($e->departamento !== null) {
+            $partes[] = $e->departamento->etiqueta();
+        }
+
+        $descripcion = trim((string) $e->descripcion);
+        if ($descripcion !== '') {
+            $partes[] = Str::limit($descripcion, 55);
+        }
+
+        if ($e->estado !== 'activo') {
+            $partes[] = 'inactivo';
+        }
+
+        return implode(' · ', $partes);
     }
 }

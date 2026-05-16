@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Campana extends Model
 {
@@ -23,8 +25,8 @@ class Campana extends Model
     | debería estar en estado "activa" a la vez. Eso se valida al crear/editar
     | campañas (admin); la base no impone un índice único parcial por motor.
     |
-    | monto_recaudado se mantiene alineado con donaciones validadas vía
-    | DonacionObserver al cambiar estado_pago.
+    | monto_recaudado lo actualiza únicamente DonacionObserver (T-A19) al
+    | validar o revertir donaciones; no duplicar lógica en servicios.
     |
     */
 
@@ -56,4 +58,76 @@ class Campana extends Model
     {
         return $this->hasMany(Donacion::class, 'campana_id');
     }
+
+    /**
+     * Campaña con estado activa y dentro del rango de fechas (T-A12).
+     * Aplicable a Eloquent y a Query\Builder (p. ej. Rule::exists()->where()).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder  $query
+     */
+    public static function applyVisibilidadPerfilTurista($query, ?Carbon $fecha = null): void
+    {
+        $fecha ??= now()->startOfDay();
+        $dia = $fecha->toDateString();
+
+        $query
+            ->where('estado', self::ESTADO_ACTIVA)
+            ->where(function ($q) use ($dia): void {
+                $q->whereNull('fecha_inicio')
+                    ->orWhereDate('fecha_inicio', '<=', $dia);
+            })
+            ->where(function ($q) use ($dia): void {
+                $q->whereNull('fecha_fin')
+                    ->orWhereDate('fecha_fin', '>=', $dia);
+            });
+    }
+
+    public function scopeVisibleEnPerfilTurista(Builder $query, ?Carbon $fecha = null): Builder
+    {
+        self::applyVisibilidadPerfilTurista($query, $fecha);
+
+        return $query;
+    }
+
+    public function estaVisibleEnPerfilTurista(?Carbon $fecha = null): bool
+    {
+        if ($this->estado !== self::ESTADO_ACTIVA) {
+            return false;
+        }
+
+        return self::fechasPermitenVisibilidadPublica(
+            $this->fecha_inicio?->toDateString(),
+            $this->fecha_fin?->toDateString(),
+            $fecha,
+        );
+    }
+
+    /**
+     * @param  string|null  $fechaInicio  Formato Y-m-d
+     * @param  string|null  $fechaFin  Formato Y-m-d
+     */
+    public static function fechasPermitenVisibilidadPublica(
+        ?string $fechaInicio,
+        ?string $fechaFin,
+        ?Carbon $fecha = null,
+    ): bool {
+        $hoy = ($fecha ?? now())->copy()->startOfDay();
+
+        if ($fechaInicio) {
+            $inicio = Carbon::parse($fechaInicio)->startOfDay();
+            if ($inicio->gt($hoy)) {
+                return false;
+            }
+        }
+
+        if ($fechaFin) {
+            $fin = Carbon::parse($fechaFin)->startOfDay();
+            if ($fin->lt($hoy)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
+

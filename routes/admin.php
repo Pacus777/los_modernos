@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\DonacionController;
 use App\Http\Controllers\Admin\EmprendedorController;
-use App\Http\Controllers\Admin\TransaccionController;
 use App\Http\Controllers\Admin\ReporteController;
 use App\Http\Controllers\Admin\PuntoController;
 
@@ -24,6 +23,8 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::redirect('/', '/admin/dashboard');
+
         Route::get('/dashboard', [ReporteController::class, 'impacto'])
             ->name('dashboard');
 
@@ -49,16 +50,28 @@ Route::middleware(['auth', 'verified', 'check.role:admin'])
                 'emprendedores' => 'emprendedor',
             ]);
 
+        Route::post('emprendedores/{emprendedor}/generar-qr', [EmprendedorController::class, 'generarQr'])
+            ->name('emprendedores.generar-qr');
+
         Route::resource('campanas', CampanaController::class)
             ->parameters([
                 'campanas' => 'campana',
             ]);
 
-        Route::get('transacciones', [TransaccionController::class, 'index'])
-            ->name('transacciones.index');
+        /*
+        | T-A20: la vista de trazabilidad no está en el menú del admin común.
+        | El registro interno sigue en TraceabilityService. Cuando exista rol
+        | superadmin, publicar aquí con check.role:superadmin:
+        |
+        | Route::get('transacciones', [\App\Http\Controllers\Admin\TransaccionController::class, 'index'])
+        |     ->name('transacciones.index');
+        */
 
         Route::get('donaciones', [DonacionController::class, 'index'])
             ->name('donaciones.index');
+
+        Route::patch('donaciones/revision-masiva', [DonacionController::class, 'revisionMasiva'])
+            ->name('donaciones.revision-masiva');
 
         Route::patch('donaciones/{donacion}/validar', [DonacionController::class, 'validar'])
             ->name('donaciones.validar');

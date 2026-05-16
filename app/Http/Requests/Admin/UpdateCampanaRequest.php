@@ -2,12 +2,15 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Admin\Concerns\ValidaFechasCampana;
 use App\Models\Campana;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateCampanaRequest extends FormRequest
 {
+    use ValidaFechasCampana;
+
     public function authorize(): bool
     {
         return true;
@@ -27,8 +30,8 @@ class UpdateCampanaRequest extends FormRequest
             'emprendedor_id' => ['required', 'exists:emprendedores,id'],
             'titulo' => ['required', 'string', 'max:255'],
             'meta_apoyo' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
-            'fecha_inicio' => ['nullable', 'date'],
-            'fecha_fin' => ['nullable', 'date'],
+            'fecha_inicio' => ['required', 'date'],
+            'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'estado' => [
                 'required',
                 Rule::in([
@@ -43,21 +46,16 @@ class UpdateCampanaRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
-            $ini = $this->input('fecha_inicio');
-            $fin = $this->input('fecha_fin');
-            if ($ini && $fin && strtotime((string) $fin) < strtotime((string) $ini)) {
-                $validator->errors()->add(
-                    'fecha_fin',
-                    'La fecha de fin debe ser igual o posterior a la de inicio.'
-                );
-            }
+            /** @var Campana $campana */
+            $campana = $this->route('campana');
+
+            $this->validarRangoFechasCampana($validator);
+            $this->validarFechaInicioNoRetroactivaEnEdicion($validator, $campana);
+            $this->validarCampanaActivaVigente($validator);
 
             if ($this->input('estado') !== Campana::ESTADO_ACTIVA) {
                 return;
             }
-
-            /** @var Campana $campana */
-            $campana = $this->route('campana');
 
             $existe = Campana::query()
                 ->where('emprendedor_id', $this->input('emprendedor_id'))
@@ -82,6 +80,11 @@ class UpdateCampanaRequest extends FormRequest
             'meta_apoyo.required' => 'La meta de apoyo es obligatoria.',
             'meta_apoyo.min' => 'La meta debe ser mayor a cero.',
             'estado.in' => 'El estado de la campaña no es válido.',
+            'fecha_inicio.required' => 'La fecha de inicio es obligatoria.',
+            'fecha_inicio.date' => 'La fecha de inicio no es válida.',
+            'fecha_fin.required' => 'La fecha de fin es obligatoria.',
+            'fecha_fin.date' => 'La fecha de fin no es válida.',
+            'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la de inicio.',
         ];
     }
 }

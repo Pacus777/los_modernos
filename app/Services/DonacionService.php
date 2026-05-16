@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Donacion;
+use App\Support\ReferenciaPagoWayna;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use App\Models\Campana;
 use Illuminate\Validation\ValidationException;
 
@@ -42,8 +42,9 @@ class DonacionService
         */
 
         $resultado = DB::transaction(function () use ($data) {
-            $referenciaPago = $data['referencia_pago']
-                ?? 'WAYNA-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(5));
+            $referenciaPago = filled($data['referencia_pago'] ?? null)
+                ? trim((string) $data['referencia_pago'])
+                : ReferenciaPagoWayna::generar();
 
             $donacion = Donacion::create([
                 'campana_id' => $data['campana_id'],
@@ -92,18 +93,11 @@ class DonacionService
     }
 
     /**
- * Confirma una donación en efectivo pendiente.
- *
- * Este método centraliza la validación de efectivo para que admin y cajero
- * usen la misma lógica.
- *
- * Flujo:
- * 1. Verifica que la donación sea en efectivo.
- * 2. Verifica que siga pendiente.
- * 3. Cambia estado_pago a validado.
- * 4. Actualiza monto_recaudado de la campaña.
- * 5. Registra trazabilidad.
- */
+     * Confirma una donación en efectivo pendiente.
+     *
+     * Centraliza la validación de efectivo para admin y cajero. El monto
+     * recaudado de la campaña lo actualiza DonacionObserver al cambiar estado_pago.
+     */
     public function confirmarPagoEfectivo(Donacion $donacion, ?int $usuarioId = null): Donacion
     {
         return DB::transaction(function () use ($donacion, $usuarioId) {
@@ -158,43 +152,13 @@ class DonacionService
                 'estado_pago' => Donacion::ESTADO_VALIDADO,
             ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | 5. Actualizar monto recaudado de la campaña
-            |--------------------------------------------------------------------------
-            |
-            | Se suma el monto de la donación validada a la campaña.
-            |
-            */
-
-            
-
-            /*
-            |--------------------------------------------------------------------------
-            | 6. Registrar trazabilidad
-            |--------------------------------------------------------------------------
-            |
-            | Usamos el servicio ya existente para dejar evidencia del cambio.
-            |
-            */
-
             $this->traceabilityService->registrarRevisionDonacionPorCajero(
                 $donacion->fresh(),
                 $estadoAnterior,
                 Donacion::ESTADO_VALIDADO,
                 $usuarioId,
             );
-            /*
-            |--------------------------------------------------------------------------
-            | Actualización de monto recaudado
-            |--------------------------------------------------------------------------
-            |
-            | No incrementamos aquí monto_recaudado porque esa responsabilidad
-            | ya la tiene DonacionObserver cuando la donación cambia a validado.
-            |
-            | Esto evita duplicar el monto en la campaña.
-            |
-            */
+
             return $donacion->refresh();
         });
     }

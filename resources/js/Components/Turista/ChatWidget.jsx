@@ -1,3 +1,4 @@
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import { useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -73,18 +74,21 @@ export default function ChatWidget() {
     const respuesta = flash?.rag;
 
     return (
-        <div className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm sm:bottom-6 sm:right-6">
+        <div className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-50 w-[calc(100%-2rem)] max-w-sm sm:bottom-6 sm:right-6">
             {abierto && (
                 <div className="mb-3 overflow-hidden rounded-3xl border border-wayna-100 bg-white shadow-2xl">
                     <div className="border-b border-wayna-100 bg-wayna-50 px-5 py-4">
                         <div className="flex items-start justify-between gap-3">
-                            <div>
+                            <div className="flex items-start gap-3">
+                                <ApplicationLogo size="xs" tone="light" />
+                                <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-wayna-600">
                                     {t('chat.etiqueta', 'Asistente Wayna')}
                                 </p>
                                 <h3 className="mt-1 text-base font-black text-wayna-950">
                                     {t('chat.titulo', '¿Necesitas ayuda?')}
                                 </h3>
+                                </div>
                             </div>
 
                             <button
@@ -98,7 +102,7 @@ export default function ChatWidget() {
                         </div>
                     </div>
 
-                    <div className="max-h-[55vh] space-y-4 overflow-y-auto px-5 py-4">
+                    <div className="max-h-[min(55dvh,24rem)] space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
                         <div className="rounded-2xl bg-wayna-50 px-4 py-3 text-sm leading-relaxed text-stone-700">
                             {t(
                                 'chat.mensajeInicial',
@@ -171,7 +175,7 @@ export default function ChatWidget() {
                 <button
                     type="button"
                     onClick={() => setAbierto(true)}
-                    className="ml-auto flex items-center gap-2 rounded-full bg-wayna-700 px-5 py-3 text-sm font-black text-white shadow-xl transition hover:bg-wayna-800"
+                    className="touch-target ml-auto flex min-h-11 items-center gap-2 rounded-full bg-wayna-700 px-5 py-3 text-sm font-black text-white shadow-xl transition hover:bg-wayna-800"
                 >
                     <span className="flex h-2.5 w-2.5 rounded-full bg-white" />
                     {t('chat.botonAbrir', 'Ayuda')}

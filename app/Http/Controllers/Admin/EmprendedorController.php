@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Departamento;
+use App\Enums\TipoEmprendimiento;
 use App\Http\Controllers\Controller;
+use App\Models\Campana;
 use App\Models\Emprendedor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,8 +13,11 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\Admin\StoreEmprendedorRequest;
 use App\Http\Requests\Admin\UpdateEmprendedorRequest;
-use Illuminate\Support\Facades\Storage;
+use App\Services\EmprendedorMediosService;
+use App\Services\ImageStorageService;
 use App\Services\QrCodeService;
+use Illuminate\Support\Facades\Storage;
+
 class EmprendedorController extends Controller
 {
     /*
@@ -56,6 +62,9 @@ class EmprendedorController extends Controller
         */
 
         $emprendedores = Emprendedor::query()
+            ->with([
+                'campanas' => fn ($q) => $q->latest('id'),
+            ])
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -83,14 +92,20 @@ class EmprendedorController extends Controller
         return Inertia::render('Admin/Emprendedores/Form', [
             'modo' => 'crear',
             'emprendedor' => null,
+            'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
+            'departamentos' => Departamento::opcionesParaFormulario(),
         ]);
     }
 
     /**
      * Guarda un nuevo emprendedor en la base de datos.
      */
-    public function store(StoreEmprendedorRequest $request, QrCodeService $qrCodeService): RedirectResponse
-    {
+    public function store(
+        StoreEmprendedorRequest $request,
+        QrCodeService $qrCodeService,
+        ImageStorageService $imageStorageService,
+        EmprendedorMediosService $emprendedorMediosService,
+    ): RedirectResponse {
         /*
         |--------------------------------------------------------------------------
         | 1. Obtener datos validados
@@ -100,22 +115,23 @@ class EmprendedorController extends Controller
         |
         */
 
-        $data = $request->validated();
+        $data = $this->datosEmprendedorSinMedios($request);
 
         /*
         |--------------------------------------------------------------------------
         | 2. Guardar fotografía si fue enviada
         |--------------------------------------------------------------------------
         |
-        | La imagen se guarda en el disco public y en la base de datos
-        | se almacena solo la ruta relativa.
+        | JPG/PNG/WebP se optimizan a WebP (T-A11) en disco public.
+        | En la base de datos se guarda solo la ruta relativa.
         |
         */
 
         if ($request->hasFile('fotografia')) {
-            $data['fotografia'] = $request
-                ->file('fotografia')
-                ->store('emprendedores/fotografias', 'public');
+            $data['fotografia'] = $imageStorageService->storePublicImageAsWebp(
+                $request->file('fotografia'),
+                'emprendedores/fotografias',
+            );
         }
 
         /*
@@ -129,6 +145,8 @@ class EmprendedorController extends Controller
         */
 
         $emprendedor = Emprendedor::create($data);
+
+        $emprendedorMediosService->sincronizarDesdeRequest($emprendedor, $request);
 
         /*
         |--------------------------------------------------------------------------
@@ -179,17 +197,42 @@ class EmprendedorController extends Controller
         return Inertia::render('Admin/Emprendedores/Form', [
             'modo' => 'editar',
             'emprendedor' => $emprendedor,
+            'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
+            'departamentos' => Departamento::opcionesParaFormulario(),
         ]);
+    }
+
+    /**
+     * Genera el QR de perfil si el emprendedor aún no tiene uno (qr_url vacío).
+     */
+    public function generarQr(Emprendedor $emprendedor, QrCodeService $qrCodeService): RedirectResponse
+    {
+        if (filled($emprendedor->qr_url)) {
+            return redirect()
+                ->back()
+                ->with('error', 'Este emprendedor ya tiene un código QR. Usá «Ver QR» en el listado.');
+        }
+
+        $rutaQr = $qrCodeService->generarQrPerfil($emprendedor);
+
+        $emprendedor->update([
+            'qr_url' => $rutaQr,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Código QR de perfil generado correctamente.');
     }
 
     /**
      * Actualiza los datos de un emprendedor.
      */
-    /**
-     * Actualiza los datos de un emprendedor.
-     */
-    public function update(UpdateEmprendedorRequest $request, Emprendedor $emprendedor): RedirectResponse
-    {
+    public function update(
+        UpdateEmprendedorRequest $request,
+        Emprendedor $emprendedor,
+        ImageStorageService $imageStorageService,
+        EmprendedorMediosService $emprendedorMediosService,
+    ): RedirectResponse {
         /*
         |--------------------------------------------------------------------------
         | 1. Obtener datos validados
@@ -199,7 +242,7 @@ class EmprendedorController extends Controller
         |
         */
 
-        $data = $request->validated();
+        $data = $this->datosEmprendedorSinMedios($request);
 
         /*
         |--------------------------------------------------------------------------
@@ -216,9 +259,10 @@ class EmprendedorController extends Controller
                 Storage::disk('public')->delete($emprendedor->fotografia);
             }
 
-            $data['fotografia'] = $request
-                ->file('fotografia')
-                ->store('emprendedores/fotografias', 'public');
+            $data['fotografia'] = $imageStorageService->storePublicImageAsWebp(
+                $request->file('fotografia'),
+                'emprendedores/fotografias',
+            );
         }
 
         /*
@@ -232,9 +276,30 @@ class EmprendedorController extends Controller
 
         $emprendedor->update($data);
 
+        $emprendedorMediosService->sincronizarDesdeRequest($emprendedor->fresh(), $request);
+
         return redirect()
             ->route('admin.emprendedores.index')
             ->with('success', 'Emprendedor actualizado correctamente.');
+    }
+
+    /**
+     * Campos de texto/número del emprendedor, sin archivos ni metadatos de galería.
+     *
+     * @return array<string, mixed>
+     */
+    private function datosEmprendedorSinMedios(StoreEmprendedorRequest|UpdateEmprendedorRequest $request): array
+    {
+        return collect($request->validated())->except([
+            'fotografia',
+            'foto_empresa',
+            'galeria',
+            'galeria_nuevas',
+            'galeria_conservar',
+            'video',
+            'video_enlace',
+            'quitar_video',
+        ])->all();
     }
 
     /**
