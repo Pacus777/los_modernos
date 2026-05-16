@@ -45,7 +45,7 @@ function IconoPersonas({ className }) {
 /**
  * Listado tabla + vista QR tipo tarjeta debajo al pulsar «Ver QR».
  */
-export default function Index({ emprendedores }) {
+export default function Index({ emprendedores, topDonacionesEmprendedores = [] }) {
     const { flash } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const [detalle, setDetalle] = useState({ open: false, emprendedor: null });
@@ -130,6 +130,18 @@ export default function Index({ emprendedores }) {
             : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200';
 
     const totalLista = emprendedores?.data?.length ?? 0;
+    const hayTopDonaciones = topDonacionesEmprendedores.length > 0;
+
+    const formatearMonto = (monto) =>
+        new Intl.NumberFormat('es-BO', {
+            style: 'currency',
+            currency: 'BOB',
+            minimumFractionDigits: 2,
+        }).format(Number(monto || 0));
+
+    const obtenerEtiquetaRanking = (index) => `Top ${index + 1}`;
+
+
 
     return (
         <AdminLayout
@@ -166,7 +178,99 @@ export default function Index({ emprendedores }) {
                 <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <AdminFlashSuccess message={flash?.success} />
 
-                    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-wayna-200/80 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm">
+                        <div className="mb-6 rounded-3xl border border-wayna-200/80 bg-white/95 p-4 shadow-sm backdrop-blur-sm sm:p-5">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-wayna-600">
+                                        Informe de donaciones
+                                    </p>
+                                    <h3 className="mt-1 text-lg font-black text-wayna-950">
+                                        Top de emprendedores con mejores donaciones
+                                    </h3>
+                                    <p className="mt-1 max-w-2xl text-sm text-stone-600">
+                                        Ranking calculado con donaciones validadas para identificar qué
+                                        emprendedores reciben mayor apoyo económico.
+                                    </p>
+                                </div>
+
+                                <span className="inline-flex self-start rounded-full bg-wayna-50 px-3 py-1 text-xs font-bold text-wayna-800 ring-1 ring-wayna-200 sm:self-auto">
+                                    {topDonacionesEmprendedores.length || 0} destacados
+                                </span>
+                            </div>
+
+                            {hayTopDonaciones ? (
+                                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+                                    {topDonacionesEmprendedores.map((emprendedor, index) => (
+                                        <button
+                                            key={emprendedor.id}
+                                            type="button"
+                                            onClick={() => abrirDetalle(emprendedor)}
+                                            className={`rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+                                                index === 0
+                                                    ? 'border-wayna-300 bg-gradient-to-br from-wayna-50 to-white'
+                                                    : 'border-wayna-100 bg-white'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between gap-3">
+                                                <span className="rounded-full bg-wayna-700 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-white">
+                                                    {obtenerEtiquetaRanking(index)}
+                                                </span>
+
+                                                <span className="text-[11px] font-bold text-stone-500">
+                                                    {emprendedor.total_donaciones}{' '}
+                                                    {emprendedor.total_donaciones === 1
+                                                        ? 'donación'
+                                                        : 'donaciones'}
+                                                </span>
+                                            </div>
+
+                                            <div className="mt-4 flex items-center gap-3">
+                                                {obtenerUrlFotografia(emprendedor.fotografia) ? (
+                                                    <img
+                                                        src={obtenerUrlFotografia(emprendedor.fotografia)}
+                                                        alt=""
+                                                        className="h-11 w-11 rounded-2xl object-cover ring-2 ring-wayna-100"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-wayna-100 text-sm font-black text-wayna-700 ring-2 ring-wayna-100">
+                                                        {emprendedor.nombre?.charAt(0)}
+                                                    </div>
+                                                )}
+
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-black text-wayna-950">
+                                                        {emprendedor.nombre} {emprendedor.apellidos}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs text-stone-500">
+                                                        Total recaudado
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <p className="mt-4 text-2xl font-black tracking-tight text-wayna-900">
+                                                {formatearMonto(emprendedor.total_donado)}
+                                            </p>
+
+                                            <p className="mt-1 text-[11px] text-stone-500">
+                                                Clic para ver ficha
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="mt-4 rounded-2xl border border-dashed border-wayna-200 bg-wayna-50/60 px-5 py-8 text-center">
+                                    <p className="text-sm font-bold text-wayna-950">
+                                        Aún no hay donaciones validadas.
+                                    </p>
+                                    <p className="mt-1 text-sm text-stone-600">
+                                        Cuando existan aportes aprobados, aquí aparecerá el ranking de
+                                        emprendedores con mayor recaudación.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-wayna-200/80 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm">
                         <div className="flex items-center gap-2 text-sm text-stone-600">
                             <IconoPersonas className="h-5 w-5 text-wayna-600" />
                             <span>
@@ -310,8 +414,8 @@ export default function Index({ emprendedores }) {
                                                         panelQrEmprendedorId === emprendedor.id
                                                             ? 'text-wayna-800 decoration-wayna-500'
                                                             : emprendedor.qr_url
-                                                              ? 'text-wayna-600 decoration-wayna-300 hover:text-wayna-800'
-                                                              : 'text-amber-700 decoration-amber-300 hover:text-amber-900'
+                                                            ? 'text-wayna-600 decoration-wayna-300 hover:text-wayna-800'
+                                                            : 'text-amber-700 decoration-amber-300 hover:text-amber-900'
                                                     }`}
                                                 >
                                                     {panelQrEmprendedorId === emprendedor.id
