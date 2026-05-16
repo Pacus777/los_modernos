@@ -28,7 +28,18 @@ class LibreTranslationService
             return $texto;
         }
 
-        $hash = Traduccion::hashTexto($texto);
+        $traduccionGlosario = $this->traducirDesdeGlosario($texto, $idiomaDestino);
+
+        if ($traduccionGlosario !== null) {
+            return $traduccionGlosario;
+        }
+
+        $textoParaTraducir = $this->normalizarTextoAntesDeTraducir(
+            texto: $texto,
+            idiomaOrigen: $idiomaOrigen,
+        );
+
+        $hash = Traduccion::hashTexto($textoParaTraducir);
 
         $traduccionExistente = Traduccion::query()
             ->where('entidad_tipo', $entidadTipo)
@@ -49,7 +60,7 @@ class LibreTranslationService
 
         try {
             $textoTraducido = $this->traducirConLibreTranslate(
-                texto: $texto,
+                texto: $textoParaTraducir,
                 idiomaDestino: $idiomaDestino,
                 idiomaOrigen: $idiomaOrigen,
             );
@@ -65,7 +76,7 @@ class LibreTranslationService
                 'idioma_origen' => $idiomaOrigen,
                 'idioma_destino' => $idiomaDestino,
                 'texto_original_hash' => $hash,
-                'texto_original' => $texto,
+                'texto_original' => $textoParaTraducir,
                 'texto_traducido' => $textoTraducido,
                 'proveedor' => 'libretranslate',
             ]);
@@ -98,6 +109,36 @@ class LibreTranslationService
             idiomaDestino: $idiomaDestino,
             idiomaOrigen: $idiomaOrigen,
         );
+    }
+
+    private function traducirDesdeGlosario(string $texto, string $idiomaDestino): ?string
+    {
+        $textoLimpio = trim($texto);
+
+        if ($textoLimpio === '') {
+            return '';
+        }
+
+        $glosario = config("traducciones.glosario.$idiomaDestino", []);
+
+        if (array_key_exists($textoLimpio, $glosario)) {
+            return $glosario[$textoLimpio];
+        }
+
+        return null;
+    }
+
+    private function normalizarTextoAntesDeTraducir(string $texto, string $idiomaOrigen): string
+    {
+        $textoNormalizado = trim($texto);
+
+        $normalizaciones = config("traducciones.normalizaciones.$idiomaOrigen", []);
+
+        foreach ($normalizaciones as $buscar => $reemplazar) {
+            $textoNormalizado = str_replace($buscar, $reemplazar, $textoNormalizado);
+        }
+
+        return $textoNormalizado;
     }
 
     private function traducirConLibreTranslate(

@@ -28,7 +28,15 @@ class GoogleTranslationService
             return $texto;
         }
 
-        $hash = Traduccion::hashTexto($texto);
+        $traduccionGlosario = $this->traducirDesdeGlosario($texto, $idiomaDestino);
+
+        if ($traduccionGlosario !== null) {
+            return $traduccionGlosario;
+        }
+
+        $textoParaTraducir = $this->normalizarTextoAntesDeTraducir($texto, $idiomaOrigen);
+
+        $hash = Traduccion::hashTexto($textoParaTraducir);
 
         $traduccionExistente = Traduccion::query()
             ->where('entidad_tipo', $entidadTipo)
@@ -65,7 +73,7 @@ class GoogleTranslationService
                 'idioma_origen' => $idiomaOrigen,
                 'idioma_destino' => $idiomaDestino,
                 'texto_original_hash' => $hash,
-                'texto_original' => $texto,
+                'texto_original' => $textoParaTraducir,
                 'texto_traducido' => $textoTraducido,
                 'proveedor' => 'google',
             ]);
