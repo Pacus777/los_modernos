@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Turista;
 
-
+use App\Services\TipoCambioService;
 use App\Services\LibreTranslationService;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
@@ -27,7 +27,7 @@ class EmprendedorPublicoController extends Controller
      * - progreso (T-29 / PB-09): meta, monto acumulado por donaciones validadas y porcentaje
      *   calculados en servidor; el frontend solo muestra props.
      */
-    public function show(Request $request, int $id, LibreTranslationService $translator): Response
+    public function show(Request $request, int $id, LibreTranslationService $translator, TipoCambioService $tipoCambioService): Response
     {
         $locale = $this->obtenerLocaleTurista($request);
 
@@ -100,6 +100,7 @@ class EmprendedorPublicoController extends Controller
                 'foto_portada' => $emprendedor->urlFotoPerfil(),
                 'qr_url' => $emprendedor->qr_url,
                 'estado' => $emprendedor->estado,
+                'tipoCambio' => $tipoCambioService->obtenerUsdBobReferencial(),
             ],
 
             'medios' => [
