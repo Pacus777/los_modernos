@@ -9,14 +9,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
      */
-    public function create(): Response
+    public function create(): InertiaResponse
     {
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
@@ -61,7 +62,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): HttpFoundationResponse
     {
         Auth::guard('web')->logout();
 
@@ -69,8 +70,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()
-            ->route('login')
-            ->with('status', __('auth.logged_out'));
+        $loginUrl = route('login');
+
+        if ($request->inertia()) {
+            return Inertia::location($loginUrl);
+        }
+
+        return redirect($loginUrl)->with('status', __('auth.logged_out'));
     }
 }

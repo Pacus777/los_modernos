@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Rol;
 use App\Models\User;
+use App\Models\UserRol;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,8 +28,33 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('login'));
+        $this->assertGuest();
+    }
+
+    public function test_remember_me_guarda_token_y_mantiene_sesion(): void
+    {
+        $rol = Rol::query()->create(['nombre' => 'admin']);
+        $user = User::factory()->create();
+        UserRol::query()->create([
+            'user_id' => $user->id,
+            'role_id' => $rol->id,
+        ]);
+
+        $user->forceFill(['remember_token' => null])->save();
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+            'remember_me' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard', absolute: false));
+        $this->assertAuthenticatedAs($user);
+
+        $user->refresh();
+        $this->assertNotNull($user->remember_token);
+        $this->assertNotSame('', $user->remember_token);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

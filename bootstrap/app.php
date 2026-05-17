@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'check.role' => CheckRole::class,
+            'nocache' => \App\Http\Middleware\PreventSensitivePageCache::class,
+            'guest.redirect' => \App\Http\Middleware\RedirectAuthenticatedFromGuest::class,
         ]);
 
         //

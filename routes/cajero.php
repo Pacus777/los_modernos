@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth', 'verified', 'check.role:admin,cajero'])
+Route::middleware(['auth', 'verified', 'check.role:admin,cajero', 'nocache'])
     ->prefix('cajero')
     ->name('cajero.')
     ->group(function () {

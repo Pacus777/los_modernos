@@ -6,6 +6,8 @@ import {
     IconPuntos,
 } from '@/Components/Admin/AdminNavIcons';
 import { WaynaBrand } from '@/Components/ApplicationLogo';
+import LogoutButton from '@/Components/LogoutButton';
+import { useReloadOnHistoryRestore } from '@/hooks/useReloadOnHistoryRestore';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminRealtimeNotifications from '@/Components/Admin/AdminRealtimeNotifications';
@@ -83,6 +85,8 @@ export default function AdminLayout({ header, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+    useReloadOnHistoryRestore();
+
     const closeMobile = () => {
         setSidebarOpen(false);
         setUserMenuOpen(false);
@@ -125,15 +129,12 @@ export default function AdminLayout({ header, children }) {
                             >
                                 Perfil
                             </Link>
-                            <Link
-                                href={route('logout')}
-                                method="post"
-                                as="button"
+                            <LogoutButton
                                 className="w-full border-t border-wayna-700/60 px-3 py-2.5 text-left text-sm text-white/95 transition hover:bg-wayna-700"
                                 onClick={closeMobile}
                             >
                                 Cerrar sesión
-                            </Link>
+                            </LogoutButton>
                         </div>
                     )}
                     <button

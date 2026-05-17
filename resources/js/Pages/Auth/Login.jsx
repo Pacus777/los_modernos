@@ -13,7 +13,7 @@ export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
-        remember: false,
+        remember_me: false,
     });
 
     const submit = (e) => {
@@ -72,9 +72,10 @@ export default function Login({ status, canResetPassword }) {
 
                 <label className="flex cursor-pointer items-center gap-2">
                     <Checkbox
-                        name="remember"
-                        checked={data.remember}
-                        onChange={(e) => setData('remember', e.target.checked)}
+                        id="remember_me"
+                        name="remember_me"
+                        checked={data.remember_me}
+                        onChange={(e) => setData('remember_me', e.target.checked)}
                     />
                     <span className="text-sm text-stone-600">{t('auth.remember')}</span>
                 </label>

@@ -1,11 +1,16 @@
 import AuthLoginVisual from '@/Components/Auth/AuthLoginVisual';
 import LanguageSelector from '@/Components/LanguageSelector';
 import WaynaNavBar from '@/Components/WaynaNavBar';
+import { useReloadOnHistoryRestore } from '@/hooks/useReloadOnHistoryRestore';
+import { useSecureGuestHistory } from '@/hooks/useSecureGuestHistory';
 
 /**
  * Login estilo split con ondas — formulario a la izquierda, visual Wayna a la derecha.
  */
 export default function AuthLoginLayout({ children, navHref = '/' }) {
+    useReloadOnHistoryRestore();
+    useSecureGuestHistory();
+
     return (
         <div className="auth-login-split flex min-h-screen flex-col bg-surface antialiased">
             <WaynaNavBar href={navHref} sticky>
