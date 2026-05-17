@@ -340,12 +340,45 @@
     background: rgb(240 126 38 / 0.45);
 }
 
-.landing-steps-track {
-    scrollbar-width: none;
+/* Selector de idioma turista */
+.language-select {
+    cursor: pointer;
+    appearance: none;
+    border-radius: 9999px;
+    border: 1px solid rgb(240 126 38 / 0.35);
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c45c18' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.55rem center;
+    padding: 0.4rem 1.75rem 0.4rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #9a4512;
 }
 
-.landing-steps-track::-webkit-scrollbar {
-    display: none;
+.language-select--on-brand {
+    border-color: rgb(255 255 255 / 0.45);
+    background-color: rgb(255 255 255 / 0.15);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    color: #fff;
+}
+
+.language-select:focus-visible {
+    outline: 2px solid #f07e26;
+    outline-offset: 2px;
+}
+
+.language-select--on-brand:focus-visible {
+    outline-color: #fff;
+}
+
+@media (min-width: 640px) {
+    .language-select {
+        padding-right: 2rem;
+        padding-left: 0.75rem;
+        font-size: 0.8125rem;
+    }
 }
 
 /* Perfil turista — layout tipo Instagram */

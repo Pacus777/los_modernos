@@ -4,7 +4,6 @@ import DonacionForm from '@/Components/Turista/DonacionForm';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import PerfilCabeceraInsta from '@/Components/Turista/PerfilCabeceraInsta';
 import PerfilGaleriaGrid from '@/Components/Turista/PerfilGaleriaGrid';
-import ChatWidget from '@/Components/Turista/ChatWidget';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +27,12 @@ export default function Perfil({
 
     return (
         <WaynaEnterTransition variant="navigate">
-        <GuestLayout variant="full" navHref="/" contentClassName="max-w-lg sm:max-w-xl lg:max-w-2xl">
+        <GuestLayout
+            variant="full"
+            navHref="/"
+            contentClassName="max-w-lg sm:max-w-xl lg:max-w-2xl"
+            chatContextEmprendedorId={emprendedor.id}
+        >
             <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
 
             <p className="mb-3">
@@ -102,7 +106,6 @@ export default function Perfil({
                 )}
             </section>
 
-            <ChatWidget />
         </GuestLayout>
         </WaynaEnterTransition>
     );

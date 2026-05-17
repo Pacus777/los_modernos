@@ -331,10 +331,10 @@
     "etiqueta": "Wayna assistant",
     "titulo": "Need help?",
     "cerrar": "Close chat",
-    "mensajeInicial": "Ask me how to explore entrepreneurs, how to donate, what cash payment means, or how to find a Wayna location.",
+    "mensajeInicial": "Ask me how to donate, payment methods, or about an entrepreneur. For example: «I saw Jaime's product, I want to donate».",
     "sinRespuestaAun": "Type a question to get a quick answer.",
     "pregunta": "Question",
-    "placeholder": "Example: How do I find an entrepreneur?",
+    "placeholder": "E.g. I saw Jaime's product, I want to donate",
     "enviando": "Sending...",
     "enviar": "Send question",
     "botonAbrir": "Help"

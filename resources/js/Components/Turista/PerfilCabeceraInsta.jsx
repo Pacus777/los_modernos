@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 function StatColumn({ value, label, icon }) {
     return (
         <div className="flex flex-1 flex-col items-center text-center">
-            <span className="text-lg font-black tabular-nums text-stone-900 sm:text-xl">{value}</span>
+            <span className="text-sm font-black tabular-nums text-stone-900 sm:text-lg md:text-xl">
+                {value}
+            </span>
             <span className="mt-0.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-stone-500">
                 {icon}
                 <span className="sr-only">{label}</span>
@@ -112,8 +114,8 @@ export default function PerfilCabeceraInsta({
 
     return (
         <header className="px-4 pb-4 pt-5 sm:px-5">
-            <div className="flex items-center gap-4 sm:gap-6">
-                <div className="perfil-ig-avatar shrink-0">
+            <div className="flex flex-col gap-4 min-[400px]:flex-row min-[400px]:items-center sm:gap-6">
+                <div className="perfil-ig-avatar mx-auto shrink-0 min-[400px]:mx-0">
                     {fotoUrl ? (
                         <img src={fotoUrl} alt="" className="h-full w-full object-cover" />
                     ) : (
@@ -123,7 +125,7 @@ export default function PerfilCabeceraInsta({
                     )}
                 </div>
 
-                <div className="flex flex-1 justify-around gap-2">
+                <div className="flex w-full min-w-0 flex-1 justify-between gap-1 min-[400px]:justify-around min-[400px]:gap-2">
                     <StatColumn
                         value={totalMedios}
                         label={t('tourist.profile.statPosts')}

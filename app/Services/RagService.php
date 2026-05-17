@@ -7,35 +7,30 @@ use Illuminate\Support\Str;
 
 class RagService
 {
-    /*
-    |--------------------------------------------------------------------------
-    | RagService
-    |--------------------------------------------------------------------------
-    |
-    | Este servicio implementa una búsqueda simple por palabras clave.
-    | No usa OpenAI todavía. Eso queda para post-MVP.
-    |
-    | Flujo:
-    | - recibe una pregunta
-    | - lee resources/data/rag/knowledge-base.json
-    | - compara palabras de la pregunta con keywords/questions del JSON
-    | - devuelve la mejor respuesta en español o inglés
-    |
-    */
-
     private string $knowledgeBasePath;
 
-    public function __construct()
-    {
+    public function __construct(
+        private ChatEntityResolver $entityResolver,
+    ) {
         $this->knowledgeBasePath = resource_path('data/rag/knowledge-base.json');
     }
 
     /**
      * Busca la respuesta más parecida a la pregunta del turista.
      */
-    public function responder(string $pregunta, string $idioma = 'es'): array
+    public function responder(string $pregunta, string $idioma = 'es', ?int $contextEmprendedorId = null): array
     {
         $idioma = $this->normalizarIdioma($idioma);
+
+        $resolucionEntidad = $this->entityResolver->intentarResolver(
+            $pregunta,
+            $idioma,
+            $contextEmprendedorId,
+        );
+
+        if ($resolucionEntidad !== null) {
+            return $resolucionEntidad;
+        }
 
         $base = $this->cargarBaseConocimiento();
 
@@ -96,7 +91,40 @@ class RagService
             'category' => $mejorItem['category'] ?? null,
             'score' => $mejorPuntaje,
             'language' => $idioma,
+            'actions' => $this->accionesDesdeIntent($mejorItem, $idioma),
         ];
+    }
+
+    /**
+     * Acciones sugeridas según la intención del conocimiento estático.
+     *
+     * @return list<array{label: string, href: string, variant: string}>
+     */
+    private function accionesDesdeIntent(array $item, string $idioma): array
+    {
+        $intent = $item['intent'] ?? '';
+
+        if (in_array($intent, ['como_donar', 'metodos_disponibles', 'pago_efectivo', 'pago_qr_bancario'], true)) {
+            return [
+                [
+                    'label' => trans('chat.actions.explore', [], $idioma),
+                    'href' => url('/#explorar'),
+                    'variant' => 'primary',
+                ],
+            ];
+        }
+
+        if (in_array($intent, ['explorar_emprendedores', 'encontrar_punto'], true)) {
+            return [
+                [
+                    'label' => trans('chat.actions.explore', [], $idioma),
+                    'href' => url('/#explorar'),
+                    'variant' => 'primary',
+                ],
+            ];
+        }
+
+        return [];
     }
 
     /**
@@ -194,6 +222,13 @@ class RagService
             'category' => 'fallback',
             'score' => 0,
             'language' => $idioma,
+            'actions' => [
+                [
+                    'label' => trans('chat.actions.explore', [], $idioma),
+                    'href' => url('/#explorar'),
+                    'variant' => 'secondary',
+                ],
+            ],
         ];
     }
 

@@ -1,3 +1,4 @@
+import { consumeWaynaEnterSkip } from '@/utils/waynaEnterSkip';
 import { useEffect, useRef, useState } from 'react';
 import { WAYNA_ENTER_PRESETS, prefersReducedMotion } from '@/hooks/useWaynaEnterPresets';
 
@@ -16,7 +17,7 @@ export function useWaynaEnterAnimation(variant = 'navigate', { enabled = true, o
             return undefined;
         }
 
-        if (prefersReducedMotion()) {
+        if (prefersReducedMotion() || consumeWaynaEnterSkip()) {
             setStage('ready');
             onCompleteRef.current?.();
             return undefined;

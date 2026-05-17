@@ -14,7 +14,7 @@ export default function AuthLoginLayout({ children, navHref = '/' }) {
     return (
         <div className="auth-login-split flex min-h-screen flex-col bg-surface antialiased">
             <WaynaNavBar href={navHref} sticky>
-                <LanguageSelector variant="on-brand" />
+                <LanguageSelector variant="on-brand" compact />
             </WaynaNavBar>
 
             <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">

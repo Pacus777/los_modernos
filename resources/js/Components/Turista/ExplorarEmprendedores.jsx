@@ -59,7 +59,7 @@ export default function ExplorarEmprendedores({
                     onSubmit={enviarBusqueda}
                     className="mt-8 rounded-3xl border border-wayna-100 bg-white p-4 shadow-lg shadow-wayna-900/5 sm:p-5"
                 >
-                    <div className="grid gap-3 lg:grid-cols-12 lg:items-end">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:items-end">
                         <div className="lg:col-span-4">
                             <label htmlFor="explorar-q" className="text-xs font-bold uppercase text-wayna-700">
                                 {t('explore.searchLabel')}
@@ -133,8 +133,8 @@ export default function ExplorarEmprendedores({
                             </select>
                         </div>
 
-                        <div className="flex gap-2 lg:col-span-1">
-                            <button type="submit" className="btn-wayna-primary w-full !px-3">
+                        <div className="sm:col-span-2 lg:col-span-1">
+                            <button type="submit" className="btn-wayna-primary touch-target w-full !px-3">
                                 {t('explore.searchButton')}
                             </button>
                         </div>

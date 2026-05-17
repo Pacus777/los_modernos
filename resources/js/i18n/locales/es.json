@@ -331,10 +331,10 @@
     "etiqueta": "Asistente Wayna",
     "titulo": "¿Necesitas ayuda?",
     "cerrar": "Cerrar chat",
-    "mensajeInicial": "Preguntame cómo explorar emprendedores, cómo donar, qué es el pago en efectivo o cómo encontrar un punto Wayna.",
+    "mensajeInicial": "Preguntame cómo donar, por métodos de pago o por un emprendedor. Por ejemplo: «Vi el producto de Jaime, quiero donarle».",
     "sinRespuestaAun": "Escribí una pregunta para recibir una respuesta rápida.",
     "pregunta": "Pregunta",
-    "placeholder": "Ejemplo: ¿Cómo encuentro un emprendedor?",
+    "placeholder": "Ej.: Vi el producto de Jaime, quiero donarle",
     "enviando": "Enviando...",
     "enviar": "Enviar pregunta",
     "botonAbrir": "Ayuda"

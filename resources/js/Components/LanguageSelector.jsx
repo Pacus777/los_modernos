@@ -6,8 +6,9 @@ import { fallbackLanguage, idiomasDisponibles, idiomaEstaSoportado } from '@/i18
 
 /**
  * @param {'default'|'on-brand'} variant — on-brand: sobre barra naranja #f07e26
+ * @param {boolean} compact — solo idiomas activos; en móvil usa lista desplegable
  */
-export default function LanguageSelector({ variant = 'default' }) {
+export default function LanguageSelector({ variant = 'default', compact = false }) {
     const { t } = useTranslation();
     const { props } = usePage();
     const [processing, setProcessing] = useState(false);
@@ -16,9 +17,17 @@ export default function LanguageSelector({ variant = 'default' }) {
         ? props.locale
         : fallbackLanguage;
 
+    const lista = compact
+        ? idiomasDisponibles.filter((idioma) => idioma.enabled)
+        : idiomasDisponibles;
+
     const changeLanguage = (locale) => {
-        if (!idiomaEstaSoportado(locale)) return;
-        if (locale === currentLocale || processing) return;
+        if (!idiomaEstaSoportado(locale)) {
+            return;
+        }
+        if (locale === currentLocale || processing) {
+            return;
+        }
 
         setProcessing(true);
 
@@ -54,9 +63,42 @@ export default function LanguageSelector({ variant = 'default' }) {
             : 'border-wayna-200 bg-surface-card text-wayna-800 hover:border-wayna-300 hover:bg-wayna-50';
     };
 
+    const selectClass =
+        variant === 'on-brand'
+            ? 'language-select language-select--on-brand max-w-[5.5rem] sm:max-w-none'
+            : 'language-select max-w-[5.5rem] sm:max-w-none';
+
+    if (compact) {
+        return (
+            <div className="shrink-0">
+                <label className="sr-only" htmlFor="language-select">
+                    {t('common.language')}
+                </label>
+                <select
+                    id="language-select"
+                    value={currentLocale}
+                    disabled={processing}
+                    onChange={(e) => changeLanguage(e.target.value)}
+                    className={`${selectClass} ${processing ? 'opacity-60' : ''}`}
+                    aria-label={t('common.language')}
+                >
+                    {lista.map((idioma) => (
+                        <option key={idioma.code} value={idioma.code}>
+                            {idioma.flag} {idioma.shortLabel}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {idiomasDisponibles.map((idioma) => {
+        <div
+            className="flex max-w-full flex-wrap items-center justify-end gap-1 sm:gap-1.5"
+            role="group"
+            aria-label={t('common.language')}
+        >
+            {lista.map((idioma) => {
                 const active = currentLocale === idioma.code;
 
                 return (
@@ -71,14 +113,14 @@ export default function LanguageSelector({ variant = 'default' }) {
                                 ? idioma.label
                                 : t('language.comingSoon', { label: idioma.label })
                         }
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold transition sm:text-sm ${buttonClass(
+                        className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold transition sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-sm ${buttonClass(
                             active,
                             idioma.enabled,
                         )} ${processing ? 'opacity-60' : ''}`}
                     >
                         <span aria-hidden>{idioma.flag}</span>
-                        <span className="hidden sm:inline">{idioma.label}</span>
                         <span className="sm:hidden">{idioma.shortLabel}</span>
+                        <span className="hidden sm:inline">{idioma.label}</span>
                     </button>
                 );
             })}

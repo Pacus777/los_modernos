@@ -1,6 +1,7 @@
 import WaynaEnterOverlay from '@/Components/Wayna/WaynaEnterOverlay';
 import { useWaynaEnterAnimation } from '@/hooks/useWaynaEnterAnimation';
 import { prefersReducedMotion } from '@/hooks/useWaynaEnterPresets';
+import { consumeWaynaEnterSkip } from '@/utils/waynaEnterSkip';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 const WaynaSectionNavContext = createContext(null);
@@ -31,7 +32,7 @@ export function WaynaSectionNavProvider({ children }) {
         if (!id) {
             return;
         }
-        if (prefersReducedMotion()) {
+        if (prefersReducedMotion() || consumeWaynaEnterSkip()) {
             scrollToId(id);
             return;
         }

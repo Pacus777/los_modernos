@@ -1,6 +1,5 @@
 import WaynaEnterTransition from '@/Components/Wayna/WaynaEnterTransition';
 import GuestLayout from '@/Layouts/GuestLayout';
-import ChatWidget from '@/Components/Turista/ChatWidget';
 import { etiquetaDepartamentoT, etiquetaTipoEmprendimientoT } from '@/utils/catalogosI18n';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
@@ -154,7 +153,6 @@ export default function Punto({ punto, emprendedores = [] }) {
                 </div>
             </section>
 
-            <ChatWidget />
         </GuestLayout>
         </WaynaEnterTransition>
     );

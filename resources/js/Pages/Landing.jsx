@@ -9,7 +9,7 @@ import LandingStatsBar from '@/Components/Landing/LandingStatsBar';
 import LandingStepsCarousel from '@/Components/Landing/LandingStepsCarousel';
 import LandingTestimonialsCarousel from '@/Components/Landing/LandingTestimonialsCarousel';
 import ExplorarEmprendedores from '@/Components/Turista/ExplorarEmprendedores';
-import ChatWidget from '@/Components/Turista/ChatWidget';
+import ChatWidget, { ChatWidgetProvider } from '@/Components/Turista/ChatWidget';
 import LanguageSelector from '@/Components/LanguageSelector';
 import WaynaNavBar from '@/Components/WaynaNavBar';
 import { Head, Link } from '@inertiajs/react';
@@ -99,6 +99,7 @@ export default function Landing({
         <>
             <Head title={t('landing.headTitle')} />
 
+            <ChatWidgetProvider>
             <WaynaSectionNavProvider>
             <LandingEnterExperience>
             <div className="min-h-screen bg-surface text-stone-900">
@@ -118,7 +119,7 @@ export default function Landing({
                         </Link>
                     )}
 
-                    <LanguageSelector variant="on-brand" />
+                    <LanguageSelector variant="on-brand" compact />
                 </WaynaNavBar>
 
                 <LandingHeroCarousel />
@@ -292,6 +293,7 @@ export default function Landing({
             </div>
             </LandingEnterExperience>
             </WaynaSectionNavProvider>
+            </ChatWidgetProvider>
         </>
     );
 }
