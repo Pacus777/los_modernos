@@ -123,6 +123,7 @@ class EmprendedorPublicoController extends Controller
                 $emprendedor->instagram,
                 $emprendedor->facebook,
                 $emprendedor->tiktok,
+                $emprendedor->sitio_web,
             ),
 
             'campanaActiva' => $campanaActiva ? [

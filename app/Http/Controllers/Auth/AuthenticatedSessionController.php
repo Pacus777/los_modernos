@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\AuthRedirect;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +18,10 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): InertiaResponse
+    public function create(Request $request): InertiaResponse
     {
+        AuthRedirect::rememberIntendedFromQuery($request);
+
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
@@ -39,8 +42,7 @@ class AuthenticatedSessionController extends Controller
         $rol = $user->rol?->nombre;
 
         return match ($rol) {
-            'admin' => redirect()->intended(route('admin.dashboard')),
-            'cajero' => redirect()->intended(route('cajero.efectivo')),
+            'admin', 'cajero' => AuthRedirect::redirectAfterLogin($request),
             default => $this->logoutUserWithoutRole($request),
         };
     }

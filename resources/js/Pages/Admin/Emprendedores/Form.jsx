@@ -24,6 +24,18 @@ import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
+/** Muestra solo los 8 dígitos locales (sin +591) en el formulario admin. */
+function whatsappCelularLocal(valor) {
+    const digitos = String(valor ?? '').replace(/\D/g, '');
+    if (digitos.startsWith('591') && digitos.length >= 11) {
+        return digitos.slice(3, 11);
+    }
+    if (digitos.length === 8) {
+        return digitos;
+    }
+    return digitos.slice(0, 8);
+}
+
 function formatearBs(valor) {
     const n = Number(valor);
     if (Number.isNaN(n)) {
@@ -69,10 +81,11 @@ export default function Form({
                 ? emprendedor.video_url
                 : '',
         quitar_video: false,
-        whatsapp: emprendedor?.whatsapp || '',
+        whatsapp: whatsappCelularLocal(emprendedor?.whatsapp),
         instagram: emprendedor?.instagram || '',
         facebook: emprendedor?.facebook || '',
         tiktok: emprendedor?.tiktok || '',
+        sitio_web: emprendedor?.sitio_web || '',
     });
 
     const fotografiaActual = emprendedor?.fotografia

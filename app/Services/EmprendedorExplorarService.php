@@ -98,6 +98,7 @@ class EmprendedorExplorarService
             $emprendedor->instagram,
             $emprendedor->facebook,
             $emprendedor->tiktok,
+            $emprendedor->sitio_web,
         );
 
         $descripcion = $this->translator->traducirCampo(

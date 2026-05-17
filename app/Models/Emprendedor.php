@@ -54,6 +54,7 @@ class Emprendedor extends Model
         'instagram',
         'facebook',
         'tiktok',
+        'sitio_web',
         'qr_url',
         'estado',
         'meta_monto',

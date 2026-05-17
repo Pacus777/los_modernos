@@ -9,6 +9,11 @@ const ENLACES = [
         labelKey: 'tourist.profile.socialTikTok',
         className: 'bg-stone-900 hover:bg-black',
     },
+    {
+        key: 'sitio_web',
+        labelKey: 'tourist.profile.socialWebsite',
+        className: 'bg-wayna-800 hover:bg-wayna-900',
+    },
 ];
 
 export default function PerfilRedesSociales({ redes }) {

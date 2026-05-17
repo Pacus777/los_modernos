@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Turista\ExplorarController;
+use App\Support\AuthRedirect;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LocaleController;
@@ -19,8 +21,10 @@ Route::post('/idioma', [LocaleController::class, 'update'])
 
 Route::get('/', ExplorarController::class)->name('turista.explorar');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+Route::get('/dashboard', function (Request $request) {
+    return redirect()->to(
+        AuthRedirect::homeRouteForRole($request->user()?->rol?->nombre),
+    );
 })->middleware(['auth', 'verified', 'nocache'])->name('dashboard');
 
 Route::middleware(['auth', 'nocache'])->group(function () {
