@@ -46,7 +46,7 @@ function StatItem({ label, value, active, suffix = '' }) {
     );
 }
 
-export default function LandingStatsBar({ stats = {} }) {
+export default function LandingStatsBar({ stats = {}, className = '' }) {
     const { t } = useTranslation();
     const { ref, visible } = useScrollReveal({ threshold: 0.2 });
 
@@ -56,7 +56,10 @@ export default function LandingStatsBar({ stats = {} }) {
     ];
 
     return (
-        <section ref={ref} className="relative z-10 -mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section
+            ref={ref}
+            className={`relative z-10 -mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ${className}`.trim()}
+        >
             <LandingScrollReveal>
                 <div className="mx-auto grid max-w-2xl gap-3 sm:grid-cols-2">
                     {items.map((item, i) => (

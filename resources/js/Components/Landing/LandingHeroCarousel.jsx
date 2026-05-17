@@ -43,7 +43,7 @@ export default function LandingHeroCarousel({ onExplore }) {
     return (
         <section
             id="inicio"
-            className="relative overflow-hidden border-b border-wayna-200/50 bg-wayna-600 text-white"
+            className="landing-enter-hero landing-enter-item landing-enter-item--2 relative overflow-hidden border-b border-wayna-200/50 bg-wayna-600 text-white"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onFocus={() => setPaused(true)}

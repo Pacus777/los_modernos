@@ -43,7 +43,7 @@ function GaleriaLightbox({ image, alt, onClose }) {
     );
 }
 
-export default function LandingGaleriaWayna() {
+export default function LandingGaleriaWayna({ className = '' }) {
     const { t } = useTranslation();
     const [lightbox, setLightbox] = useState(null);
     const { index, goTo, next, prev, setPaused } = useCarousel(LANDING_IMAGES.length, {
@@ -53,7 +53,10 @@ export default function LandingGaleriaWayna() {
     const featured = LANDING_IMAGES[index];
 
     return (
-        <section id="galeria" className="scroll-mt-20 border-b border-wayna-100 bg-white py-14 sm:py-20">
+        <section
+            id="galeria"
+            className={`scroll-mt-20 border-b border-wayna-100 bg-white py-14 sm:py-20 ${className}`.trim()}
+        >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <LandingScrollReveal>
                     <header className="max-w-2xl">

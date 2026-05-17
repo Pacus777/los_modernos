@@ -1,3 +1,4 @@
+import LandingEnterExperience from '@/Components/Landing/LandingEnterExperience';
 import LandingDestacadosCarousel from '@/Components/Landing/LandingDestacadosCarousel';
 import LandingGaleriaWayna from '@/Components/Landing/LandingGaleriaWayna';
 import LandingHeroCarousel from '@/Components/Landing/LandingHeroCarousel';
@@ -85,8 +86,9 @@ export default function Landing({
         <>
             <Head title={t('landing.headTitle')} />
 
+            <LandingEnterExperience>
             <div className="min-h-screen bg-surface text-stone-900">
-                <WaynaNavBar href="#inicio" sticky>
+                <WaynaNavBar href="#inicio" sticky className="landing-enter-item landing-enter-item--1">
                     <nav className="hidden items-center gap-1 md:flex" aria-label={t('landing.footer.navTitle')}>
                         {NAV_SECTIONS.map(({ id, key }) => (
                             <NavAnchor key={id} id={id} label={t(`landing.nav.${key}`)} />
@@ -107,9 +109,9 @@ export default function Landing({
 
                 <LandingHeroCarousel />
 
-                <LandingStatsBar stats={stats} />
+                <LandingStatsBar stats={stats} className="landing-enter-item landing-enter-item--3" />
 
-                <LandingGaleriaWayna />
+                <LandingGaleriaWayna className="landing-enter-item landing-enter-item--4" />
 
                 <LandingDestacadosCarousel destacados={destacados} />
 
@@ -278,6 +280,7 @@ export default function Landing({
 
                 <ChatWidget />
             </div>
+            </LandingEnterExperience>
         </>
     );
 }
