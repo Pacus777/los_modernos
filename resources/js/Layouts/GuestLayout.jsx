@@ -15,7 +15,7 @@ export default function GuestLayout({
     if (variant === 'full') {
         return (
             <div className="min-h-screen bg-surface antialiased">
-                <WaynaNavBar href={navHref}>
+                <WaynaNavBar href={navHref} sticky>
                     <LanguageSelector variant="on-brand" />
                 </WaynaNavBar>
 
@@ -30,7 +30,7 @@ export default function GuestLayout({
 
     return (
         <div className="flex min-h-screen flex-col bg-surface">
-            <WaynaNavBar href={navHref}>
+            <WaynaNavBar href={navHref} sticky>
                 <LanguageSelector variant="on-brand" />
             </WaynaNavBar>
 

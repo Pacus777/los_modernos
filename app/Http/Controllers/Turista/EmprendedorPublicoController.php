@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Turista;
 
 use App\Services\TipoCambioService;
 use App\Services\LibreTranslationService;
+use App\Services\VisitanteService;
 use App\Support\RedesSocialesEmprendedor;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
@@ -28,8 +29,13 @@ class EmprendedorPublicoController extends Controller
      * - progreso (T-29 / PB-09): meta, monto acumulado por donaciones validadas y porcentaje
      *   calculados en servidor; el frontend solo muestra props.
      */
-    public function show(Request $request, int $id, LibreTranslationService $translator, TipoCambioService $tipoCambioService): Response
-    {
+    public function show(
+        Request $request,
+        int $id,
+        LibreTranslationService $translator,
+        TipoCambioService $tipoCambioService,
+        VisitanteService $visitanteService,
+    ): Response {
         $locale = $this->obtenerLocaleTurista($request);
 
         $emprendedor = Emprendedor::query()
@@ -149,6 +155,8 @@ class EmprendedorPublicoController extends Controller
                 ->select('id', 'nombre', 'codigo')
                 ->orderBy('id')
                 ->get(),
+
+            'visitanteNombrePrefill' => $visitanteService->nombreEnSesion($request),
         ]);
     }
 

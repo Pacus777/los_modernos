@@ -4,7 +4,11 @@ import { useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
+export default function DonacionForm({
+    campanasActivas = [],
+    tipoPagos = [],
+    visitanteNombrePrefill = '',
+}) {
     const { t, i18n } = useTranslation();
     const tipoCambio = usePage().props.tipoCambio ?? { activo: false, usd_por_bs: 0 };
     const montosRapidos = [5, 10, 20, 50];
@@ -22,6 +26,7 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
         campana_id: primeraCampanaId,
         tipo_pago_id: tipoPagoInicial?.id ?? '',
         visitante_id: '',
+        visitante_nombre: visitanteNombrePrefill ?? '',
         monto: 10,
         metodo: tipoPagoInicial?.codigo ?? tipoPagoInicial?.nombre ?? 'qr_digital',
         referencia_pago: '',
@@ -118,6 +123,30 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
             <p className="mt-1 text-sm text-gray-500">
                 {t('tourist.donationForm.chooseSubtitle')}
             </p>
+
+            <div className="mt-4">
+                <label htmlFor="donacion-visitante-nombre" className="block text-sm font-medium text-gray-700">
+                    {t('tourist.donationForm.visitorNameLabel')}
+                    <span className="ml-1 font-normal text-gray-400">
+                        ({t('tourist.donationForm.optional')})
+                    </span>
+                </label>
+                <input
+                    id="donacion-visitante-nombre"
+                    type="text"
+                    maxLength={120}
+                    value={data.visitante_nombre}
+                    onChange={(e) => setData('visitante_nombre', e.target.value)}
+                    disabled={processing}
+                    autoComplete="name"
+                    className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                    placeholder={t('tourist.donationForm.visitorNamePlaceholder')}
+                />
+                <p className="mt-1.5 text-xs text-gray-500">{t('tourist.donationForm.visitorNameHint')}</p>
+                {errors.visitante_nombre && (
+                    <p className="mt-2 text-sm text-red-600">{errors.visitante_nombre}</p>
+                )}
+            </div>
 
             {listaCampanas.length === 0 && (
                 <div className="mt-4 rounded-xl bg-yellow-50 p-3 text-sm text-yellow-700">
@@ -295,3 +324,4 @@ export default function DonacionForm({ campanasActivas = [], tipoPagos = [] }) {
         </form>
     );
 }
+
