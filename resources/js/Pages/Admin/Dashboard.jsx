@@ -71,6 +71,68 @@ export default function Dashboard({
         });
     };
 
+
+    
+
+
+
+    const obtenerFechaLocal = (fecha) => {
+        const year = fecha.getFullYear();
+        const month = String(fecha.getMonth() + 1).padStart(2, '0');
+        const day = String(fecha.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const aplicarPeriodoRapido = (periodo) => {
+        const hoy = new Date();
+        let inicio = '';
+        let fin = obtenerFechaLocal(hoy);
+
+        if (periodo === 'hoy') {
+            inicio = obtenerFechaLocal(hoy);
+        }
+
+        if (periodo === 'semana') {
+            const primerDia = new Date(hoy);
+            primerDia.setDate(hoy.getDate() - 6);
+            inicio = obtenerFechaLocal(primerDia);
+        }
+
+        if (periodo === 'mes') {
+            const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+            inicio = obtenerFechaLocal(primerDia);
+        }
+
+        if (periodo === 'todo') {
+            setFechaInicio('');
+            setFechaFin('');
+            setProgresoAbierto(false);
+
+            router.get(
+                route('admin.dashboard'),
+                {},
+                { preserveState: true, preserveScroll: true, replace: true },
+            );
+
+            return;
+        }
+
+        setFechaInicio(inicio);
+        setFechaFin(fin);
+        setFiltrosAbiertos(true);
+
+        router.get(
+            route('admin.dashboard'),
+            {
+                fecha_inicio: inicio,
+                fecha_fin: fin,
+                ver_progreso: 1,
+            },
+            { preserveState: true, preserveScroll: true, replace: true },
+        );
+    };
+
     const solicitarProgresoCampanas = () => {
         router.get(
             route('admin.dashboard'),
@@ -227,34 +289,53 @@ export default function Dashboard({
                         )}
                     </div>
 
-                    <div className={adminListCardOuter}>
-                        <button
-                            type="button"
-                            onClick={() => setFiltrosAbiertos((v) => !v)}
-                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-wayna-50/50 sm:px-5"
-                            aria-expanded={filtrosAbiertos}
-                        >
+                    <div className={`${adminListCardOuter} p-4 sm:p-5`}>
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
                             <div>
                                 <p className="text-sm font-bold text-wayna-950">
                                     Filtrar por período
                                 </p>
-                                <p className="text-xs text-stone-600">
+                                <p className="mt-0.5 text-xs text-stone-600">
                                     {filtros?.fecha_inicio || filtros?.fecha_fin
                                         ? `${filtros.fecha_inicio || '…'} → ${filtros.fecha_fin || '…'}`
                                         : 'Sin filtro — métricas generales'}
                                 </p>
-                            </div>
-                            <span
-                                className={`shrink-0 text-wayna-700 transition ${filtrosAbiertos ? 'rotate-90' : ''}`}
-                            >
-                                <IconoFlecha className="h-5 w-5" />
-                            </span>
-                        </button>
 
-                        {filtrosAbiertos && (
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => aplicarPeriodoRapido('hoy')}
+                                        className="rounded-full border border-wayna-200 bg-white px-3 py-1.5 text-xs font-bold text-wayna-800 transition hover:bg-wayna-50"
+                                    >
+                                        Hoy
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => aplicarPeriodoRapido('semana')}
+                                        className="rounded-full border border-wayna-200 bg-white px-3 py-1.5 text-xs font-bold text-wayna-800 transition hover:bg-wayna-50"
+                                    >
+                                        Últimos 7 días
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => aplicarPeriodoRapido('mes')}
+                                        className="rounded-full border border-wayna-200 bg-white px-3 py-1.5 text-xs font-bold text-wayna-800 transition hover:bg-wayna-50"
+                                    >
+                                        Este mes
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => aplicarPeriodoRapido('todo')}
+                                        className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-700 transition hover:bg-stone-100"
+                                    >
+                                        Todo
+                                    </button>
+                                </div>
+                            </div>
+
                             <form
                                 onSubmit={aplicarFiltros}
-                                className="grid gap-3 border-t border-wayna-100 px-4 py-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-4 lg:items-end"
+                                className="grid gap-3 sm:grid-cols-2 lg:min-w-[34rem] lg:grid-cols-[1fr_1fr_auto_auto] lg:items-end"
                             >
                                 <div>
                                     <label
@@ -271,6 +352,7 @@ export default function Dashboard({
                                         className="mt-1 block w-full rounded-xl border-wayna-200 bg-white py-2 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                     />
                                 </div>
+
                                 <div>
                                     <label
                                         htmlFor="fecha_fin"
@@ -286,12 +368,14 @@ export default function Dashboard({
                                         className="mt-1 block w-full rounded-xl border-wayna-200 bg-white py-2 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                                     />
                                 </div>
+
                                 <button
                                     type="submit"
                                     className="rounded-xl bg-wayna-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-wayna-800"
                                 >
                                     Aplicar
                                 </button>
+
                                 <button
                                     type="button"
                                     onClick={limpiarFiltros}
@@ -300,7 +384,7 @@ export default function Dashboard({
                                     Limpiar
                                 </button>
                             </form>
-                        )}
+                        </div>
                     </div>
 
                     <div className={adminListCardOuter}>

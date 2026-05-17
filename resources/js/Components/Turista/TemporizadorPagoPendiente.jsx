@@ -31,7 +31,7 @@ export default function TemporizadorPagoPendiente({ plazoPago }) {
         [plazoPago?.vence_at],
     );
 
-    const minutosPlazo = plazoPago?.minutos_plazo ?? 15;
+    const minutosPlazo = plazoPago?.minutos_plazo ?? 5;
     const duracionSegundos = Math.max(60, minutosPlazo * 60);
 
     const [segundosRestantes, setSegundosRestantes] = useState(() => {

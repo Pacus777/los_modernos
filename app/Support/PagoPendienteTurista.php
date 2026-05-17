@@ -13,9 +13,9 @@ use Illuminate\Support\Carbon;
  */
 final class PagoPendienteTurista
 {
-    public static function minutosPlazo(): int
+    private static function minutosPlazo(): int
     {
-        return max(1, (int) config('wayna.pago_pendiente_minutos', 15));
+        return max((int) config('donaciones.plazo_pago_minutos', 5), 1);
     }
 
     public static function venceEn(CarbonInterface $creadoEn): Carbon

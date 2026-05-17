@@ -32,3 +32,5 @@ Thumbs.db
 /public/build
 /public/hot
 pnpm-lock.yaml 
+.env
+tools/libretranslate/venv

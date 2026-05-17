@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+use App\Models\Donacion;
+use Illuminate\Support\Facades\DB;
 use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Http\Controllers\Controller;
@@ -69,8 +72,53 @@ class EmprendedorController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        /*
+        |--------------------------------------------------------------------------
+        | T-A33: Top de emprendedores con mejores donaciones
+        |--------------------------------------------------------------------------
+        |
+        | Este informe se calcula desde donaciones validadas, conectando:
+        | donaciones -> campanas -> emprendedores.
+        |
+        | No se crea una tabla nueva porque es un reporte derivado.
+        |
+        */
+
+        $topDonacionesEmprendedores = DB::table('donaciones')
+            ->join('campanas', 'campanas.id', '=', 'donaciones.campana_id')
+            ->join('emprendedores', 'emprendedores.id', '=', 'campanas.emprendedor_id')
+            ->where('donaciones.estado_pago', Donacion::ESTADO_VALIDADO)
+            ->select([
+                'emprendedores.id',
+                'emprendedores.nombre',
+                'emprendedores.apellidos',
+                'emprendedores.fotografia',
+                DB::raw('COALESCE(SUM(donaciones.monto), 0) as total_donado'),
+                DB::raw('COUNT(donaciones.id) as total_donaciones'),
+                DB::raw('MAX(donaciones.updated_at) as ultima_donacion_at'),
+            ])
+            ->groupBy(
+                'emprendedores.id',
+                'emprendedores.nombre',
+                'emprendedores.apellidos',
+                'emprendedores.fotografia',
+            )
+            ->orderByDesc('total_donado')
+            ->limit(5)
+            ->get()
+            ->map(fn ($item) => [
+                'id' => (int) $item->id,
+                'nombre' => $item->nombre,
+                'apellidos' => $item->apellidos,
+                'fotografia' => $item->fotografia,
+                'total_donado' => (float) $item->total_donado,
+                'total_donaciones' => (int) $item->total_donaciones,
+                'ultima_donacion_at' => $item->ultima_donacion_at,
+            ]);
+
         return Inertia::render('Admin/Emprendedores/Index', [
             'emprendedores' => $emprendedores,
+            'topDonacionesEmprendedores' => $topDonacionesEmprendedores,
         ]);
     }
 

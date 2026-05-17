@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Turista;
 
+use App\Services\TipoCambioService;
+use App\Services\LibreTranslationService;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Models\Donacion;
@@ -25,8 +27,10 @@ class EmprendedorPublicoController extends Controller
      * - progreso (T-29 / PB-09): meta, monto acumulado por donaciones validadas y porcentaje
      *   calculados en servidor; el frontend solo muestra props.
      */
-    public function show(Request $request, int $id): Response
+    public function show(Request $request, int $id, LibreTranslationService $translator, TipoCambioService $tipoCambioService): Response
     {
+        $locale = $this->obtenerLocaleTurista($request);
+
         $emprendedor = Emprendedor::query()
             ->with([
                 'campanas' => function ($query) {
@@ -48,20 +52,55 @@ class EmprendedorPublicoController extends Controller
 
         $progreso = $this->calcularProgresoCampanaActiva($campanaActiva, $emprendedor);
 
+        $descripcionEmprendedor = $translator->traducirCampo(
+            entidadTipo: 'emprendedor',
+            entidadId: $emprendedor->id,
+            campo: 'descripcion',
+            texto: $emprendedor->descripcion,
+            idiomaDestino: $locale,
+        );
+
+        $tipoEmprendimientoEtiqueta = $translator->traducirCampo(
+            entidadTipo: 'emprendedor',
+            entidadId: $emprendedor->id,
+            campo: 'tipo_emprendimiento_etiqueta',
+            texto: $emprendedor->tipo_emprendimiento?->etiqueta(),
+            idiomaDestino: $locale,
+        );
+
+        $departamentoEtiqueta = $translator->traducirCampo(
+            entidadTipo: 'emprendedor',
+            entidadId: $emprendedor->id,
+            campo: 'departamento_etiqueta',
+            texto: $emprendedor->departamento?->etiqueta(),
+            idiomaDestino: $locale,
+        );
+
+        $campanaActivaTitulo = $campanaActiva
+            ? $translator->traducirCampo(
+                entidadTipo: 'campana',
+                entidadId: $campanaActiva->id,
+                campo: 'titulo',
+                texto: $campanaActiva->titulo,
+                idiomaDestino: $locale,
+            )
+            : null;
+
         return Inertia::render('Turista/Perfil', [
             'emprendedor' => [
                 'id' => $emprendedor->id,
                 'nombre' => $emprendedor->nombre,
                 'apellidos' => $emprendedor->apellidos,
-                'descripcion' => $emprendedor->descripcion,
+                'descripcion' => $descripcionEmprendedor,
                 'tipo_emprendimiento' => $emprendedor->tipo_emprendimiento?->value,
-                'tipo_emprendimiento_etiqueta' => $emprendedor->tipo_emprendimiento?->etiqueta(),
+                'tipo_emprendimiento_etiqueta' => $tipoEmprendimientoEtiqueta,
                 'departamento' => $emprendedor->departamento?->value,
-                'departamento_etiqueta' => $emprendedor->departamento?->etiqueta(),
+                'departamento_etiqueta' => $departamentoEtiqueta,
                 'fotografia' => $emprendedor->fotografia,
                 'foto_portada' => $emprendedor->urlFotoPerfil(),
                 'qr_url' => $emprendedor->qr_url,
                 'estado' => $emprendedor->estado,
+                'tipoCambio' => $tipoCambioService->obtenerUsdBobReferencial(),
             ],
 
             'medios' => [
@@ -72,7 +111,7 @@ class EmprendedorPublicoController extends Controller
 
             'campanaActiva' => $campanaActiva ? [
                 'id' => $campanaActiva->id,
-                'titulo' => $campanaActiva->titulo,
+                'titulo' => $campanaActivaTitulo,
                 'meta_apoyo' => $progreso['meta'],
                 'monto_recaudado' => $progreso['monto_recaudado'],
                 'fecha_inicio' => $campanaActiva->fecha_inicio,
@@ -83,7 +122,13 @@ class EmprendedorPublicoController extends Controller
             'campanasActivas' => $campanasActivas
                 ->map(fn (Campana $c) => [
                     'id' => $c->id,
-                    'titulo' => $c->titulo,
+                    'titulo' => $translator->traducirCampo(
+                        entidadTipo: 'campana',
+                        entidadId: $c->id,
+                        campo: 'titulo',
+                        texto: $c->titulo,
+                        idiomaDestino: $locale,
+                    ),
                 ])
                 ->values()
                 ->all(),
@@ -96,6 +141,18 @@ class EmprendedorPublicoController extends Controller
                 ->orderBy('id')
                 ->get(),
         ]);
+    }
+
+    private function obtenerLocaleTurista(Request $request): string
+    {
+        $locale = $request->session()->get('locale')
+            ?? $request->session()->get('idioma')
+            ?? app()->getLocale()
+            ?? 'es';
+
+        return in_array($locale, ['es', 'en'], true)
+            ? $locale
+            : 'es';
     }
 
     /**
