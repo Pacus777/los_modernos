@@ -11,6 +11,7 @@ class Visitante extends Model
 
     protected $fillable = [
         'codigo',
+        'nombre',
         'idioma',
         'session_id',
     ];

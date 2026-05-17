@@ -52,6 +52,27 @@ return [
             'La Paz' => 'La Paz',
             'Santa Cruz' => 'Santa Cruz',
             'Oruro' => 'Oruro',
+
+            'Apoyo a manillas artesanales' => 'Support for artisan bracelets',
+            'Apoyo a' => 'Support for',
+            'manillas artesanales' => 'artisan bracelets',
+            'Meta de apoyo' => 'Support goal',
+            'Campaña activa' => 'Active campaign',
+        ],
+    ],
+
+    /*
+    | Frases parciales (es → en) aplicadas al texto completo cuando no hay coincidencia exacta.
+    */
+    'frases' => [
+        'en' => [
+            'Apoyo a ' => 'Support for ',
+            'Meta de ' => 'Goal for ',
+            'apoyo a ' => 'support for ',
+            'meta de ' => 'goal for ',
+            'manillas artesanales' => 'artisan bracelets',
+            'emprendimiento de ' => 'business: ',
+            'Emprendimiento de ' => 'Business: ',
         ],
     ],
 

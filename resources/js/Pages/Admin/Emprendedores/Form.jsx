@@ -2,6 +2,7 @@ import AdminBackLink from '@/Components/Admin/AdminBackLink';
 import AdminFormField from '@/Components/Admin/AdminFormField';
 import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
 import AdminEmprendedorMediosFields from '@/Components/Admin/AdminEmprendedorMediosFields';
+import AdminEmprendedorRedesFields from '@/Components/Admin/AdminEmprendedorRedesFields';
 import AdminEmprendedorVistaPreviaMedios from '@/Components/Admin/AdminEmprendedorVistaPreviaMedios';
 import AdminFotografiaPerfilField from '@/Components/Admin/AdminFotografiaPerfilField';
 import AdminResumenEmprendedor from '@/Components/Admin/AdminResumenEmprendedor';
@@ -22,6 +23,18 @@ import { etiquetaDepartamento } from '@/utils/departamento';
 import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
+
+/** Muestra solo los 8 dígitos locales (sin +591) en el formulario admin. */
+function whatsappCelularLocal(valor) {
+    const digitos = String(valor ?? '').replace(/\D/g, '');
+    if (digitos.startsWith('591') && digitos.length >= 11) {
+        return digitos.slice(3, 11);
+    }
+    if (digitos.length === 8) {
+        return digitos;
+    }
+    return digitos.slice(0, 8);
+}
 
 function formatearBs(valor) {
     const n = Number(valor);
@@ -68,6 +81,11 @@ export default function Form({
                 ? emprendedor.video_url
                 : '',
         quitar_video: false,
+        whatsapp: whatsappCelularLocal(emprendedor?.whatsapp),
+        instagram: emprendedor?.instagram || '',
+        facebook: emprendedor?.facebook || '',
+        tiktok: emprendedor?.tiktok || '',
+        sitio_web: emprendedor?.sitio_web || '',
     });
 
     const fotografiaActual = emprendedor?.fotografia
@@ -445,6 +463,12 @@ export default function Form({
                                                 emprendedor={emprendedor}
                                                 error={error}
                                                 esEdicion={esEdicion}
+                                            />
+
+                                            <AdminEmprendedorRedesFields
+                                                data={data}
+                                                setData={setData}
+                                                error={error}
                                             />
 
                                             <AdminEmprendedorVistaPreviaMedios

@@ -1,7 +1,6 @@
+import WaynaEnterTransition from '@/Components/Wayna/WaynaEnterTransition';
 import GuestLayout from '@/Layouts/GuestLayout';
-import ChatWidget from '@/Components/Turista/ChatWidget';
-import { etiquetaDepartamento } from '@/utils/departamento';
-import { etiquetaTipoEmprendimiento } from '@/utils/tipoEmprendimiento';
+import { etiquetaDepartamentoT, etiquetaTipoEmprendimientoT } from '@/utils/catalogosI18n';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,14 +25,19 @@ export default function Punto({ punto, emprendedores = [] }) {
         return `${emprendedor.nombre || ''} ${emprendedor.apellidos || ''}`.trim();
     };
 
+    const tituloPagina = punto?.nombre
+        ? t('punto.headTitle', { name: punto.nombre })
+        : t('punto.headTitleFallback');
+
     return (
+        <WaynaEnterTransition variant="navigate">
         <GuestLayout variant="full" contentClassName="!max-w-5xl sm:!max-w-5xl lg:!max-w-5xl">
-            <Head title={`${punto?.nombre || 'Punto Wayna'} — Wayna`} />
+            <Head title={tituloPagina} />
 
             <section className="overflow-hidden rounded-3xl border border-wayna-100 bg-white/90 shadow-sm">
                 <div className="p-5 sm:p-8">
                     <p className="text-xs font-bold uppercase tracking-[0.22em] text-wayna-600">
-                        {t('punto.etiqueta', 'Punto Wayna')}
+                        {t('punto.etiqueta')}
                     </p>
 
                     <h1 className="mt-2 text-2xl font-black tracking-tight text-wayna-950 sm:text-4xl">
@@ -53,33 +57,24 @@ export default function Punto({ punto, emprendedores = [] }) {
                     )}
 
                     <p className="mt-5 text-sm leading-relaxed text-stone-600">
-                        {t(
-                            'punto.instruccion',
-                            'Elige un emprendedor para conocer su historia y realizar un aporte.',
-                        )}
+                        {t('punto.instruccion')}
                     </p>
                 </div>
 
                 <div className="border-t border-wayna-100 px-5 pb-6 pt-5 sm:px-8 sm:pb-8">
                     <div className="mb-4">
                         <h2 className="text-lg font-black text-wayna-950 sm:text-xl">
-                            {t('punto.emprendedoresDisponibles', 'Emprendedores disponibles')}
+                            {t('punto.emprendedoresDisponibles')}
                         </h2>
                         <p className="mt-1 text-sm text-stone-600">
-                            {t(
-                                'punto.descripcionLista',
-                                'Personas asociadas a este punto físico.',
-                            )}
+                            {t('punto.descripcionLista')}
                         </p>
                     </div>
 
                     {emprendedores.length === 0 && (
                         <div className="rounded-2xl border border-wayna-100 bg-wayna-50/50 p-6 text-center">
                             <p className="text-sm font-semibold text-stone-700">
-                                {t(
-                                    'punto.sinEmprendedores',
-                                    'No hay emprendedores activos asociados a este punto por el momento.',
-                                )}
+                                {t('punto.sinEmprendedores')}
                             </p>
                         </div>
                     )}
@@ -88,10 +83,12 @@ export default function Punto({ punto, emprendedores = [] }) {
                         {emprendedores.map((emprendedor) => {
                             const foto = obtenerFoto(emprendedor);
                             const nombreCompleto = obtenerNombreCompleto(emprendedor);
-                            const tipoEtiqueta = etiquetaTipoEmprendimiento(
+                            const tipoEtiqueta = etiquetaTipoEmprendimientoT(
+                                t,
                                 emprendedor.tipo_emprendimiento,
                             );
-                            const deptoEtiqueta = etiquetaDepartamento(
+                            const deptoEtiqueta = etiquetaDepartamentoT(
+                                t,
                                 emprendedor.departamento,
                             );
 
@@ -116,7 +113,7 @@ export default function Punto({ punto, emprendedores = [] }) {
 
                                     <div className="flex flex-1 flex-col p-4 sm:p-5">
                                         <p className="text-xs font-bold uppercase tracking-wide text-wayna-600">
-                                            {t('punto.emprendedor', 'Emprendedor')}
+                                            {t('punto.emprendedor')}
                                         </p>
 
                                         <h3 className="mt-1 text-lg font-black text-wayna-950">
@@ -139,18 +136,14 @@ export default function Punto({ punto, emprendedores = [] }) {
                                         ) : null}
 
                                         <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-stone-600">
-                                            {emprendedor.descripcion ||
-                                                t(
-                                                    'punto.sinDescripcion',
-                                                    'Conoce su historia y apoya su meta.',
-                                                )}
+                                            {emprendedor.descripcion || t('punto.sinDescripcion')}
                                         </p>
 
                                         <Link
                                             href={`/emprendedor/${emprendedor.id}`}
                                             className="touch-target mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-wayna-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-wayna-800 active:scale-[0.99]"
                                         >
-                                            {t('punto.verPerfil', 'Ver perfil completo')}
+                                            {t('punto.verPerfil')}
                                         </Link>
                                     </div>
                                 </article>
@@ -160,7 +153,8 @@ export default function Punto({ punto, emprendedores = [] }) {
                 </div>
             </section>
 
-            <ChatWidget />
         </GuestLayout>
+        </WaynaEnterTransition>
     );
 }
+

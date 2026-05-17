@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Turista;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Services\DonacionService;
+use App\Services\VisitanteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -15,8 +16,11 @@ class DonacionController extends Controller
      * El Controller solo valida la solicitud y llama al servicio.
      * La lógica principal queda en DonacionService.
      */
-    public function store(Request $request, DonacionService $donacionService): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        DonacionService $donacionService,
+        VisitanteService $visitanteService,
+    ): RedirectResponse {
         $validated = $request->validate(
             [
                 'campana_id' => [
@@ -27,14 +31,22 @@ class DonacionController extends Controller
                 ],
                 'tipo_pago_id' => ['required', 'exists:tipos_pago,id'],
                 'visitante_id' => ['nullable', 'exists:visitantes,id'],
+                'visitante_nombre' => ['nullable', 'string', 'max:120'],
                 'monto' => ['required', 'numeric', 'min:1', 'max:999999.99'],
                 'metodo' => ['required', 'string', 'max:50'],
                 'referencia_pago' => ['nullable', 'string', 'max:150'],
             ],
             [
-                'campana_id.exists' => 'La campaña seleccionada no está disponible o ya venció.',
+                'campana_id.exists' => __('donacion.campaign_unavailable'),
             ],
         );
+
+        $validated['visitante_id'] = $visitanteService->resolverParaDonacion(
+            $request,
+            $validated['visitante_nombre'] ?? null,
+        );
+
+        unset($validated['visitante_nombre']);
 
         $resultado = $donacionService->registrar($validated);
 
@@ -42,6 +54,6 @@ class DonacionController extends Controller
             ->route('turista.donaciones.confirmacion', [
                 'donacion' => $resultado['donacion']->id,
             ])
-            ->with('success', 'Donación registrada correctamente. Escanea el QR para completar el pago.');
+            ->with('success', __('donacion.registered_success'));
     }
 }

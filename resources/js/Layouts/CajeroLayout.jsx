@@ -1,8 +1,12 @@
-﻿import WaynaNavBar from '@/Components/WaynaNavBar';
-import { Link, usePage } from '@inertiajs/react';
+﻿import LogoutButton from '@/Components/LogoutButton';
+import WaynaNavBar from '@/Components/WaynaNavBar';
+import { useReloadOnHistoryRestore } from '@/hooks/useReloadOnHistoryRestore';
+import { usePage } from '@inertiajs/react';
 
 export default function CajeroLayout({ header, children }) {
     const user = usePage().props.auth.user;
+
+    useReloadOnHistoryRestore();
 
     return (
         <div className="min-h-screen bg-surface">
@@ -11,14 +15,9 @@ export default function CajeroLayout({ header, children }) {
                     <span className="hidden max-w-[9rem] truncate text-sm font-medium text-white/90 sm:inline">
                         {user?.name}
                     </span>
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="touch-target min-h-11 rounded-full border border-white/60 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-wayna-700"
-                    >
+                    <LogoutButton className="touch-target min-h-11 rounded-full border border-white/60 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-wayna-700">
                         Salir
-                    </Link>
+                    </LogoutButton>
                 </div>
             </WaynaNavBar>
 

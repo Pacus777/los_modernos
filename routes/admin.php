@@ -19,7 +19,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::middleware(['auth', 'verified', 'check.role:admin'])
+Route::middleware(['auth', 'verified', 'check.role:admin', 'nocache'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {

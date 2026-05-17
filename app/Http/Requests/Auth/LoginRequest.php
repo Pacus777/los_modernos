@@ -30,7 +30,16 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'remember_me' => ['sometimes', 'boolean'],
         ];
+    }
+
+    /**
+     * ¿Mantener la sesión iniciada? (campo remember_me evita conflicto con useForm de Inertia).
+     */
+    public function wantsRemember(): bool
+    {
+        return filter_var($this->input('remember_me', false), FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
@@ -42,7 +51,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->wantsRemember())) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 /**
  * Formato unificado T-A6: Bs. 500 / Bs. 2.000 — 25%
  */
-export function formatearBsProgreso(monto) {
+export function formatearBsProgreso(monto, locale = 'es-BO') {
     const valor = Number(monto || 0);
     if (Number.isNaN(valor)) {
         return 'Bs. 0';
     }
 
-    return `Bs. ${valor.toLocaleString('es-BO', {
+    return `Bs. ${valor.toLocaleString(locale, {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
     })}`;
@@ -30,10 +30,10 @@ export function calcularPorcentajeMeta(montoRecaudado, meta, porcentajeExplicito
     return Math.min(100, Math.round((recaudado / metaNum) * 100));
 }
 
-export function textoProgresoMeta(montoRecaudado, meta, porcentajeExplicito) {
+export function textoProgresoMeta(montoRecaudado, meta, porcentajeExplicito, locale = 'es-BO') {
     const pct = calcularPorcentajeMeta(montoRecaudado, meta, porcentajeExplicito);
 
-    return `${formatearBsProgreso(montoRecaudado)} / ${formatearBsProgreso(meta)} — ${pct}%`;
+    return `${formatearBsProgreso(montoRecaudado, locale)} / ${formatearBsProgreso(meta, locale)} — ${pct}%`;
 }
 
 const MARCAS_META = [25, 50, 75];
@@ -49,6 +49,7 @@ export default function BarraProgresoMeta({
     animar = true,
     className = '',
     etiquetaAria,
+    localeMoneda = 'es-BO',
 }) {
     const pct = calcularPorcentajeMeta(montoRecaudado, meta, porcentaje);
     const completa = pct >= 100;
@@ -96,10 +97,10 @@ export default function BarraProgresoMeta({
                 <p
                     className={`min-w-0 flex-1 font-bold tabular-nums leading-snug text-wayna-950 ${textoRecaudado}`}
                 >
-                    <span className="text-wayna-700">{formatearBsProgreso(montoRecaudado)}</span>
+                    <span className="text-wayna-700">{formatearBsProgreso(montoRecaudado, localeMoneda)}</span>
                     <span className="mx-1 font-normal text-stone-400">/</span>
                     <span className="font-semibold text-stone-600">
-                        {formatearBsProgreso(meta)}
+                        {formatearBsProgreso(meta, localeMoneda)}
                     </span>
                 </p>
                 <span
@@ -141,7 +142,9 @@ export default function BarraProgresoMeta({
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={Math.round(pct)}
-                    aria-label={etiquetaAria ?? textoProgresoMeta(montoRecaudado, meta, pct)}
+                    aria-label={
+                        etiquetaAria ?? textoProgresoMeta(montoRecaudado, meta, pct, localeMoneda)
+                    }
                 >
                     <div className="h-full overflow-hidden rounded-full bg-white/50">
                         <div

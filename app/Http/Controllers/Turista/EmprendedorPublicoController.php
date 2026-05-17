@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Turista;
 
 use App\Services\TipoCambioService;
 use App\Services\LibreTranslationService;
+use App\Services\VisitanteService;
+use App\Support\RedesSocialesEmprendedor;
+use App\Support\TipoPagoTurista;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Models\Donacion;
@@ -27,11 +30,17 @@ class EmprendedorPublicoController extends Controller
      * - progreso (T-29 / PB-09): meta, monto acumulado por donaciones validadas y porcentaje
      *   calculados en servidor; el frontend solo muestra props.
      */
-    public function show(Request $request, int $id, LibreTranslationService $translator, TipoCambioService $tipoCambioService): Response
-    {
+    public function show(
+        Request $request,
+        int $id,
+        LibreTranslationService $translator,
+        TipoCambioService $tipoCambioService,
+        VisitanteService $visitanteService,
+    ): Response {
         $locale = $this->obtenerLocaleTurista($request);
 
         $emprendedor = Emprendedor::query()
+            ->where('estado', 'activo')
             ->with([
                 'campanas' => function ($query) {
                     $query
@@ -109,6 +118,14 @@ class EmprendedorPublicoController extends Controller
                 'video' => $emprendedor->presentacionVideoPublico(),
             ],
 
+            'redes' => RedesSocialesEmprendedor::paraFrontend(
+                $emprendedor->whatsapp,
+                $emprendedor->instagram,
+                $emprendedor->facebook,
+                $emprendedor->tiktok,
+                $emprendedor->sitio_web,
+            ),
+
             'campanaActiva' => $campanaActiva ? [
                 'id' => $campanaActiva->id,
                 'titulo' => $campanaActivaTitulo,
@@ -139,7 +156,16 @@ class EmprendedorPublicoController extends Controller
                 ->where('activo', true)
                 ->select('id', 'nombre', 'codigo')
                 ->orderBy('id')
-                ->get(),
+                ->get()
+                ->map(fn (TipoPago $tipo) => [
+                    'id' => $tipo->id,
+                    'codigo' => $tipo->codigo,
+                    'nombre' => TipoPagoTurista::nombreParaLocale($tipo, $locale),
+                ])
+                ->values()
+                ->all(),
+
+            'visitanteNombrePrefill' => $visitanteService->nombreEnSesion($request),
         ]);
     }
 

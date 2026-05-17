@@ -51,7 +51,11 @@ function etiquetaVisitante(visitante) {
     if (!visitante) {
         return null;
     }
-    const partes = [visitante.codigo];
+    const partes = [];
+    if (visitante.nombre) {
+        partes.push(visitante.nombre);
+    }
+    partes.push(visitante.codigo);
     if (visitante.idioma) {
         partes.push(`idioma: ${visitante.idioma}`);
     }

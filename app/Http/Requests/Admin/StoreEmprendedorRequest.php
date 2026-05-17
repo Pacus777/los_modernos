@@ -5,12 +5,14 @@ namespace App\Http\Requests\Admin;
 use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Http\Requests\Admin\Concerns\ValidaMediosEmprendedor;
+use App\Http\Requests\Admin\Concerns\ValidaRedesSocialesEmprendedor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreEmprendedorRequest extends FormRequest
 {
     use ValidaMediosEmprendedor;
+    use ValidaRedesSocialesEmprendedor;
     /**
      * Autoriza esta solicitud.
      *
@@ -56,6 +58,7 @@ class StoreEmprendedorRequest extends FormRequest
             */
             'fotografia' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             ...$this->reglasMediosEmprendedor(),
+            ...$this->reglasRedesSocialesEmprendedor(),
         ];
     }
 
@@ -82,6 +85,7 @@ class StoreEmprendedorRequest extends FormRequest
             'fotografia.mimes' => 'La fotografía debe estar en formato JPG, JPEG, PNG o WEBP.',
             'fotografia.max' => 'La fotografía no debe pesar más de 2 MB.',
             ...$this->mensajesMediosEmprendedor(),
+            ...$this->mensajesRedesSocialesEmprendedor(),
         ];
     }
 }

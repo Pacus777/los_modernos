@@ -7,7 +7,52 @@
     "back": "Back",
     "continue": "Continue",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close",
+    "currencyBs": "Bs"
+  },
+  "language": {
+    "comingSoon": "{{label}} — coming soon"
+  },
+  "catalog": {
+    "businessType": {
+      "gastronomia": "Food & beverage",
+      "artesania": "Handicrafts",
+      "turismo": "Tourism",
+      "textil": "Textiles",
+      "agricultura": "Agriculture",
+      "servicios": "Services",
+      "otro": "Other"
+    },
+    "paymentMethod": {
+      "efectivo": "Cash",
+      "qr": "QR / mobile wallet",
+      "tarjeta": "Card",
+      "transferencia": "Bank transfer"
+    },
+    "department": {
+      "la_paz": "La Paz",
+      "santa_cruz": "Santa Cruz",
+      "cochabamba": "Cochabamba",
+      "oruro": "Oruro",
+      "potosi": "Potosí",
+      "chuquisaca": "Chuquisaca",
+      "tarija": "Tarija",
+      "beni": "Beni",
+      "pando": "Pando"
+    }
+  },
+  "punto": {
+    "headTitle": "{{name}} — Wayna",
+    "headTitleFallback": "Wayna location",
+    "etiqueta": "Wayna location",
+    "instruccion": "Choose an entrepreneur to read their story and make a contribution.",
+    "emprendedoresDisponibles": "Available entrepreneurs",
+    "descripcionLista": "People linked to this physical location.",
+    "sinEmprendedores": "There are no active entrepreneurs at this location right now.",
+    "emprendedor": "Entrepreneur",
+    "sinDescripcion": "Discover their story and support their goal.",
+    "verPerfil": "View full profile"
   },
   "tourist": {
     "heroTitle": "Connect with local entrepreneurs",
@@ -26,6 +71,7 @@
       "title": "Your contribution was registered",
       "intro": "Follow these steps to complete payment.",
       "successFallback": "Donation registered. Use the QR code to continue.",
+      "successRegistered": "Your contribution was registered. Follow the steps below to complete payment.",
       "emptyTitle": "We couldn’t find a recent donation",
       "emptyBody": "You may have opened this page directly, or the session may have expired.",
       "emptyCta": "Go to home",
@@ -49,6 +95,15 @@
       "badge": "Wayna entrepreneur",
       "storyTitle": "Their story",
       "storyFallback": "This entrepreneur is part of Wayna and seeks to grow with direct support from tourists and visitors.",
+      "socialTitle": "Connect with their business",
+      "socialSubtitle": "Follow on social media or message on WhatsApp — no donation required.",
+      "socialWhatsApp": "WhatsApp",
+      "socialInstagram": "Instagram",
+      "socialFacebook": "Facebook",
+      "socialTikTok": "TikTok",
+      "socialWebsite": "Website",
+      "supportSectionTitle": "Want to support?",
+      "supportSectionSubtitle": "Your contribution is voluntary. Choose an amount only if their story inspires you.",
       "goalSectionTitle": "Support goal",
       "campaignActiveTitle": "Active campaign",
       "raised": "Raised",
@@ -61,6 +116,13 @@
       "galleryTitle": "Gallery",
       "gallerySubtitle": "See more of their work and products.",
       "galleryImageAlt": "Image {{index}} of {{name}}",
+      "galleryEmpty": "Photos and videos will appear here soon.",
+      "tabPhotos": "Photos",
+      "tabVideo": "Video",
+      "statPosts": "Posts",
+      "statRaised": "Raised",
+      "statGoal": "Goal progress",
+      "donateButton": "Donate",
       "videoTitle": "Video",
       "videoUnsupported": "Your browser cannot play this video."
     },
@@ -70,6 +132,10 @@
     "donationForm": {
       "chooseTitle": "Choose your contribution",
       "chooseSubtitle": "Pick an amount in bolivianos and confirm your support.",
+      "optional": "optional",
+      "visitorNameLabel": "Your name",
+      "visitorNamePlaceholder": "e.g. Maria (visitor)",
+      "visitorNameHint": "Optional. Helps the entrepreneur and cashier identify your contribution.",
       "campaignLabel": "Campaign",
       "noActiveCampaign": "This entrepreneur does not have an active campaign yet.",
       "noPaymentTypes": "No payment methods are available.",
@@ -127,15 +193,205 @@
       }
     }
   },
+  "landing": {
+    "headTitle": "Wayna Connect — Support entrepreneurs",
+    "nav": {
+      "home": "Home",
+      "explore": "Explore",
+      "how": "How it works",
+      "gallery": "Gallery",
+      "system": "Platform",
+      "locations": "Locations",
+      "market": "Wayna Markets",
+      "staffLogin": "Team login",
+      "adminLogin": "Log in",
+      "adminPanel": "Admin area"
+    },
+    "hero": {
+      "kicker": "Wayna entrepreneur network",
+      "title": "Discover real stories before you support",
+      "subtitle": "Browse profiles with photos, videos, and social links. Donate with traceability when you are ready.",
+      "ctaExplore": "Explore entrepreneurs",
+      "ctaHow": "How it works",
+      "ctaStaff": "Staff sign in",
+      "scrollHint": "Scroll to explore",
+      "imageAlt": "Entrepreneurs and community at Wayna markets"
+    },
+    "stats": {
+      "transparent": "Traceable donations",
+      "languages": "Spanish & English",
+      "payments": "Cash & digital"
+    },
+    "statsBar": {
+      "entrepreneurs": "Active entrepreneurs",
+      "locations": "Wayna locations"
+    },
+    "heroSlides": {
+      "slide1": {
+        "kicker": "Wayna network",
+        "title": "Discover real stories before you support",
+        "subtitle": "Browse profiles with photos, videos, and direct contact. No pressure to donate."
+      },
+      "slide2": {
+        "kicker": "Entrepreneur mini network",
+        "title": "See who is at the market today",
+        "subtitle": "Filter by category, department, or Wayna location and open full profiles.",
+        "cta": "View entrepreneurs"
+      },
+      "slide3": {
+        "kicker": "Transparent support",
+        "title": "Give when you feel inspired, not obligated",
+        "subtitle": "Your contribution is recorded with traceability: cash or digital."
+      }
+    },
+    "carousel": {
+      "prev": "Previous",
+      "next": "Next",
+      "goToSlide": "Go to slide {{n}}"
+    },
+    "gallery": {
+      "kicker": "Life at Wayna",
+      "title": "Markets, entrepreneurs and community",
+      "subtitle": "Real photos from our Wayna locations — browse the carousel or tap the main photo to view it full size.",
+      "tapToExpand": "View full size",
+      "waynaSign": "Wayna sign and market",
+      "team": "Team and visitors at the market",
+      "market1": "Market aisles and products",
+      "market2": "Entrepreneurs at their stalls",
+      "entrepreneur1": "Entrepreneur serving at Wayna",
+      "entrepreneur2": "Products and service at the stall",
+      "community": "Community and Wayna atmosphere"
+    },
+    "featured": {
+      "kicker": "Featured",
+      "title": "Entrepreneurs you can meet today",
+      "subtitle": "Swipe the carousel or browse the full directory below."
+    },
+    "testimonials": {
+      "kicker": "Wayna voices",
+      "title": "What tourists and entrepreneurs say",
+      "t1": {
+        "quote": "I looked at the photos and video first, then donated because I loved the story. No pressure.",
+        "author": "Visiting tourist",
+        "role": "Wayna Sopocachi"
+      },
+      "t2": {
+        "quote": "I like that they can follow me on Instagram or message on WhatsApp without donating right away.",
+        "author": "Wayna entrepreneur",
+        "role": "Food & beverage"
+      },
+      "t3": {
+        "quote": "The platform explains payment clearly; the cashier confirmed my contribution in minutes.",
+        "author": "Visitor",
+        "role": "Cash payment"
+      }
+    },
+    "how": {
+      "title": "How it works",
+      "subtitle": "Three steps from the market to your registered contribution.",
+      "step1Title": "Scan the QR",
+      "step1Body": "At Wayna Sopocachi or Wayna Sur, each entrepreneur has a code that opens their profile on this platform.",
+      "step2Title": "Choose your support",
+      "step2Body": "Read their story, the campaign goal, and the amount you want to donate in bolivianos.",
+      "step3Title": "Confirm payment",
+      "step3Body": "Pay via banking QR or cash at the desk; the Wayna team validates and records it in the system."
+    },
+    "platform": {
+      "title": "Your Wayna support system",
+      "subtitle": "The same spirit as the market, with digital records for tourists, cashiers, and administration.",
+      "traceTitle": "Traceability",
+      "traceBody": "Every donation is linked to the entrepreneur, campaign, and payment method for reporting and audit.",
+      "touristTitle": "Tourist experience",
+      "touristBody": "Public profile, media, campaign goals, and confirmation with payment code and timer.",
+      "teamTitle": "Team dashboard",
+      "teamBody": "Admin and cashiers manage entrepreneurs, pending donations, and cash confirmation."
+    },
+    "market": {
+      "title": "Looking for market products?",
+      "body": "Orders, featured entrepreneurs, and news stay on Wayna Markets. This platform focuses on in-person support and donations.",
+      "cta": "Go to Wayna Markets"
+    },
+    "locations": {
+      "title": "Locations",
+      "subtitle": "Visit our markets and support in person.",
+      "sopocachiName": "Wayna Sopocachi",
+      "sopocachiAddress": "Av. 20 de Octubre #927, between Belisario Salinas and Pedro Salazar, Plaza Abaroa.",
+      "sopocachiHours": "Tue–Fri 12:00–20:00 · Sat 12:00–18:00 · Sun 12:00–15:00",
+      "surName": "Wayna Sur",
+      "surAddress": "Calle 15 de Calacoto, between Sánchez Bustamante and Julio Patiño, El Bosque Boulevard.",
+      "surHours": "Tue–Sat 12:00–19:00 · Sun 12:00–15:00"
+    },
+    "footer": {
+      "tagline": "Wayna Connect — support platform for entrepreneurs in the Wayna ecosystem.",
+      "navTitle": "Navigate",
+      "marketTitle": "Market",
+      "rights": "© {{year}} Wayna Markets. Wayna ecosystem."
+    }
+  },
+  "chat": {
+    "etiqueta": "Wayna assistant",
+    "titulo": "Need help?",
+    "cerrar": "Close chat",
+    "mensajeInicial": "Ask me how to donate, payment methods, or about an entrepreneur. For example: «I saw Jaime's product, I want to donate».",
+    "sinRespuestaAun": "Type a question to get a quick answer.",
+    "pregunta": "Question",
+    "placeholder": "E.g. I saw Jaime's product, I want to donate",
+    "enviando": "Sending...",
+    "enviar": "Send question",
+    "botonAbrir": "Help"
+  },
+  "explore": {
+    "kicker": "Wayna community",
+    "title": "Entrepreneurs you can meet today",
+    "subtitle": "No pressure: read their story, see their photos and socials. Giving is voluntary when it feels right.",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Name or story…",
+    "searchButton": "Search",
+    "filterType": "Category",
+    "filterDepartment": "Department",
+    "filterPoint": "Wayna location",
+    "filterAll": "All",
+    "resultsCount": "{{count}} entrepreneurs",
+    "emptyTitle": "No results for these filters",
+    "emptyBody": "Try another search or browse everyone again.",
+    "cardKicker": "Entrepreneur",
+    "cardStoryFallback": "Open the full profile with photos, video, and contact links.",
+    "viewProfile": "View profile",
+    "backToExplore": "Back to explore",
+    "hasSocial": "Social",
+    "badgeVideo": "Video",
+    "badgePhotos": "{{count}} photos"
+  },
   "auth": {
     "welcome": "Welcome",
-    "subtitle": "Sign in to continue to the system",
+    "subtitle": "Sign in for admin and cashier access",
     "email": "Email address",
     "password": "Password",
     "remember": "Remember me",
     "forgotPassword": "Forgot your password?",
     "login": "Log in",
     "loginTitle": "Log in",
-    "loginButton": "Log in"
+    "loginButton": "Log in",
+    "loggingIn": "Signing in…",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "backToHome": "Back to home",
+    "visual": {
+      "title": "Real entrepreneur stories and support for the community"
+    },
+    "showcase": {
+      "slide1": {
+        "title": "Everything in one place",
+        "body": "Entrepreneurs, donations and confirmations for the team."
+      },
+      "slide2": {
+        "title": "Built for the team",
+        "body": "Cashiers and admins coordinate support clearly at each Wayna location."
+      },
+      "slide3": {
+        "title": "Tourists and community",
+        "body": "Discover stories, connect on social media, and give when you want—no pressure."
+      }
+    }
   }
 }
