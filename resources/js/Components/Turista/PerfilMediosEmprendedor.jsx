@@ -93,7 +93,7 @@ export default function PerfilMediosEmprendedor({ medios, nombreEmprendimiento =
                         className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-sm font-bold text-wayna-900 shadow"
                         onClick={() => setImagenAmpliada(null)}
                     >
-                        {t('common.close', 'Cerrar')}
+                        {t('common.close')}
                     </button>
                     <img
                         src={imagenAmpliada}

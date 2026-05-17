@@ -125,7 +125,24 @@ class LibreTranslationService
             return $glosario[$textoLimpio];
         }
 
+        $conFrases = $this->aplicarFrasesGlosario($textoLimpio, $idiomaDestino);
+
+        if ($conFrases !== $textoLimpio) {
+            return $conFrases;
+        }
+
         return null;
+    }
+
+    private function aplicarFrasesGlosario(string $texto, string $idiomaDestino): string
+    {
+        $frases = config("traducciones.frases.$idiomaDestino", []);
+
+        if ($frases === []) {
+            return $texto;
+        }
+
+        return str_replace(array_keys($frases), array_values($frases), $texto);
     }
 
     private function normalizarTextoAntesDeTraducir(string $texto, string $idiomaOrigen): string

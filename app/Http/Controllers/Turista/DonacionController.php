@@ -37,7 +37,7 @@ class DonacionController extends Controller
                 'referencia_pago' => ['nullable', 'string', 'max:150'],
             ],
             [
-                'campana_id.exists' => 'La campaña seleccionada no está disponible o ya venció.',
+                'campana_id.exists' => __('donacion.campaign_unavailable'),
             ],
         );
 
@@ -54,6 +54,6 @@ class DonacionController extends Controller
             ->route('turista.donaciones.confirmacion', [
                 'donacion' => $resultado['donacion']->id,
             ])
-            ->with('success', 'Donación registrada correctamente. Escanea el QR para completar el pago.');
+            ->with('success', __('donacion.registered_success'));
     }
 }

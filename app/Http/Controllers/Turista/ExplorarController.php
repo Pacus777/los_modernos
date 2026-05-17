@@ -25,16 +25,24 @@ class ExplorarController extends Controller
         }
 
         $desdeRequest = $explorar->filtrosDesdeRequest($request);
+        $locale = $this->localeTurista($request);
 
         return Inertia::render('Landing', [
             'canLogin' => Route::has('login'),
             'panelUrl' => $panelUrl,
             'marketUrl' => 'https://www.waynamercados.com/',
-            'emprendedores' => $explorar->listarTarjetas($desdeRequest['filtros']),
-            'destacados' => $explorar->listarDestacados(),
+            'emprendedores' => $explorar->listarTarjetas($desdeRequest['filtros'], $locale),
+            'destacados' => $explorar->listarDestacados(8, $locale),
             'stats' => $explorar->estadisticasLanding(),
             'filtros' => $desdeRequest['filtros'],
             'catalogos' => $desdeRequest['catalogos'],
         ]);
+    }
+
+    private function localeTurista(Request $request): string
+    {
+        $locale = $request->session()->get('locale', 'es');
+
+        return in_array($locale, ['es', 'en'], true) ? $locale : 'es';
     }
 }

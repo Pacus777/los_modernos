@@ -1,3 +1,4 @@
+import { etiquetaTipoPagoT } from '@/utils/catalogosI18n';
 import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
 import { bolivianosAUsd, formatearUsd } from '@/utils/tipoCambioTurista';
 import { useForm, usePage } from '@inertiajs/react';
@@ -111,6 +112,12 @@ export default function DonacionForm({
 
     const localeMoneda = i18n.language?.startsWith('en') ? 'en-US' : 'es-BO';
 
+    const formatearBs = (valor) =>
+        Number(valor).toLocaleString(localeMoneda, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+
     return (
         <form
             onSubmit={submit}
@@ -197,7 +204,7 @@ export default function DonacionForm({
                                 : 'btn-wayna-chip'
                         }
                     >
-                        Bs {monto}
+                        {t('common.currencyBs')} {monto}
                     </button>
                 ))}
             </div>
@@ -231,11 +238,8 @@ export default function DonacionForm({
                         aria-live="polite"
                     >
                         <span className="font-semibold text-sky-900">
-                            Bs{' '}
-                            {Number(data.monto).toLocaleString('es-BO', {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 2,
-                            })}
+                            {t('common.currencyBs')}{' '}
+                            {formatearBs(data.monto)}
                         </span>
                         <span className="text-sky-700" aria-hidden>
                             ≈
@@ -270,13 +274,13 @@ export default function DonacionForm({
                                             : 'btn-wayna-chip-payment'
                                     }
                                 >
-                                    {tipoPago.nombre}
+                                    {etiquetaTipoPagoT(t, tipoPago)}
                                 </button>
                             ))}
                         </div>
                     ) : (
                         <p className="mt-2 text-sm font-semibold text-wayna-800">
-                            {tipoPagos[0]?.nombre}
+                            {etiquetaTipoPagoT(t, tipoPagos[0])}
                         </p>
                     )}
 

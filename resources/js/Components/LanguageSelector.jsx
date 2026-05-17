@@ -1,5 +1,6 @@
 import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { initI18n } from '@/i18n';
 import { fallbackLanguage, idiomasDisponibles, idiomaEstaSoportado } from '@/i18n/languages';
 
@@ -7,6 +8,7 @@ import { fallbackLanguage, idiomasDisponibles, idiomaEstaSoportado } from '@/i18
  * @param {'default'|'on-brand'} variant — on-brand: sobre barra naranja #f07e26
  */
 export default function LanguageSelector({ variant = 'default' }) {
+    const { t } = useTranslation();
     const { props } = usePage();
     const [processing, setProcessing] = useState(false);
 
@@ -64,7 +66,11 @@ export default function LanguageSelector({ variant = 'default' }) {
                         onClick={() => changeLanguage(idioma.code)}
                         disabled={processing || !idioma.enabled}
                         aria-pressed={active}
-                        title={idioma.enabled ? idioma.label : `${idioma.label} próximamente`}
+                        title={
+                            idioma.enabled
+                                ? idioma.label
+                                : t('language.comingSoon', { label: idioma.label })
+                        }
                         className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold transition sm:text-sm ${buttonClass(
                             active,
                             idioma.enabled,

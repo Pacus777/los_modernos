@@ -93,7 +93,7 @@ function VisorLightbox({ item, nombreEmprendimiento, onClose, t }) {
                 type="button"
                 className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm transition hover:bg-white/25"
                 onClick={onClose}
-                aria-label={t('common.close', 'Cerrar')}
+                aria-label={t('common.close')}
             >
                 <span className="text-2xl leading-none">&times;</span>
             </button>

@@ -25,10 +25,7 @@ export default function Confirmacion() {
     const qrUrl = page.props.qr_pago_url ?? flash.qr_pago_url;
     const referencia =
         confirmacion?.referencia_pago ?? flash.referencia_pago;
-    const successMessage =
-        page.props.success ??
-        flash.success ??
-        t('tourist.confirmation.successFallback');
+    const successMessage = t('tourist.confirmation.successRegistered');
     const tieneDatosDonacion = Boolean(qrUrl || referencia);
 
     const plazoPago = confirmacion?.plazo_pago ?? null;

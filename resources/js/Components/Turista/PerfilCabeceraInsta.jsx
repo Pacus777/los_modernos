@@ -1,3 +1,4 @@
+import { etiquetaDepartamentoT, etiquetaTipoEmprendimientoT } from '@/utils/catalogosI18n';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -144,14 +145,16 @@ export default function PerfilCabeceraInsta({
             <div className="mt-4">
                 <h1 className="text-base font-bold text-stone-900">{nombreCompleto}</h1>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {emprendedor.tipo_emprendimiento_etiqueta ? (
+                    {(emprendedor.tipo_emprendimiento || emprendedor.tipo_emprendimiento_etiqueta) ? (
                         <span className="rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800">
-                            {emprendedor.tipo_emprendimiento_etiqueta}
+                            {etiquetaTipoEmprendimientoT(t, emprendedor.tipo_emprendimiento) ??
+                                emprendedor.tipo_emprendimiento_etiqueta}
                         </span>
                     ) : null}
-                    {emprendedor.departamento_etiqueta ? (
+                    {(emprendedor.departamento || emprendedor.departamento_etiqueta) ? (
                         <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-bold text-stone-600">
-                            {emprendedor.departamento_etiqueta}
+                            {etiquetaDepartamentoT(t, emprendedor.departamento) ??
+                                emprendedor.departamento_etiqueta}
                         </span>
                     ) : null}
                 </div>

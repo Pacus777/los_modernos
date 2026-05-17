@@ -7,7 +7,52 @@
     "back": "Volver",
     "continue": "Continuar",
     "save": "Guardar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "currencyBs": "Bs"
+  },
+  "language": {
+    "comingSoon": "{{label}} — próximamente"
+  },
+  "catalog": {
+    "businessType": {
+      "gastronomia": "Gastronomía",
+      "artesania": "Artesanía",
+      "turismo": "Turismo",
+      "textil": "Textil",
+      "agricultura": "Agricultura",
+      "servicios": "Servicios",
+      "otro": "Otro"
+    },
+    "paymentMethod": {
+      "efectivo": "Efectivo",
+      "qr": "QR / billetera móvil",
+      "tarjeta": "Tarjeta",
+      "transferencia": "Transferencia bancaria"
+    },
+    "department": {
+      "la_paz": "La Paz",
+      "santa_cruz": "Santa Cruz",
+      "cochabamba": "Cochabamba",
+      "oruro": "Oruro",
+      "potosi": "Potosí",
+      "chuquisaca": "Chuquisaca",
+      "tarija": "Tarija",
+      "beni": "Beni",
+      "pando": "Pando"
+    }
+  },
+  "punto": {
+    "headTitle": "{{name}} — Wayna",
+    "headTitleFallback": "Punto Wayna",
+    "etiqueta": "Punto Wayna",
+    "instruccion": "Elegí un emprendedor para conocer su historia y realizar un aporte.",
+    "emprendedoresDisponibles": "Emprendedores disponibles",
+    "descripcionLista": "Personas asociadas a este punto físico.",
+    "sinEmprendedores": "No hay emprendedores activos asociados a este punto por el momento.",
+    "emprendedor": "Emprendedor",
+    "sinDescripcion": "Conocé su historia y apoyá su meta.",
+    "verPerfil": "Ver perfil completo"
   },
   "tourist": {
     "heroTitle": "Conecta con emprendedores locales",
@@ -26,6 +71,7 @@
       "title": "Tu aporte quedó registrado",
       "intro": "Seguí estos pasos para completar el pago.",
       "successFallback": "Donación registrada. Usá el código QR para continuar.",
+      "successRegistered": "Tu aporte quedó registrado. Seguí los pasos de abajo para completar el pago.",
       "emptyTitle": "No encontramos una donación reciente",
       "emptyBody": "Es posible que hayas abierto esta página directamente o que la sesión haya expirado.",
       "emptyCta": "Ir al inicio",

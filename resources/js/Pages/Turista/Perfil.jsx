@@ -59,7 +59,7 @@ export default function Perfil({
                 ) : Number(progreso?.meta ?? 0) > 0 ? (
                     <div className="mx-4 mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:mx-5">
                         <p className="text-xs font-semibold text-amber-900">
-                            {t('tourist.profile.referenceMetaNote')}: Bs{' '}
+                            {t('tourist.profile.referenceMetaNote')}: {t('common.currencyBs')}{' '}
                             {Number(progreso.meta).toFixed(2)}
                         </p>
                     </div>

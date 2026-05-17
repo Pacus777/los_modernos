@@ -13,7 +13,8 @@ export default function BarraProgreso({
     meta = 0,
     titulo,
 }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const localeMoneda = i18n.language?.startsWith('en') ? 'en-US' : 'es-BO';
     const pct = calcularPorcentajeMeta(montoRecaudado, meta, porcentaje);
 
     return (
@@ -51,6 +52,7 @@ export default function BarraProgreso({
                     porcentaje={pct}
                     variant="full"
                     animar
+                    localeMoneda={localeMoneda}
                     etiquetaAria={t('tourist.barraProgreso.ariaLabel', {
                         pct: Math.round(pct),
                     })}

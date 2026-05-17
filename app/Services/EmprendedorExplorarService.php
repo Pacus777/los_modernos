@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 
 class EmprendedorExplorarService
 {
+    public function __construct(
+        protected LibreTranslationService $translator,
+    ) {
+    }
+
     /**
      * @return array{emprendedores: int, puntos: int}
      */
@@ -27,7 +32,7 @@ class EmprendedorExplorarService
      *
      * @return list<array<string, mixed>>
      */
-    public function listarDestacados(int $limite = 8): array
+    public function listarDestacados(int $limite = 8, string $locale = 'es'): array
     {
         return Emprendedor::query()
             ->where('estado', 'activo')
@@ -37,7 +42,7 @@ class EmprendedorExplorarService
             ->orderBy('apellidos')
             ->limit($limite)
             ->get()
-            ->map(fn (Emprendedor $emprendedor) => $this->formatearTarjeta($emprendedor))
+            ->map(fn (Emprendedor $emprendedor) => $this->formatearTarjeta($emprendedor, $locale))
             ->values()
             ->all();
     }
@@ -46,7 +51,7 @@ class EmprendedorExplorarService
      * @param  array{q?: string, tipo_emprendimiento?: string, departamento?: string, punto_id?: int|string|null}  $filtros
      * @return list<array<string, mixed>>
      */
-    public function listarTarjetas(array $filtros = []): array
+    public function listarTarjetas(array $filtros = [], string $locale = 'es'): array
     {
         $query = Emprendedor::query()
             ->where('estado', 'activo')
@@ -77,7 +82,7 @@ class EmprendedorExplorarService
 
         return $query
             ->get()
-            ->map(fn (Emprendedor $emprendedor) => $this->formatearTarjeta($emprendedor))
+            ->map(fn (Emprendedor $emprendedor) => $this->formatearTarjeta($emprendedor, $locale))
             ->values()
             ->all();
     }
@@ -85,7 +90,7 @@ class EmprendedorExplorarService
     /**
      * @return array<string, mixed>
      */
-    public function formatearTarjeta(Emprendedor $emprendedor): array
+    public function formatearTarjeta(Emprendedor $emprendedor, string $locale = 'es'): array
     {
         $galeria = is_array($emprendedor->galeria) ? $emprendedor->galeria : [];
         $redes = RedesSocialesEmprendedor::paraFrontend(
@@ -95,15 +100,23 @@ class EmprendedorExplorarService
             $emprendedor->tiktok,
         );
 
+        $descripcion = $this->translator->traducirCampo(
+            entidadTipo: 'emprendedor',
+            entidadId: $emprendedor->id,
+            campo: 'descripcion',
+            texto: $emprendedor->descripcion,
+            idiomaDestino: $locale,
+        );
+
         return [
             'id' => $emprendedor->id,
             'nombre' => $emprendedor->nombre,
             'apellidos' => $emprendedor->apellidos,
-            'descripcion' => Str::limit((string) $emprendedor->descripcion, 140),
+            'descripcion' => Str::limit($descripcion, 140),
             'tipo_emprendimiento' => $emprendedor->tipo_emprendimiento?->value,
-            'tipo_emprendimiento_etiqueta' => $emprendedor->tipo_emprendimiento?->etiqueta(),
+            'tipo_emprendimiento_etiqueta' => $emprendedor->tipo_emprendimiento?->value,
             'departamento' => $emprendedor->departamento?->value,
-            'departamento_etiqueta' => $emprendedor->departamento?->etiqueta(),
+            'departamento_etiqueta' => $emprendedor->departamento?->value,
             'foto_portada' => $emprendedor->urlFotoPerfil(),
             'tiene_video' => filled($emprendedor->video_url),
             'cantidad_fotos' => count($galeria),

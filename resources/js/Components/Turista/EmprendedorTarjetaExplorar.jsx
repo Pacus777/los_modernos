@@ -1,3 +1,4 @@
+import { etiquetaDepartamentoT, etiquetaTipoEmprendimientoT } from '@/utils/catalogosI18n';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,14 +50,14 @@ export default function EmprendedorTarjetaExplorar({ emprendedor }) {
                 <h3 className="mt-1 text-lg font-black leading-tight text-wayna-950">{nombreCompleto}</h3>
 
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                    {emprendedor.tipo_emprendimiento_etiqueta ? (
+                    {emprendedor.tipo_emprendimiento ? (
                         <span className="inline-flex rounded-full bg-wayna-100 px-2.5 py-0.5 text-xs font-bold text-wayna-800">
-                            {emprendedor.tipo_emprendimiento_etiqueta}
+                            {etiquetaTipoEmprendimientoT(t, emprendedor.tipo_emprendimiento)}
                         </span>
                     ) : null}
-                    {emprendedor.departamento_etiqueta ? (
+                    {emprendedor.departamento ? (
                         <span className="inline-flex rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-bold text-stone-700">
-                            {emprendedor.departamento_etiqueta}
+                            {etiquetaDepartamentoT(t, emprendedor.departamento)}
                         </span>
                     ) : null}
                 </div>

@@ -6,6 +6,7 @@ use App\Services\TipoCambioService;
 use App\Services\LibreTranslationService;
 use App\Services\VisitanteService;
 use App\Support\RedesSocialesEmprendedor;
+use App\Support\TipoPagoTurista;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Models\Donacion;
@@ -154,7 +155,14 @@ class EmprendedorPublicoController extends Controller
                 ->where('activo', true)
                 ->select('id', 'nombre', 'codigo')
                 ->orderBy('id')
-                ->get(),
+                ->get()
+                ->map(fn (TipoPago $tipo) => [
+                    'id' => $tipo->id,
+                    'codigo' => $tipo->codigo,
+                    'nombre' => TipoPagoTurista::nombreParaLocale($tipo, $locale),
+                ])
+                ->values()
+                ->all(),
 
             'visitanteNombrePrefill' => $visitanteService->nombreEnSesion($request),
         ]);

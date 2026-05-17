@@ -7,7 +7,52 @@
     "back": "Back",
     "continue": "Continue",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close",
+    "currencyBs": "Bs"
+  },
+  "language": {
+    "comingSoon": "{{label}} — coming soon"
+  },
+  "catalog": {
+    "businessType": {
+      "gastronomia": "Food & beverage",
+      "artesania": "Handicrafts",
+      "turismo": "Tourism",
+      "textil": "Textiles",
+      "agricultura": "Agriculture",
+      "servicios": "Services",
+      "otro": "Other"
+    },
+    "paymentMethod": {
+      "efectivo": "Cash",
+      "qr": "QR / mobile wallet",
+      "tarjeta": "Card",
+      "transferencia": "Bank transfer"
+    },
+    "department": {
+      "la_paz": "La Paz",
+      "santa_cruz": "Santa Cruz",
+      "cochabamba": "Cochabamba",
+      "oruro": "Oruro",
+      "potosi": "Potosí",
+      "chuquisaca": "Chuquisaca",
+      "tarija": "Tarija",
+      "beni": "Beni",
+      "pando": "Pando"
+    }
+  },
+  "punto": {
+    "headTitle": "{{name}} — Wayna",
+    "headTitleFallback": "Wayna location",
+    "etiqueta": "Wayna location",
+    "instruccion": "Choose an entrepreneur to read their story and make a contribution.",
+    "emprendedoresDisponibles": "Available entrepreneurs",
+    "descripcionLista": "People linked to this physical location.",
+    "sinEmprendedores": "There are no active entrepreneurs at this location right now.",
+    "emprendedor": "Entrepreneur",
+    "sinDescripcion": "Discover their story and support their goal.",
+    "verPerfil": "View full profile"
   },
   "tourist": {
     "heroTitle": "Connect with local entrepreneurs",
@@ -26,6 +71,7 @@
       "title": "Your contribution was registered",
       "intro": "Follow these steps to complete payment.",
       "successFallback": "Donation registered. Use the QR code to continue.",
+      "successRegistered": "Your contribution was registered. Follow the steps below to complete payment.",
       "emptyTitle": "We couldn’t find a recent donation",
       "emptyBody": "You may have opened this page directly, or the session may have expired.",
       "emptyCta": "Go to home",

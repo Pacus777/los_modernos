@@ -1,6 +1,7 @@
 import EmprendedorTarjetaExplorar from '@/Components/Turista/EmprendedorTarjetaExplorar';
+import { opcionesDepartamentoT, opcionesTipoEmprendimientoT } from '@/utils/catalogosI18n';
 import { router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function ExplorarEmprendedores({
@@ -10,6 +11,16 @@ export default function ExplorarEmprendedores({
 }) {
     const { t } = useTranslation();
     const [busqueda, setBusqueda] = useState(filtros.q ?? '');
+
+    const tiposEmprendimiento = useMemo(
+        () => opcionesTipoEmprendimientoT(t, catalogos.tiposEmprendimiento ?? []),
+        [t, catalogos.tiposEmprendimiento],
+    );
+
+    const departamentos = useMemo(
+        () => opcionesDepartamentoT(t, catalogos.departamentos ?? []),
+        [t, catalogos.departamentos],
+    );
 
     const aplicarFiltros = (parcial = {}) => {
         const payload = {
@@ -76,7 +87,7 @@ export default function ExplorarEmprendedores({
                                 className="mt-1 w-full rounded-2xl border border-surface-200 px-3 py-2.5 text-sm"
                             >
                                 <option value="">{t('explore.filterAll')}</option>
-                                {(catalogos.tiposEmprendimiento ?? []).map((opt) => (
+                                {tiposEmprendimiento.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
                                         {opt.label}
                                     </option>
@@ -95,7 +106,7 @@ export default function ExplorarEmprendedores({
                                 className="mt-1 w-full rounded-2xl border border-surface-200 px-3 py-2.5 text-sm"
                             >
                                 <option value="">{t('explore.filterAll')}</option>
-                                {(catalogos.departamentos ?? []).map((opt) => (
+                                {departamentos.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
                                         {opt.label}
                                     </option>
