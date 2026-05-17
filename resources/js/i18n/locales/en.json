@@ -202,7 +202,9 @@
       "system": "Platform",
       "locations": "Locations",
       "market": "Wayna Markets",
-      "staffLogin": "Team login"
+      "staffLogin": "Team login",
+      "adminLogin": "Log in",
+      "adminPanel": "Admin area"
     },
     "hero": {
       "kicker": "Wayna entrepreneur network",

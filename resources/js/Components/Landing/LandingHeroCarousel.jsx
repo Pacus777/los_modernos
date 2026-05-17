@@ -1,15 +1,13 @@
 import { LANDING_HERO_IMAGES } from '@/data/landingImages';
+import { useWaynaSectionNav } from '@/context/WaynaSectionNavContext';
 import { useCarousel } from '@/hooks/useCarousel';
 import { useTranslation } from 'react-i18next';
-
-function scrollToSection(id) {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 const TEXT_SLIDE_COUNT = 3;
 
 export default function LandingHeroCarousel({ onExplore }) {
     const { t } = useTranslation();
+    const { goToSection } = useWaynaSectionNav();
 
     const textSlides = [
         {
@@ -17,21 +15,21 @@ export default function LandingHeroCarousel({ onExplore }) {
             title: t('landing.heroSlides.slide1.title'),
             subtitle: t('landing.heroSlides.slide1.subtitle'),
             cta: t('landing.hero.ctaExplore'),
-            action: () => (onExplore ? onExplore() : scrollToSection('explorar')),
+            action: () => (onExplore ? onExplore() : goToSection('explorar')),
         },
         {
             kicker: t('landing.heroSlides.slide2.kicker'),
             title: t('landing.heroSlides.slide2.title'),
             subtitle: t('landing.heroSlides.slide2.subtitle'),
             cta: t('landing.heroSlides.slide2.cta'),
-            action: () => scrollToSection('explorar'),
+            action: () => goToSection('explorar'),
         },
         {
             kicker: t('landing.heroSlides.slide3.kicker'),
             title: t('landing.heroSlides.slide3.title'),
             subtitle: t('landing.heroSlides.slide3.subtitle'),
             cta: t('landing.hero.ctaHow'),
-            action: () => scrollToSection('como-funciona'),
+            action: () => goToSection('como-funciona'),
         },
     ];
 
@@ -75,7 +73,7 @@ export default function LandingHeroCarousel({ onExplore }) {
                             </button>
                             <button
                                 type="button"
-                                onClick={() => scrollToSection('como-funciona')}
+                                onClick={() => goToSection('como-funciona')}
                                 className="btn-wayna-secondary !border-white/40 !bg-white/10 !text-white hover:!bg-white/20"
                             >
                                 {t('landing.hero.ctaHow')}
@@ -135,7 +133,7 @@ export default function LandingHeroCarousel({ onExplore }) {
 
                 <button
                     type="button"
-                    onClick={() => scrollToSection('explorar')}
+                    onClick={() => goToSection('explorar')}
                     className="mt-8 flex w-full flex-col items-center gap-1 text-xs font-semibold text-orange-100/90 lg:mt-6"
                 >
                     <span>{t('landing.hero.scrollHint')}</span>

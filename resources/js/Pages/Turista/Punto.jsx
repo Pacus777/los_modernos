@@ -1,3 +1,4 @@
+import WaynaEnterTransition from '@/Components/Wayna/WaynaEnterTransition';
 import GuestLayout from '@/Layouts/GuestLayout';
 import ChatWidget from '@/Components/Turista/ChatWidget';
 import { etiquetaDepartamentoT, etiquetaTipoEmprendimientoT } from '@/utils/catalogosI18n';
@@ -30,6 +31,7 @@ export default function Punto({ punto, emprendedores = [] }) {
         : t('punto.headTitleFallback');
 
     return (
+        <WaynaEnterTransition variant="navigate">
         <GuestLayout variant="full" contentClassName="!max-w-5xl sm:!max-w-5xl lg:!max-w-5xl">
             <Head title={tituloPagina} />
 
@@ -154,6 +156,7 @@ export default function Punto({ punto, emprendedores = [] }) {
 
             <ChatWidget />
         </GuestLayout>
+        </WaynaEnterTransition>
     );
 }
 

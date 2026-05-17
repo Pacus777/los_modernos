@@ -1,4 +1,5 @@
 import LandingEnterExperience from '@/Components/Landing/LandingEnterExperience';
+import { WaynaSectionNavProvider, useWaynaSectionNav } from '@/context/WaynaSectionNavContext';
 import LandingDestacadosCarousel from '@/Components/Landing/LandingDestacadosCarousel';
 import LandingGaleriaWayna from '@/Components/Landing/LandingGaleriaWayna';
 import LandingHeroCarousel from '@/Components/Landing/LandingHeroCarousel';
@@ -22,18 +23,30 @@ const NAV_SECTIONS = [
     { id: 'ubicaciones', key: 'locations' },
 ];
 
-function scrollToSection(id) {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
 function NavAnchor({ id, label }) {
+    const { goToSection } = useWaynaSectionNav();
+
     return (
         <button
             type="button"
-            onClick={() => scrollToSection(id)}
+            onClick={() => goToSection(id)}
             className="hidden rounded-lg px-2 py-1 text-sm font-semibold text-white/95 transition hover:bg-white/15 lg:inline-block"
         >
             {label}
+        </button>
+    );
+}
+
+function FooterSectionLink({ id, children }) {
+    const { goToSection } = useWaynaSectionNav();
+
+    return (
+        <button
+            type="button"
+            onClick={() => goToSection(id)}
+            className="text-orange-50/90 hover:text-white"
+        >
+            {children}
         </button>
     );
 }
@@ -86,6 +99,7 @@ export default function Landing({
         <>
             <Head title={t('landing.headTitle')} />
 
+            <WaynaSectionNavProvider>
             <LandingEnterExperience>
             <div className="min-h-screen bg-surface text-stone-900">
                 <WaynaNavBar href="#inicio" sticky className="landing-enter-item landing-enter-item--1">
@@ -95,14 +109,14 @@ export default function Landing({
                         ))}
                     </nav>
 
-                    <a
-                        href={externalMarket}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hidden rounded-xl border border-white/30 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-white/10 sm:inline-block"
-                    >
-                        {t('landing.nav.market')}
-                    </a>
+                    {canLogin && (
+                        <Link
+                            href={staffHref}
+                            className="inline-flex shrink-0 items-center justify-center rounded-xl border border-white/40 bg-white/20 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-white/30 sm:px-4 sm:text-sm"
+                        >
+                            {panelUrl ? t('landing.nav.adminPanel') : t('landing.nav.adminLogin')}
+                        </Link>
+                    )}
 
                     <LanguageSelector variant="on-brand" />
                 </WaynaNavBar>
@@ -234,13 +248,9 @@ export default function Landing({
                                 <ul className="mt-3 space-y-2 text-sm">
                                     {NAV_SECTIONS.map(({ id, key }) => (
                                         <li key={id}>
-                                            <button
-                                                type="button"
-                                                onClick={() => scrollToSection(id)}
-                                                className="text-orange-50/90 hover:text-white"
-                                            >
+                                            <FooterSectionLink id={id}>
                                                 {t(`landing.nav.${key}`)}
-                                            </button>
+                                            </FooterSectionLink>
                                         </li>
                                     ))}
                                     {canLogin && (
@@ -281,6 +291,7 @@ export default function Landing({
                 <ChatWidget />
             </div>
             </LandingEnterExperience>
+            </WaynaSectionNavProvider>
         </>
     );
 }

@@ -1,3 +1,4 @@
+import WaynaEnterTransition from '@/Components/Wayna/WaynaEnterTransition';
 import GuestLayout from '@/Layouts/GuestLayout';
 import DonacionForm from '@/Components/Turista/DonacionForm';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
@@ -26,6 +27,7 @@ export default function Perfil({
     const nombreCompleto = `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim();
 
     return (
+        <WaynaEnterTransition variant="navigate">
         <GuestLayout variant="full" navHref="/" contentClassName="max-w-lg sm:max-w-xl lg:max-w-2xl">
             <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
 
@@ -102,6 +104,7 @@ export default function Perfil({
 
             <ChatWidget />
         </GuestLayout>
+        </WaynaEnterTransition>
     );
 }
 
