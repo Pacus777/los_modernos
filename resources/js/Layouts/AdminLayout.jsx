@@ -8,6 +8,7 @@ import {
 import { WaynaBrand } from '@/Components/ApplicationLogo';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import AdminRealtimeNotifications from '@/Components/Admin/AdminRealtimeNotifications';
 
 const NAV_ITEMS = [
     {
@@ -175,6 +176,7 @@ export default function AdminLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-surface">
+                    <AdminRealtimeNotifications />
             {sidebarOpen && (
                 <button
                     type="button"

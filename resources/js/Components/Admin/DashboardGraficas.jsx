@@ -1,5 +1,5 @@
 import { adminListCardOuter } from '@/Components/Admin/adminUi';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Area,
     AreaChart,
@@ -10,7 +10,6 @@ import {
     Legend,
     Pie,
     PieChart,
-    ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
@@ -65,12 +64,45 @@ function GraficaVacia({ mensaje, grande = false }) {
     );
 }
 
+function useMeasuredSize() {
+    const ref = useRef(null);
+    const [size, setSize] = useState({ width: 0, height: 0 });
+
+    useEffect(() => {
+        const element = ref.current;
+
+        if (!element) {
+            return undefined;
+        }
+
+        const updateSize = () => {
+            const { width, height } = element.getBoundingClientRect();
+            setSize({
+                width: Math.floor(width),
+                height: Math.floor(height),
+            });
+        };
+
+        updateSize();
+
+        const observer = new ResizeObserver(() => {
+            updateSize();
+        });
+
+        observer.observe(element);
+
+        return () => observer.disconnect();
+    }, []);
+
+    return { ref, ...size };
+}
+
 function TarjetaGrafica({ titulo, descripcion, children, onClick }) {
     return (
         <button
             type="button"
             onClick={onClick}
-            className={`${adminListCardOuter} min-w-0 p-3 text-left transition hover:-translate-y-0.5 hover:border-wayna-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40 sm:p-4`}
+            className={`${adminListCardOuter} block w-full min-w-0 p-3 text-left transition hover:-translate-y-0.5 hover:border-wayna-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wayna-500/40 sm:p-4`}
         >
             <div className="flex min-h-[3rem] items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -89,7 +121,7 @@ function TarjetaGrafica({ titulo, descripcion, children, onClick }) {
                 </span>
             </div>
 
-            <div className="mt-3 h-40 sm:h-44 xl:h-48">
+            <div className="mt-3 h-40 w-full min-w-0 sm:h-44 xl:h-48">
                 {children}
             </div>
         </button>
@@ -136,7 +168,7 @@ function ModalGrafica({ grafica, onClose, children }) {
                 </div>
 
                 <div className="px-5 py-5">
-                    <div className="h-[22rem] sm:h-[26rem]">
+                    <div className="h-[22rem] w-full min-w-0 sm:h-[26rem]">
                         {children}
                     </div>
 
@@ -157,6 +189,8 @@ function ModalGrafica({ grafica, onClose, children }) {
 }
 
 function GraficaEvolucion({ evolucion, hayEvolucion, grande = false }) {
+    const { ref, width, height } = useMeasuredSize();
+
     if (!hayEvolucion) {
         return (
             <GraficaVacia
@@ -167,50 +201,56 @@ function GraficaEvolucion({ evolucion, hayEvolucion, grande = false }) {
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-                data={evolucion}
-                margin={{
-                    top: 8,
-                    right: grande ? 24 : 8,
-                    left: grande ? 0 : -18,
-                    bottom: grande ? 16 : 0,
-                }}
-            >
-                <defs>
-                    <linearGradient id="gradRecaudacion" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#f07e26" stopOpacity={0.45} />
-                        <stop offset="100%" stopColor="#f07e26" stopOpacity={0.05} />
-                    </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-                <XAxis
-                    dataKey="etiqueta"
-                    tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
-                    axisLine={false}
-                    tickLine={false}
-                />
-                <YAxis
-                    tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-                />
-                <Tooltip content={<TooltipMonto />} />
-                <Area
-                    type="monotone"
-                    dataKey="monto"
-                    name="Recaudado"
-                    stroke="#f07e26"
-                    strokeWidth={grande ? 3 : 2}
-                    fill="url(#gradRecaudacion)"
-                />
-            </AreaChart>
-        </ResponsiveContainer>
+        <div ref={ref} className="h-full w-full min-w-0">
+            {width > 0 && height > 0 ? (
+                <AreaChart
+                    width={width}
+                    height={height}
+                    data={evolucion}
+                    margin={{
+                        top: 8,
+                        right: grande ? 24 : 8,
+                        left: grande ? 0 : -18,
+                        bottom: grande ? 16 : 0,
+                    }}
+                >
+                    <defs>
+                        <linearGradient id="gradRecaudacion" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f07e26" stopOpacity={0.45} />
+                            <stop offset="100%" stopColor="#f07e26" stopOpacity={0.05} />
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
+                    <XAxis
+                        dataKey="etiqueta"
+                        tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
+                        axisLine={false}
+                        tickLine={false}
+                    />
+                    <YAxis
+                        tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v) => `${Math.round(v / 1000)}k`}
+                    />
+                    <Tooltip content={<TooltipMonto />} />
+                    <Area
+                        type="monotone"
+                        dataKey="monto"
+                        name="Recaudado"
+                        stroke="#f07e26"
+                        strokeWidth={grande ? 3 : 2}
+                        fill="url(#gradRecaudacion)"
+                    />
+                </AreaChart>
+            ) : null}
+        </div>
     );
 }
 
 function GraficaAportes({ evolucion, hayEvolucion, grande = false }) {
+    const { ref, width, height } = useMeasuredSize();
+
     if (!hayEvolucion) {
         return (
             <GraficaVacia
@@ -221,43 +261,49 @@ function GraficaAportes({ evolucion, hayEvolucion, grande = false }) {
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-                data={evolucion}
-                margin={{
-                    top: 8,
-                    right: grande ? 24 : 8,
-                    left: grande ? 0 : -18,
-                    bottom: grande ? 16 : 0,
-                }}
-            >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-                <XAxis
-                    dataKey="etiqueta"
-                    tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
-                    axisLine={false}
-                    tickLine={false}
-                />
-                <YAxis
-                    allowDecimals={false}
-                    tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
-                    axisLine={false}
-                    tickLine={false}
-                />
-                <Tooltip content={<TooltipMonto />} />
-                <Bar
-                    dataKey="aportes"
-                    name="Aportes"
-                    fill="#d96d1c"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={grande ? 64 : 36}
-                />
-            </BarChart>
-        </ResponsiveContainer>
+        <div ref={ref} className="h-full w-full min-w-0">
+            {width > 0 && height > 0 ? (
+                <BarChart
+                    width={width}
+                    height={height}
+                    data={evolucion}
+                    margin={{
+                        top: 8,
+                        right: grande ? 24 : 8,
+                        left: grande ? 0 : -18,
+                        bottom: grande ? 16 : 0,
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
+                    <XAxis
+                        dataKey="etiqueta"
+                        tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
+                        axisLine={false}
+                        tickLine={false}
+                    />
+                    <YAxis
+                        allowDecimals={false}
+                        tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
+                        axisLine={false}
+                        tickLine={false}
+                    />
+                    <Tooltip content={<TooltipMonto />} />
+                    <Bar
+                        dataKey="aportes"
+                        name="Aportes"
+                        fill="#d96d1c"
+                        radius={[6, 6, 0, 0]}
+                        maxBarSize={grande ? 64 : 36}
+                    />
+                </BarChart>
+            ) : null}
+        </div>
     );
 }
 
 function GraficaMetodoPago({ porMetodo, totalMetodo, grande = false }) {
+    const { ref, width, height } = useMeasuredSize();
+
     if (totalMetodo === 0) {
         return (
             <GraficaVacia
@@ -268,40 +314,44 @@ function GraficaMetodoPago({ porMetodo, totalMetodo, grande = false }) {
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-                <Pie
-                    data={porMetodo}
-                    dataKey="monto"
-                    nameKey="etiqueta"
-                    cx="50%"
-                    cy={grande ? '50%' : '46%'}
-                    outerRadius={grande ? '78%' : '68%'}
-                >
-                    {porMetodo.map((item, i) => (
-                        <Cell
-                            key={item.metodo}
-                            fill={COLORES_WAYNA[i % COLORES_WAYNA.length]}
-                        />
-                    ))}
-                </Pie>
-                <Tooltip
-                    formatter={(value, name) => [
-                        formatearMonto(value),
-                        name,
-                    ]}
-                />
-                <Legend
-                    iconType="circle"
-                    iconSize={grande ? 9 : 7}
-                    wrapperStyle={{ fontSize: grande ? 12 : 10 }}
-                />
-            </PieChart>
-        </ResponsiveContainer>
+        <div ref={ref} className="h-full w-full min-w-0">
+            {width > 0 && height > 0 ? (
+                <PieChart width={width} height={height}>
+                    <Pie
+                        data={porMetodo}
+                        dataKey="monto"
+                        nameKey="etiqueta"
+                        cx="50%"
+                        cy={grande ? '50%' : '46%'}
+                        outerRadius={grande ? '78%' : '68%'}
+                    >
+                        {porMetodo.map((item, i) => (
+                            <Cell
+                                key={item.metodo}
+                                fill={COLORES_WAYNA[i % COLORES_WAYNA.length]}
+                            />
+                        ))}
+                    </Pie>
+                    <Tooltip
+                        formatter={(value, name) => [
+                            formatearMonto(value),
+                            name,
+                        ]}
+                    />
+                    <Legend
+                        iconType="circle"
+                        iconSize={grande ? 9 : 7}
+                        wrapperStyle={{ fontSize: grande ? 12 : 10 }}
+                    />
+                </PieChart>
+            ) : null}
+        </div>
     );
 }
 
 function GraficaTopCampanas({ topCampanas, grande = false }) {
+    const { ref, width, height } = useMeasuredSize();
+
     if (topCampanas.length === 0) {
         return (
             <GraficaVacia
@@ -312,49 +362,53 @@ function GraficaTopCampanas({ topCampanas, grande = false }) {
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-                data={topCampanas}
-                layout="vertical"
-                margin={{
-                    top: 4,
-                    right: grande ? 24 : 10,
-                    left: grande ? 24 : -12,
-                    bottom: 4,
-                }}
-            >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" horizontal={false} />
-                <XAxis
-                    type="number"
-                    tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-                />
-                <YAxis
-                    type="category"
-                    dataKey="titulo"
-                    width={grande ? 150 : 78}
-                    tick={{ fontSize: grande ? 12 : 9, fill: '#57534e' }}
-                    axisLine={false}
-                    tickLine={false}
-                />
-                <Tooltip
-                    formatter={(value) => [
-                        formatearMonto(value),
-                        'Recaudado',
-                    ]}
-                    labelFormatter={(label) => label}
-                />
-                <Bar
-                    dataKey="monto"
-                    name="Recaudado"
-                    fill="#b55916"
-                    radius={[0, 6, 6, 0]}
-                    maxBarSize={grande ? 34 : 22}
-                />
-            </BarChart>
-        </ResponsiveContainer>
+        <div ref={ref} className="h-full w-full min-w-0">
+            {width > 0 && height > 0 ? (
+                <BarChart
+                    width={width}
+                    height={height}
+                    data={topCampanas}
+                    layout="vertical"
+                    margin={{
+                        top: 4,
+                        right: grande ? 24 : 10,
+                        left: grande ? 24 : -12,
+                        bottom: 4,
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" horizontal={false} />
+                    <XAxis
+                        type="number"
+                        tick={{ fontSize: grande ? 12 : 10, fill: '#78716c' }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v) => `${Math.round(v / 1000)}k`}
+                    />
+                    <YAxis
+                        type="category"
+                        dataKey="titulo"
+                        width={grande ? 150 : 78}
+                        tick={{ fontSize: grande ? 12 : 9, fill: '#57534e' }}
+                        axisLine={false}
+                        tickLine={false}
+                    />
+                    <Tooltip
+                        formatter={(value) => [
+                            formatearMonto(value),
+                            'Recaudado',
+                        ]}
+                        labelFormatter={(label) => label}
+                    />
+                    <Bar
+                        dataKey="monto"
+                        name="Recaudado"
+                        fill="#b55916"
+                        radius={[0, 6, 6, 0]}
+                        maxBarSize={grande ? 34 : 22}
+                    />
+                </BarChart>
+            ) : null}
+        </div>
     );
 }
 
@@ -369,35 +423,37 @@ function GraficaCampanasEstado({ campanasEstado, totalCampanasEstado, grande = f
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-                <Pie
-                    data={campanasEstado}
-                    dataKey="total"
-                    nameKey="etiqueta"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={grande ? '50%' : '48%'}
-                    outerRadius={grande ? '76%' : '68%'}
-                    paddingAngle={3}
-                >
-                    {campanasEstado.map((item) => (
-                        <Cell
-                            key={item.estado}
-                            fill={COLORES_ESTADO[item.estado] ?? '#a8a29e'}
-                        />
-                    ))}
-                </Pie>
-                <Tooltip
-                    formatter={(value, name) => [`${value} campaña(s)`, name]}
-                />
-                <Legend
-                    iconType="circle"
-                    iconSize={grande ? 9 : 7}
-                    wrapperStyle={{ fontSize: grande ? 12 : 10 }}
-                />
-            </PieChart>
-        </ResponsiveContainer>
+        <div ref={ref} className="h-full w-full min-w-0">
+            {width > 0 && height > 0 ? (
+                <PieChart width={width} height={height}>
+                    <Pie
+                        data={campanasEstado}
+                        dataKey="total"
+                        nameKey="etiqueta"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={grande ? '50%' : '48%'}
+                        outerRadius={grande ? '76%' : '68%'}
+                        paddingAngle={3}
+                    >
+                        {campanasEstado.map((item) => (
+                            <Cell
+                                key={item.estado}
+                                fill={COLORES_ESTADO[item.estado] ?? '#a8a29e'}
+                            />
+                        ))}
+                    </Pie>
+                    <Tooltip
+                        formatter={(value, name) => [`${value} campaña(s)`, name]}
+                    />
+                    <Legend
+                        iconType="circle"
+                        iconSize={grande ? 9 : 7}
+                        wrapperStyle={{ fontSize: grande ? 12 : 10 }}
+                    />
+                </PieChart>
+            ) : null}
+        </div>
     );
 }
 

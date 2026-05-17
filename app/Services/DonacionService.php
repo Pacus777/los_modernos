@@ -7,6 +7,8 @@ use App\Support\ReferenciaPagoWayna;
 use Illuminate\Support\Facades\DB;
 use App\Models\Campana;
 use Illuminate\Validation\ValidationException;
+use App\Events\DonacionCreada;
+
 
 class DonacionService
 {
@@ -88,6 +90,9 @@ class DonacionService
         if ($this->esPagoEnEfectivo($donacion)) {
             $this->telegramService->notificarDonacionEfectivoPendiente($donacion);
         }
+
+        // Notificación interna web (toast)
+        event(new DonacionCreada($donacion));
 
         return $resultado;
     }
