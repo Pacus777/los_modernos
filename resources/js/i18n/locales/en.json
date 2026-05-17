@@ -127,6 +127,71 @@
       }
     }
   },
+  "landing": {
+    "headTitle": "Wayna Connect — Support entrepreneurs",
+    "nav": {
+      "home": "Home",
+      "how": "How it works",
+      "system": "Platform",
+      "locations": "Locations",
+      "market": "Wayna Markets",
+      "staffLogin": "Team login"
+    },
+    "hero": {
+      "kicker": "Entrepreneur marketplace",
+      "title": "Support with purpose, connect with real stories",
+      "subtitle": "Scan the QR at a Wayna location, meet the entrepreneur, and register your donation with full traceability — cash or digital.",
+      "ctaHow": "How it works",
+      "ctaStaff": "Staff sign in",
+      "scrollHint": "Scroll to learn more"
+    },
+    "stats": {
+      "transparent": "Traceable donations",
+      "languages": "Spanish & English",
+      "payments": "Cash & digital"
+    },
+    "how": {
+      "title": "How it works",
+      "subtitle": "Three steps from the market to your registered contribution.",
+      "step1Title": "Scan the QR",
+      "step1Body": "At Wayna Sopocachi or Wayna Sur, each entrepreneur has a code that opens their profile on this platform.",
+      "step2Title": "Choose your support",
+      "step2Body": "Read their story, the campaign goal, and the amount you want to donate in bolivianos.",
+      "step3Title": "Confirm payment",
+      "step3Body": "Pay via banking QR or cash at the desk; the Wayna team validates and records it in the system."
+    },
+    "platform": {
+      "title": "Your Wayna support system",
+      "subtitle": "The same spirit as the market, with digital records for tourists, cashiers, and administration.",
+      "traceTitle": "Traceability",
+      "traceBody": "Every donation is linked to the entrepreneur, campaign, and payment method for reporting and audit.",
+      "touristTitle": "Tourist experience",
+      "touristBody": "Public profile, media, campaign goals, and confirmation with payment code and timer.",
+      "teamTitle": "Team dashboard",
+      "teamBody": "Admin and cashiers manage entrepreneurs, pending donations, and cash confirmation."
+    },
+    "market": {
+      "title": "Looking for market products?",
+      "body": "Orders, featured entrepreneurs, and news stay on Wayna Markets. This platform focuses on in-person support and donations.",
+      "cta": "Go to Wayna Markets"
+    },
+    "locations": {
+      "title": "Locations",
+      "subtitle": "Visit our markets and support in person.",
+      "sopocachiName": "Wayna Sopocachi",
+      "sopocachiAddress": "Av. 20 de Octubre #927, between Belisario Salinas and Pedro Salazar, Plaza Abaroa.",
+      "sopocachiHours": "Tue–Fri 12:00–20:00 · Sat 12:00–18:00 · Sun 12:00–15:00",
+      "surName": "Wayna Sur",
+      "surAddress": "Calle 15 de Calacoto, between Sánchez Bustamante and Julio Patiño, El Bosque Boulevard.",
+      "surHours": "Tue–Sat 12:00–19:00 · Sun 12:00–15:00"
+    },
+    "footer": {
+      "tagline": "Wayna Connect — support platform for entrepreneurs in the Wayna ecosystem.",
+      "navTitle": "Navigate",
+      "marketTitle": "Market",
+      "rights": "© {{year}} Wayna Markets. Wayna ecosystem."
+    }
+  },
   "auth": {
     "welcome": "Welcome",
     "subtitle": "Sign in to continue to the system",

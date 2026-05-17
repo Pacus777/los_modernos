@@ -127,6 +127,71 @@
       }
     }
   },
+  "landing": {
+    "headTitle": "Wayna Conecta — Apoya a emprendedores",
+    "nav": {
+      "home": "Inicio",
+      "how": "Cómo funciona",
+      "system": "Plataforma",
+      "locations": "Ubicaciones",
+      "market": "Wayna Mercados",
+      "staffLogin": "Acceso equipo"
+    },
+    "hero": {
+      "kicker": "Mercado de emprendedores",
+      "title": "Apoya con propósito, conecta con historias reales",
+      "subtitle": "Escaneá el QR en el punto Wayna, conocé al emprendedor y registrá tu donación con trazabilidad — efectivo o digital.",
+      "ctaHow": "Cómo funciona",
+      "ctaStaff": "Acceso administración",
+      "scrollHint": "Desplázate para conocer más"
+    },
+    "stats": {
+      "transparent": "Donaciones trazables",
+      "languages": "Español e inglés",
+      "payments": "Efectivo y digital"
+    },
+    "how": {
+      "title": "¿Cómo funciona?",
+      "subtitle": "Tres pasos desde el mercado hasta tu aporte registrado.",
+      "step1Title": "Escaneá el QR",
+      "step1Body": "En Wayna Sopocachi o Wayna Sur, cada emprendedor tiene un código que abre su perfil en esta plataforma.",
+      "step2Title": "Elegí tu aporte",
+      "step2Body": "Conocé su historia, la meta de campaña y el monto que querés donar en bolivianos.",
+      "step3Title": "Confirmá el pago",
+      "step3Body": "Completá con QR bancario o efectivo en caja; el equipo Wayna valida y deja constancia en el sistema."
+    },
+    "platform": {
+      "title": "Tu sistema de apoyo Wayna",
+      "subtitle": "La misma calidez del mercado, con registro digital para turistas, cajeros y administración.",
+      "traceTitle": "Trazabilidad",
+      "traceBody": "Cada donación queda vinculada al emprendedor, campaña y método de pago para reportes y auditoría.",
+      "touristTitle": "Experiencia turista",
+      "touristBody": "Perfil público, medios, metas de campaña y confirmación con código de pago y temporizador.",
+      "teamTitle": "Panel del equipo",
+      "teamBody": "Administración y cajero gestionan emprendedores, donaciones pendientes y confirmación en efectivo."
+    },
+    "market": {
+      "title": "¿Buscás productos del mercado?",
+      "body": "Pedidos, emprendedores destacados y noticias siguen en Wayna Mercados. Esta plataforma se enfoca en el apoyo y la donación en el punto físico.",
+      "cta": "Ir a Wayna Mercados"
+    },
+    "locations": {
+      "title": "Ubicaciones",
+      "subtitle": "Visitá nuestros mercados y apoyá en persona.",
+      "sopocachiName": "Wayna Sopocachi",
+      "sopocachiAddress": "Av. 20 de Octubre #927, entre Belisario Salinas y Pedro Salazar, Plaza Abaroa.",
+      "sopocachiHours": "Mar–Vie 12:00–20:00 · Sáb 12:00–18:00 · Dom 12:00–15:00",
+      "surName": "Wayna Sur",
+      "surAddress": "Calle 15 de Calacoto, entre Sánchez Bustamante y Julio Patiño, El Bosque Boulevard.",
+      "surHours": "Mar–Sáb 12:00–19:00 · Dom 12:00–15:00"
+    },
+    "footer": {
+      "tagline": "Wayna Conecta — plataforma de apoyo a emprendedores del ecosistema Wayna.",
+      "navTitle": "Navega",
+      "marketTitle": "Mercado",
+      "rights": "© {{year}} Wayna Mercados. Ecosistema Wayna."
+    }
+  },
   "auth": {
     "welcome": "Bienvenido",
     "subtitle": "Ingresa para continuar al sistema",
