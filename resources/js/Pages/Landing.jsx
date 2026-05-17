@@ -1,4 +1,13 @@
+import LandingDestacadosCarousel from '@/Components/Landing/LandingDestacadosCarousel';
+import LandingGaleriaWayna from '@/Components/Landing/LandingGaleriaWayna';
+import LandingHeroCarousel from '@/Components/Landing/LandingHeroCarousel';
+import { LANDING_LOCATION_IMAGES } from '@/data/landingImages';
+import LandingScrollReveal from '@/Components/Landing/LandingScrollReveal';
+import LandingStatsBar from '@/Components/Landing/LandingStatsBar';
+import LandingStepsCarousel from '@/Components/Landing/LandingStepsCarousel';
+import LandingTestimonialsCarousel from '@/Components/Landing/LandingTestimonialsCarousel';
 import ExplorarEmprendedores from '@/Components/Turista/ExplorarEmprendedores';
+import ChatWidget from '@/Components/Turista/ChatWidget';
 import LanguageSelector from '@/Components/LanguageSelector';
 import WaynaNavBar from '@/Components/WaynaNavBar';
 import { Head, Link } from '@inertiajs/react';
@@ -7,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 const NAV_SECTIONS = [
     { id: 'inicio', key: 'home' },
     { id: 'explorar', key: 'explore' },
+    { id: 'galeria', key: 'gallery' },
     { id: 'como-funciona', key: 'how' },
     { id: 'ubicaciones', key: 'locations' },
 ];
@@ -27,41 +37,31 @@ function NavAnchor({ id, label }) {
     );
 }
 
-function StatPill({ label }) {
-    return (
-        <div className="rounded-2xl border border-wayna-200/80 bg-surface-card/95 px-4 py-3 text-center shadow-sm backdrop-blur-sm">
-            <p className="text-sm font-bold text-wayna-900">{label}</p>
-        </div>
-    );
-}
-
-function StepCard({ number, title, body }) {
-    return (
-        <article className="relative overflow-hidden rounded-3xl border border-wayna-200/70 bg-surface-card p-6 shadow-lg shadow-wayna-900/5">
-            <span className="absolute -right-2 -top-4 text-7xl font-black text-wayna-100/90">
-                {number}
-            </span>
-            <h3 className="relative text-lg font-bold text-wayna-950">{title}</h3>
-            <p className="relative mt-3 text-sm leading-relaxed text-stone-600">{body}</p>
-        </article>
-    );
-}
-
 function FeatureCard({ title, body }) {
     return (
-        <article className="rounded-3xl border border-surface-200 bg-surface-card p-6 shadow-md">
+        <article className="rounded-3xl border border-surface-200 bg-surface-card p-6 shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg">
             <h3 className="text-lg font-bold text-wayna-800">{title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-stone-600">{body}</p>
         </article>
     );
 }
 
-function LocationCard({ name, address, hours }) {
+function LocationCard({ name, address, hours, imageSrc }) {
     return (
-        <article className="rounded-3xl border border-wayna-200/80 bg-gradient-to-br from-wayna-50 to-surface-card p-6 shadow-md">
-            <h3 className="text-xl font-bold text-wayna-900">{name}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-stone-700">{address}</p>
-            <p className="mt-4 text-sm font-semibold text-wayna-700">{hours}</p>
+        <article className="overflow-hidden rounded-3xl border border-wayna-200/80 bg-gradient-to-br from-wayna-50 to-surface-card shadow-md transition duration-300 hover:shadow-lg">
+            {imageSrc && (
+                <img
+                    src={imageSrc}
+                    alt=""
+                    className="aspect-[16/10] w-full object-cover"
+                    loading="lazy"
+                />
+            )}
+            <div className="p-6">
+                <h3 className="text-xl font-bold text-wayna-900">{name}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-stone-700">{address}</p>
+                <p className="mt-4 text-sm font-semibold text-wayna-700">{hours}</p>
+            </div>
         </article>
     );
 }
@@ -71,6 +71,8 @@ export default function Landing({
     panelUrl,
     marketUrl,
     emprendedores = [],
+    destacados = [],
+    stats = {},
     filtros = {},
     catalogos = {},
 }) {
@@ -103,68 +105,13 @@ export default function Landing({
                     <LanguageSelector variant="on-brand" />
                 </WaynaNavBar>
 
-                <section
-                    id="inicio"
-                    className="relative overflow-hidden border-b border-wayna-200/50 bg-gradient-to-b from-wayna-500 via-wayna-500 to-wayna-600 pb-16 pt-10 text-white sm:pb-20 sm:pt-14"
-                >
-                    <div className="pointer-events-none absolute -left-24 top-10 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-                    <div className="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-wayna-900/20 blur-3xl" />
+                <LandingHeroCarousel />
 
-                    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-100">
-                            {t('landing.hero.kicker')}
-                        </p>
+                <LandingStatsBar stats={stats} />
 
-                        <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
-                            {t('landing.hero.title')}
-                        </h1>
+                <LandingGaleriaWayna />
 
-                        <p className="mt-5 max-w-2xl text-base leading-relaxed text-orange-50/95 sm:text-lg">
-                            {t('landing.hero.subtitle')}
-                        </p>
-
-                        <div className="mt-8 flex flex-wrap gap-3">
-                            <button
-                                type="button"
-                                onClick={() => scrollToSection('explorar')}
-                                className="btn-wayna-primary-gradient"
-                            >
-                                {t('landing.hero.ctaExplore')}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => scrollToSection('como-funciona')}
-                                className="btn-wayna-secondary !border-white/40 !bg-white/10 !text-white hover:!bg-white/20"
-                            >
-                                {t('landing.hero.ctaHow')}
-                            </button>
-                        </div>
-
-                        <div className="mt-10 grid gap-3 sm:grid-cols-3">
-                            <StatPill label={t('landing.stats.transparent')} />
-                            <StatPill label={t('landing.stats.languages')} />
-                            <StatPill label={t('landing.stats.payments')} />
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={() => scrollToSection('explorar')}
-                            className="mt-12 flex w-full flex-col items-center gap-1 text-xs font-semibold text-orange-100/90"
-                        >
-                            <span>{t('landing.hero.scrollHint')}</span>
-                            <svg className="h-5 w-5 animate-bounce" viewBox="0 0 24 24" fill="none" aria-hidden>
-                                <path
-                                    d="M12 5v14M5 12l7 7 7-7"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                </section>
+                <LandingDestacadosCarousel destacados={destacados} />
 
                 <ExplorarEmprendedores
                     emprendedores={emprendedores}
@@ -172,99 +119,100 @@ export default function Landing({
                     catalogos={catalogos}
                 />
 
-                <section id="como-funciona" className="scroll-mt-20 py-16 sm:py-20">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <header className="max-w-2xl">
-                            <h2 className="text-3xl font-black text-wayna-900">{t('landing.how.title')}</h2>
-                            <p className="mt-3 text-stone-600">{t('landing.how.subtitle')}</p>
-                        </header>
-
-                        <div className="mt-10 grid gap-6 md:grid-cols-3">
-                            <StepCard
-                                number="01"
-                                title={t('landing.how.step1Title')}
-                                body={t('landing.how.step1Body')}
-                            />
-                            <StepCard
-                                number="02"
-                                title={t('landing.how.step2Title')}
-                                body={t('landing.how.step2Body')}
-                            />
-                            <StepCard
-                                number="03"
-                                title={t('landing.how.step3Title')}
-                                body={t('landing.how.step3Body')}
-                            />
-                        </div>
-                    </div>
-                </section>
+                <LandingStepsCarousel />
 
                 <section
                     id="plataforma"
                     className="scroll-mt-20 border-y border-surface-200 bg-surface-muted py-16 sm:py-20"
                 >
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <header className="max-w-2xl">
-                            <h2 className="text-3xl font-black text-wayna-900">{t('landing.platform.title')}</h2>
-                            <p className="mt-3 text-stone-600">{t('landing.platform.subtitle')}</p>
-                        </header>
+                        <LandingScrollReveal>
+                            <header className="max-w-2xl">
+                                <h2 className="text-3xl font-black text-wayna-900">
+                                    {t('landing.platform.title')}
+                                </h2>
+                                <p className="mt-3 text-stone-600">{t('landing.platform.subtitle')}</p>
+                            </header>
+                        </LandingScrollReveal>
 
                         <div className="mt-10 grid gap-6 lg:grid-cols-3">
-                            <FeatureCard
-                                title={t('landing.platform.traceTitle')}
-                                body={t('landing.platform.traceBody')}
-                            />
-                            <FeatureCard
-                                title={t('landing.platform.touristTitle')}
-                                body={t('landing.platform.touristBody')}
-                            />
-                            <FeatureCard
-                                title={t('landing.platform.teamTitle')}
-                                body={t('landing.platform.teamBody')}
-                            />
+                            <LandingScrollReveal delayMs={80}>
+                                <FeatureCard
+                                    title={t('landing.platform.traceTitle')}
+                                    body={t('landing.platform.traceBody')}
+                                />
+                            </LandingScrollReveal>
+                            <LandingScrollReveal delayMs={160}>
+                                <FeatureCard
+                                    title={t('landing.platform.touristTitle')}
+                                    body={t('landing.platform.touristBody')}
+                                />
+                            </LandingScrollReveal>
+                            <LandingScrollReveal delayMs={240}>
+                                <FeatureCard
+                                    title={t('landing.platform.teamTitle')}
+                                    body={t('landing.platform.teamBody')}
+                                />
+                            </LandingScrollReveal>
                         </div>
                     </div>
                 </section>
 
+                <LandingTestimonialsCarousel />
+
                 <section className="py-16 sm:py-20">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-wayna-600 to-wayna-500 p-8 text-white shadow-xl sm:p-10 lg:flex lg:items-center lg:justify-between lg:gap-10">
-                            <div className="max-w-xl">
-                                <h2 className="text-2xl font-black sm:text-3xl">{t('landing.market.title')}</h2>
-                                <p className="mt-3 text-sm leading-relaxed text-orange-50 sm:text-base">
-                                    {t('landing.market.body')}
-                                </p>
+                        <LandingScrollReveal>
+                            <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-wayna-600 to-wayna-500 p-8 text-white shadow-xl sm:p-10 lg:flex lg:items-center lg:justify-between lg:gap-10">
+                                <div className="max-w-xl">
+                                    <h2 className="text-2xl font-black sm:text-3xl">
+                                        {t('landing.market.title')}
+                                    </h2>
+                                    <p className="mt-3 text-sm leading-relaxed text-orange-50 sm:text-base">
+                                        {t('landing.market.body')}
+                                    </p>
+                                </div>
+                                <a
+                                    href={externalMarket}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-6 inline-flex shrink-0 items-center justify-center rounded-2xl bg-white px-6 py-3 text-sm font-bold text-wayna-700 shadow-lg transition hover:scale-[1.02] hover:bg-orange-50 lg:mt-0"
+                                >
+                                    {t('landing.market.cta')} →
+                                </a>
                             </div>
-                            <a
-                                href={externalMarket}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-6 inline-flex shrink-0 items-center justify-center rounded-2xl bg-white px-6 py-3 text-sm font-bold text-wayna-700 shadow-lg transition hover:bg-orange-50 lg:mt-0"
-                            >
-                                {t('landing.market.cta')} →
-                            </a>
-                        </div>
+                        </LandingScrollReveal>
                     </div>
                 </section>
 
                 <section id="ubicaciones" className="scroll-mt-20 pb-16 sm:pb-20">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <header className="max-w-2xl">
-                            <h2 className="text-3xl font-black text-wayna-900">{t('landing.locations.title')}</h2>
-                            <p className="mt-3 text-stone-600">{t('landing.locations.subtitle')}</p>
-                        </header>
+                        <LandingScrollReveal>
+                            <header className="max-w-2xl">
+                                <h2 className="text-3xl font-black text-wayna-900">
+                                    {t('landing.locations.title')}
+                                </h2>
+                                <p className="mt-3 text-stone-600">{t('landing.locations.subtitle')}</p>
+                            </header>
+                        </LandingScrollReveal>
 
                         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-                            <LocationCard
-                                name={t('landing.locations.sopocachiName')}
-                                address={t('landing.locations.sopocachiAddress')}
-                                hours={t('landing.locations.sopocachiHours')}
-                            />
-                            <LocationCard
-                                name={t('landing.locations.surName')}
-                                address={t('landing.locations.surAddress')}
-                                hours={t('landing.locations.surHours')}
-                            />
+                            <LandingScrollReveal delayMs={100}>
+                                <LocationCard
+                                    name={t('landing.locations.sopocachiName')}
+                                    address={t('landing.locations.sopocachiAddress')}
+                                    hours={t('landing.locations.sopocachiHours')}
+                                    imageSrc={LANDING_LOCATION_IMAGES.sopocachi}
+                                />
+                            </LandingScrollReveal>
+                            <LandingScrollReveal delayMs={200}>
+                                <LocationCard
+                                    name={t('landing.locations.surName')}
+                                    address={t('landing.locations.surAddress')}
+                                    hours={t('landing.locations.surHours')}
+                                    imageSrc={LANDING_LOCATION_IMAGES.sur}
+                                />
+                            </LandingScrollReveal>
                         </div>
                     </div>
                 </section>
@@ -327,6 +275,8 @@ export default function Landing({
                         </p>
                     </div>
                 </footer>
+
+                <ChatWidget />
             </div>
         </>
     );

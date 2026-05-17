@@ -5,10 +5,13 @@ import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '@/Components/Turista/ChatWidget';
 import PerfilMediosEmprendedor from '@/Components/Turista/PerfilMediosEmprendedor';
+import PerfilRedesSociales from '@/Components/Turista/PerfilRedesSociales';
+import { Link } from '@inertiajs/react';
 
 export default function Perfil({
     emprendedor,
     medios,
+    redes,
     campanaActiva,
     campanasActivas = [],
     progreso,
@@ -21,8 +24,17 @@ export default function Perfil({
     const fotoUrl = emprendedor.foto_portada ?? null;
 
     return (
-        <GuestLayout variant="full">
+        <GuestLayout variant="full" navHref="/">
             <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
+
+            <p className="mb-4">
+                <Link
+                    href="/"
+                    className="text-sm font-bold text-wayna-700 underline decoration-wayna-300 underline-offset-4 hover:text-wayna-900"
+                >
+                    ← {t('explore.backToExplore')}
+                </Link>
+            </p>
 
             <section className="overflow-hidden rounded-3xl bg-white shadow-xl shadow-wayna-900/10">
                 <div className="relative h-48 bg-gradient-to-br from-wayna-100 to-surface-muted sm:h-64">
@@ -94,6 +106,8 @@ export default function Perfil({
                         nombreEmprendimiento={nombreCompleto}
                     />
 
+                    <PerfilRedesSociales redes={redes} />
+
                     {campanaActiva ? (
                         <BarraProgreso
                             porcentaje={progreso?.porcentaje ?? 0}
@@ -120,15 +134,26 @@ export default function Perfil({
                         </div>
                     )}
 
-                    <DonacionForm
-                        key={
-                            campanasActivas.length > 0
-                                ? campanasActivas.map((c) => c.id).join('-')
-                                : 'sin-campana'
-                        }
-                        campanasActivas={campanasActivas}
-                        tipoPagos={tipoPagos}
-                    />
+                    <div className="rounded-2xl border border-wayna-200 bg-surface-muted/80 p-5">
+                        <h2 className="text-lg font-bold text-wayna-950">
+                            {t('tourist.profile.supportSectionTitle')}
+                        </h2>
+                        <p className="mt-1 text-sm text-stone-600">
+                            {t('tourist.profile.supportSectionSubtitle')}
+                        </p>
+
+                        <div className="mt-5">
+                            <DonacionForm
+                                key={
+                                    campanasActivas.length > 0
+                                        ? campanasActivas.map((c) => c.id).join('-')
+                                        : 'sin-campana'
+                                }
+                                campanasActivas={campanasActivas}
+                                tipoPagos={tipoPagos}
+                            />
+                        </div>
+                    </div>
                 </div>
             </section>
 

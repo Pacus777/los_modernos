@@ -12,6 +12,37 @@ use Illuminate\Support\Str;
 class EmprendedorExplorarService
 {
     /**
+     * @return array{emprendedores: int, puntos: int}
+     */
+    public function estadisticasLanding(): array
+    {
+        return [
+            'emprendedores' => Emprendedor::query()->where('estado', 'activo')->count(),
+            'puntos' => Punto::query()->where('estado', 'activo')->count(),
+        ];
+    }
+
+    /**
+     * Emprendedores con foto primero, para carrusel de destacados.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function listarDestacados(int $limite = 8): array
+    {
+        return Emprendedor::query()
+            ->where('estado', 'activo')
+            ->with(['puntos:id,nombre,slug'])
+            ->orderByRaw('CASE WHEN fotografia IS NOT NULL AND fotografia != \'\' THEN 0 ELSE 1 END')
+            ->orderBy('nombre')
+            ->orderBy('apellidos')
+            ->limit($limite)
+            ->get()
+            ->map(fn (Emprendedor $emprendedor) => $this->formatearTarjeta($emprendedor))
+            ->values()
+            ->all();
+    }
+
+    /**
      * @param  array{q?: string, tipo_emprendimiento?: string, departamento?: string, punto_id?: int|string|null}  $filtros
      * @return list<array<string, mixed>>
      */

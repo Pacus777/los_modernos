@@ -141,6 +141,7 @@
       "home": "Home",
       "explore": "Explore",
       "how": "How it works",
+      "gallery": "Gallery",
       "system": "Platform",
       "locations": "Locations",
       "market": "Wayna Markets",
@@ -153,12 +154,79 @@
       "ctaExplore": "Explore entrepreneurs",
       "ctaHow": "How it works",
       "ctaStaff": "Staff sign in",
-      "scrollHint": "Scroll to explore"
+      "scrollHint": "Scroll to explore",
+      "imageAlt": "Entrepreneurs and community at Wayna markets"
     },
     "stats": {
       "transparent": "Traceable donations",
       "languages": "Spanish & English",
       "payments": "Cash & digital"
+    },
+    "statsBar": {
+      "entrepreneurs": "Active entrepreneurs",
+      "locations": "Wayna locations",
+      "networks": "Social networks",
+      "languages": "Languages"
+    },
+    "heroSlides": {
+      "slide1": {
+        "kicker": "Wayna network",
+        "title": "Discover real stories before you support",
+        "subtitle": "Browse profiles with photos, videos, and direct contact. No pressure to donate."
+      },
+      "slide2": {
+        "kicker": "Entrepreneur mini network",
+        "title": "See who is at the market today",
+        "subtitle": "Filter by category, department, or Wayna location and open full profiles.",
+        "cta": "View entrepreneurs"
+      },
+      "slide3": {
+        "kicker": "Transparent support",
+        "title": "Give when you feel inspired, not obligated",
+        "subtitle": "Your contribution is recorded with traceability: cash or digital."
+      }
+    },
+    "carousel": {
+      "prev": "Previous",
+      "next": "Next",
+      "goToSlide": "Go to slide {{n}}"
+    },
+    "gallery": {
+      "kicker": "Life at Wayna",
+      "title": "Markets, entrepreneurs and community",
+      "subtitle": "Real photos from our Wayna locations — tap an image to view it full size.",
+      "tapToExpand": "View full size",
+      "waynaSign": "Wayna sign and market",
+      "team": "Team and visitors at the market",
+      "market1": "Market aisles and products",
+      "market2": "Entrepreneurs at their stalls",
+      "entrepreneur1": "Entrepreneur serving at Wayna",
+      "entrepreneur2": "Products and service at the stall",
+      "community": "Community and Wayna atmosphere"
+    },
+    "featured": {
+      "kicker": "Featured",
+      "title": "Entrepreneurs you can meet today",
+      "subtitle": "Swipe the carousel or browse the full directory below."
+    },
+    "testimonials": {
+      "kicker": "Wayna voices",
+      "title": "What tourists and entrepreneurs say",
+      "t1": {
+        "quote": "I looked at the photos and video first, then donated because I loved the story. No pressure.",
+        "author": "Visiting tourist",
+        "role": "Wayna Sopocachi"
+      },
+      "t2": {
+        "quote": "I like that they can follow me on Instagram or message on WhatsApp without donating right away.",
+        "author": "Wayna entrepreneur",
+        "role": "Food & beverage"
+      },
+      "t3": {
+        "quote": "The platform explains payment clearly; the cashier confirmed my contribution in minutes.",
+        "author": "Visitor",
+        "role": "Cash payment"
+      }
     },
     "how": {
       "title": "How it works",
@@ -201,6 +269,18 @@
       "marketTitle": "Market",
       "rights": "© {{year}} Wayna Markets. Wayna ecosystem."
     }
+  },
+  "chat": {
+    "etiqueta": "Wayna assistant",
+    "titulo": "Need help?",
+    "cerrar": "Close chat",
+    "mensajeInicial": "Ask me how to explore entrepreneurs, how to donate, what cash payment means, or how to find a Wayna location.",
+    "sinRespuestaAun": "Type a question to get a quick answer.",
+    "pregunta": "Question",
+    "placeholder": "Example: How do I find an entrepreneur?",
+    "enviando": "Sending...",
+    "enviar": "Send question",
+    "botonAbrir": "Help"
   },
   "explore": {
     "kicker": "Wayna community",

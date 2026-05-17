@@ -31,6 +31,8 @@ class ExplorarController extends Controller
             'panelUrl' => $panelUrl,
             'marketUrl' => 'https://www.waynamercados.com/',
             'emprendedores' => $explorar->listarTarjetas($desdeRequest['filtros']),
+            'destacados' => $explorar->listarDestacados(),
+            'stats' => $explorar->estadisticasLanding(),
             'filtros' => $desdeRequest['filtros'],
             'catalogos' => $desdeRequest['catalogos'],
         ]);

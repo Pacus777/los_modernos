@@ -83,10 +83,10 @@ export default function ChatWidget() {
                                 <ApplicationLogo size="xs" tone="light" />
                                 <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-wayna-600">
-                                    {t('chat.etiqueta', 'Asistente Wayna')}
+                                    {t('chat.etiqueta')}
                                 </p>
                                 <h3 className="mt-1 text-base font-black text-wayna-950">
-                                    {t('chat.titulo', '¿Necesitas ayuda?')}
+                                    {t('chat.titulo')}
                                 </h3>
                                 </div>
                             </div>
@@ -95,7 +95,7 @@ export default function ChatWidget() {
                                 type="button"
                                 onClick={() => setAbierto(false)}
                                 className="rounded-full px-2 py-1 text-sm font-bold text-stone-500 hover:bg-white hover:text-wayna-900"
-                                aria-label={t('chat.cerrar', 'Cerrar chat')}
+                                aria-label={t('chat.cerrar')}
                             >
                                 ✕
                             </button>
@@ -104,10 +104,7 @@ export default function ChatWidget() {
 
                     <div className="max-h-[min(55dvh,24rem)] space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
                         <div className="rounded-2xl bg-wayna-50 px-4 py-3 text-sm leading-relaxed text-stone-700">
-                            {t(
-                                'chat.mensajeInicial',
-                                'Puedes preguntarme cómo donar, cómo funciona el pago en efectivo, qué significa pendiente o cómo se actualiza la barra de progreso.'
-                            )}
+                            {t('chat.mensajeInicial')}
                         </div>
 
                         {respuesta && (
@@ -126,17 +123,14 @@ export default function ChatWidget() {
 
                         {!respuesta && (
                             <div className="rounded-2xl border border-dashed border-wayna-200 px-4 py-3 text-sm leading-relaxed text-stone-500">
-                                {t(
-                                    'chat.sinRespuestaAun',
-                                    'Escribe una pregunta para recibir una respuesta rápida.'
-                                )}
+                                {t('chat.sinRespuestaAun')}
                             </div>
                         )}
                     </div>
 
                     <form onSubmit={enviarPregunta} className="border-t border-wayna-100 p-4">
                         <label htmlFor="pregunta-chat" className="sr-only">
-                            {t('chat.pregunta', 'Pregunta')}
+                            {t('chat.pregunta')}
                         </label>
 
                         <textarea
@@ -144,10 +138,7 @@ export default function ChatWidget() {
                             rows="2"
                             value={data.pregunta}
                             onChange={(e) => setData('pregunta', e.target.value)}
-                            placeholder={t(
-                                'chat.placeholder',
-                                'Ejemplo: ¿Cómo puedo donar?'
-                            )}
+                            placeholder={t('chat.placeholder')}
                             className="block w-full resize-none rounded-2xl border-wayna-200 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
                             maxLength={300}
                         />
@@ -164,8 +155,8 @@ export default function ChatWidget() {
                             className="mt-3 w-full rounded-2xl bg-wayna-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-wayna-800 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {processing
-                                ? t('chat.enviando', 'Enviando...')
-                                : t('chat.enviar', 'Enviar pregunta')}
+                                ? t('chat.enviando')
+                                : t('chat.enviar')}
                         </button>
                     </form>
                 </div>
@@ -178,7 +169,7 @@ export default function ChatWidget() {
                     className="touch-target ml-auto flex min-h-11 items-center gap-2 rounded-full bg-wayna-700 px-5 py-3 text-sm font-black text-white shadow-xl transition hover:bg-wayna-800"
                 >
                     <span className="flex h-2.5 w-2.5 rounded-full bg-white" />
-                    {t('chat.botonAbrir', 'Ayuda')}
+                    {t('chat.botonAbrir')}
                 </button>
             )}
         </div>

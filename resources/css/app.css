@@ -258,6 +258,110 @@
     }
 }
 
+/* Landing turista: animaciones y carruseles */
+.landing-reveal {
+    opacity: 0;
+    transform: translateY(1.25rem);
+    transition:
+        opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.landing-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(125deg, #f07e26 0%, #d96d1c 45%, #b55916 100%);
+    animation: landing-hero-gradient 14s ease-in-out infinite alternate;
+}
+
+@keyframes landing-hero-gradient {
+    0% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+    100% {
+        filter: hue-rotate(-8deg) brightness(1.05);
+    }
+}
+
+.landing-hero-slide {
+    animation: landing-hero-fade 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-hero-image-wrap {
+    animation: landing-hero-image-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-hero-image {
+    object-position: center 20%;
+}
+
+@keyframes landing-hero-image-in {
+    from {
+        opacity: 0;
+        transform: scale(1.03) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes landing-hero-fade {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.landing-carousel-panel {
+    animation: landing-hero-fade 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-featured-track {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(240 126 38 / 0.5) transparent;
+}
+
+.landing-featured-track::-webkit-scrollbar {
+    height: 6px;
+}
+
+.landing-featured-track::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgb(240 126 38 / 0.45);
+}
+
+.landing-steps-track {
+    scrollbar-width: none;
+}
+
+.landing-steps-track::-webkit-scrollbar {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .landing-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .landing-hero-bg,
+    .landing-hero-slide,
+    .landing-carousel-panel {
+        animation: none !important;
+    }
+}
+
 /* T-A9: impresión del modal QR emprendedor */
 @media print {
     body.printing-emprendedor-qr * {

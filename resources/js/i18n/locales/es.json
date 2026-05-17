@@ -141,6 +141,7 @@
       "home": "Inicio",
       "explore": "Explorar",
       "how": "Cómo funciona",
+      "gallery": "Galería",
       "system": "Plataforma",
       "locations": "Ubicaciones",
       "market": "Wayna Mercados",
@@ -153,12 +154,79 @@
       "ctaExplore": "Explorar emprendedores",
       "ctaHow": "Cómo funciona",
       "ctaStaff": "Acceso administración",
-      "scrollHint": "Desplázate para explorar"
+      "scrollHint": "Desplázate para explorar",
+      "imageAlt": "Emprendedores y comunidad en los mercados Wayna"
     },
     "stats": {
       "transparent": "Donaciones trazables",
       "languages": "Español e inglés",
       "payments": "Efectivo y digital"
+    },
+    "statsBar": {
+      "entrepreneurs": "Emprendedores activos",
+      "locations": "Puntos Wayna",
+      "networks": "Redes sociales",
+      "languages": "Idiomas"
+    },
+    "heroSlides": {
+      "slide1": {
+        "kicker": "Red Wayna",
+        "title": "Conocé historias reales antes de apoyar",
+        "subtitle": "Explorá perfiles con fotos, videos y contacto directo. Sin presión para donar."
+      },
+      "slide2": {
+        "kicker": "Mini red de emprendedores",
+        "title": "Descubrí quién está en el mercado hoy",
+        "subtitle": "Filtrá por rubro, departamento o punto Wayna y entrá al perfil completo.",
+        "cta": "Ver emprendedores"
+      },
+      "slide3": {
+        "kicker": "Apoyo transparente",
+        "title": "Doná cuando te inspire, no por obligación",
+        "subtitle": "Tu aporte queda registrado con trazabilidad: efectivo o digital."
+      }
+    },
+    "carousel": {
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "goToSlide": "Ir a diapositiva {{n}}"
+    },
+    "gallery": {
+      "kicker": "Vida en Wayna",
+      "title": "Mercados, emprendedores y comunidad",
+      "subtitle": "Fotos reales de nuestros puntos Wayna — tocá una imagen para verla en grande.",
+      "tapToExpand": "Ver en grande",
+      "waynaSign": "Letrero y mercado Wayna",
+      "team": "Equipo y visitantes en el mercado",
+      "market1": "Pasillos y productos del mercado",
+      "market2": "Emprendedores en sus puestos",
+      "entrepreneur1": "Emprendedor atendiendo en Wayna",
+      "entrepreneur2": "Productos y atención en el puesto",
+      "community": "Comunidad y ambiente Wayna"
+    },
+    "featured": {
+      "kicker": "Destacados",
+      "title": "Emprendedores que podés conocer hoy",
+      "subtitle": "Deslizá el carrusel o explorá el directorio completo más abajo."
+    },
+    "testimonials": {
+      "kicker": "Voces Wayna",
+      "title": "Lo que dicen turistas y emprendedores",
+      "t1": {
+        "quote": "Primero miré las fotos y el video, después doné porque me encantó la historia. No sentí presión.",
+        "author": "Turista visitante",
+        "role": "Wayna Sopocachi"
+      },
+      "t2": {
+        "quote": "Me gusta que puedan seguirme en Instagram y escribirme por WhatsApp sin tener que donar al instante.",
+        "author": "Emprendedora Wayna",
+        "role": "Gastronomía"
+      },
+      "t3": {
+        "quote": "La plataforma explica bien el pago y el código; el cajero confirmó mi aporte en minutos.",
+        "author": "Visitante",
+        "role": "Pago en efectivo"
+      }
     },
     "how": {
       "title": "¿Cómo funciona?",
@@ -201,6 +269,18 @@
       "marketTitle": "Mercado",
       "rights": "© {{year}} Wayna Mercados. Ecosistema Wayna."
     }
+  },
+  "chat": {
+    "etiqueta": "Asistente Wayna",
+    "titulo": "¿Necesitas ayuda?",
+    "cerrar": "Cerrar chat",
+    "mensajeInicial": "Preguntame cómo explorar emprendedores, cómo donar, qué es el pago en efectivo o cómo encontrar un punto Wayna.",
+    "sinRespuestaAun": "Escribí una pregunta para recibir una respuesta rápida.",
+    "pregunta": "Pregunta",
+    "placeholder": "Ejemplo: ¿Cómo encuentro un emprendedor?",
+    "enviando": "Enviando...",
+    "enviar": "Enviar pregunta",
+    "botonAbrir": "Ayuda"
   },
   "explore": {
     "kicker": "Comunidad Wayna",
