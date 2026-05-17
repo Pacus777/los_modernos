@@ -49,6 +49,13 @@
       "badge": "Emprendedor Wayna",
       "storyTitle": "Su historia",
       "storyFallback": "Este emprendedor forma parte de Wayna y busca fortalecer su actividad mediante el apoyo directo de turistas y visitantes.",
+      "socialTitle": "Conectá con el emprendimiento",
+      "socialSubtitle": "Seguilo en sus redes o escribile por WhatsApp — sin obligación de donar.",
+      "socialWhatsApp": "WhatsApp",
+      "socialInstagram": "Instagram",
+      "socialFacebook": "Facebook",
+      "supportSectionTitle": "¿Querés apoyar?",
+      "supportSectionSubtitle": "Tu aporte es voluntario. Elegí el monto solo si te nace después de conocer su historia.",
       "goalSectionTitle": "Meta de apoyo",
       "campaignActiveTitle": "Campaña activa",
       "raised": "Recaudado",
@@ -131,6 +138,7 @@
     "headTitle": "Wayna Conecta — Apoya a emprendedores",
     "nav": {
       "home": "Inicio",
+      "explore": "Explorar",
       "how": "Cómo funciona",
       "system": "Plataforma",
       "locations": "Ubicaciones",
@@ -138,12 +146,13 @@
       "staffLogin": "Acceso equipo"
     },
     "hero": {
-      "kicker": "Mercado de emprendedores",
-      "title": "Apoya con propósito, conecta con historias reales",
-      "subtitle": "Escaneá el QR en el punto Wayna, conocé al emprendedor y registrá tu donación con trazabilidad — efectivo o digital.",
+      "kicker": "Red de emprendedores Wayna",
+      "title": "Conocé historias reales antes de apoyar",
+      "subtitle": "Explorá perfiles con fotos, videos y redes de contacto. Cuando quieras, podés donar con trazabilidad en el mercado.",
+      "ctaExplore": "Explorar emprendedores",
       "ctaHow": "Cómo funciona",
       "ctaStaff": "Acceso administración",
-      "scrollHint": "Desplázate para conocer más"
+      "scrollHint": "Desplázate para explorar"
     },
     "stats": {
       "transparent": "Donaciones trazables",
@@ -191,6 +200,28 @@
       "marketTitle": "Mercado",
       "rights": "© {{year}} Wayna Mercados. Ecosistema Wayna."
     }
+  },
+  "explore": {
+    "kicker": "Comunidad Wayna",
+    "title": "Emprendedores que podés conocer hoy",
+    "subtitle": "Sin presión: mirá su historia, sus fotos y sus redes. El aporte es voluntario cuando te inspire.",
+    "searchLabel": "Buscar",
+    "searchPlaceholder": "Nombre o historia…",
+    "searchButton": "Buscar",
+    "filterType": "Rubro",
+    "filterDepartment": "Departamento",
+    "filterPoint": "Punto Wayna",
+    "filterAll": "Todos",
+    "resultsCount": "{{count}} emprendedores",
+    "emptyTitle": "No hay resultados con esos filtros",
+    "emptyBody": "Probá otra búsqueda o volvé a ver todos.",
+    "cardKicker": "Emprendedor",
+    "cardStoryFallback": "Conocé su perfil completo con fotos, video y formas de contacto.",
+    "viewProfile": "Ver perfil",
+    "backToExplore": "Volver a explorar",
+    "hasSocial": "Redes",
+    "badgeVideo": "Video",
+    "badgePhotos": "{{count}} fotos"
   },
   "auth": {
     "welcome": "Bienvenido",

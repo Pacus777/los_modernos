@@ -1,3 +1,4 @@
+import ExplorarEmprendedores from '@/Components/Turista/ExplorarEmprendedores';
 import LanguageSelector from '@/Components/LanguageSelector';
 import WaynaNavBar from '@/Components/WaynaNavBar';
 import { Head, Link } from '@inertiajs/react';
@@ -5,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 const NAV_SECTIONS = [
     { id: 'inicio', key: 'home' },
+    { id: 'explorar', key: 'explore' },
     { id: 'como-funciona', key: 'how' },
-    { id: 'plataforma', key: 'system' },
     { id: 'ubicaciones', key: 'locations' },
 ];
 
@@ -65,7 +66,14 @@ function LocationCard({ name, address, hours }) {
     );
 }
 
-export default function Landing({ canLogin, panelUrl, marketUrl }) {
+export default function Landing({
+    canLogin,
+    panelUrl,
+    marketUrl,
+    emprendedores = [],
+    filtros = {},
+    catalogos = {},
+}) {
     const { t } = useTranslation();
     const year = new Date().getFullYear();
     const externalMarket = marketUrl || 'https://www.waynamercados.com/';
@@ -93,15 +101,6 @@ export default function Landing({ canLogin, panelUrl, marketUrl }) {
                     </a>
 
                     <LanguageSelector variant="on-brand" />
-
-                    {canLogin && (
-                        <Link
-                            href={staffHref}
-                            className="btn-wayna-primary !rounded-xl !px-4 !py-2 !text-xs sm:!text-sm"
-                        >
-                            {panelUrl ? t('landing.nav.staffLogin') : t('landing.hero.ctaStaff')}
-                        </Link>
-                    )}
                 </WaynaNavBar>
 
                 <section
@@ -127,20 +126,19 @@ export default function Landing({ canLogin, panelUrl, marketUrl }) {
                         <div className="mt-8 flex flex-wrap gap-3">
                             <button
                                 type="button"
-                                onClick={() => scrollToSection('como-funciona')}
+                                onClick={() => scrollToSection('explorar')}
                                 className="btn-wayna-primary-gradient"
+                            >
+                                {t('landing.hero.ctaExplore')}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => scrollToSection('como-funciona')}
+                                className="btn-wayna-secondary !border-white/40 !bg-white/10 !text-white hover:!bg-white/20"
                             >
                                 {t('landing.hero.ctaHow')}
                             </button>
-
-                            {canLogin && (
-                                <Link
-                                    href={staffHref}
-                                    className="btn-wayna-secondary !border-white/40 !bg-white/10 !text-white hover:!bg-white/20"
-                                >
-                                    {t('landing.hero.ctaStaff')}
-                                </Link>
-                            )}
                         </div>
 
                         <div className="mt-10 grid gap-3 sm:grid-cols-3">
@@ -151,7 +149,7 @@ export default function Landing({ canLogin, panelUrl, marketUrl }) {
 
                         <button
                             type="button"
-                            onClick={() => scrollToSection('como-funciona')}
+                            onClick={() => scrollToSection('explorar')}
                             className="mt-12 flex w-full flex-col items-center gap-1 text-xs font-semibold text-orange-100/90"
                         >
                             <span>{t('landing.hero.scrollHint')}</span>
@@ -167,6 +165,12 @@ export default function Landing({ canLogin, panelUrl, marketUrl }) {
                         </button>
                     </div>
                 </section>
+
+                <ExplorarEmprendedores
+                    emprendedores={emprendedores}
+                    filtros={filtros}
+                    catalogos={catalogos}
+                />
 
                 <section id="como-funciona" className="scroll-mt-20 py-16 sm:py-20">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

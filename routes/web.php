@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Turista\ExplorarController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LocaleController;
@@ -17,24 +17,7 @@ Route::post('/idioma', [LocaleController::class, 'update'])
     ->name('locale.update');
 
 
-Route::get('/', function (Request $request) {
-    $user = $request->user();
-    $panelUrl = null;
-
-    if ($user) {
-        $panelUrl = match ($user->rol?->nombre) {
-            'admin' => route('admin.dashboard'),
-            'cajero' => route('cajero.efectivo'),
-            default => null,
-        };
-    }
-
-    return Inertia::render('Landing', [
-        'canLogin' => Route::has('login'),
-        'panelUrl' => $panelUrl,
-        'marketUrl' => 'https://www.waynamercados.com/',
-    ]);
-});
+Route::get('/', ExplorarController::class)->name('turista.explorar');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

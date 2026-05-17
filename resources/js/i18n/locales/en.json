@@ -49,6 +49,13 @@
       "badge": "Wayna entrepreneur",
       "storyTitle": "Their story",
       "storyFallback": "This entrepreneur is part of Wayna and seeks to grow with direct support from tourists and visitors.",
+      "socialTitle": "Connect with their business",
+      "socialSubtitle": "Follow on social media or message on WhatsApp — no donation required.",
+      "socialWhatsApp": "WhatsApp",
+      "socialInstagram": "Instagram",
+      "socialFacebook": "Facebook",
+      "supportSectionTitle": "Want to support?",
+      "supportSectionSubtitle": "Your contribution is voluntary. Choose an amount only if their story inspires you.",
       "goalSectionTitle": "Support goal",
       "campaignActiveTitle": "Active campaign",
       "raised": "Raised",
@@ -131,6 +138,7 @@
     "headTitle": "Wayna Connect — Support entrepreneurs",
     "nav": {
       "home": "Home",
+      "explore": "Explore",
       "how": "How it works",
       "system": "Platform",
       "locations": "Locations",
@@ -138,12 +146,13 @@
       "staffLogin": "Team login"
     },
     "hero": {
-      "kicker": "Entrepreneur marketplace",
-      "title": "Support with purpose, connect with real stories",
-      "subtitle": "Scan the QR at a Wayna location, meet the entrepreneur, and register your donation with full traceability — cash or digital.",
+      "kicker": "Wayna entrepreneur network",
+      "title": "Discover real stories before you support",
+      "subtitle": "Browse profiles with photos, videos, and social links. Donate with traceability when you are ready.",
+      "ctaExplore": "Explore entrepreneurs",
       "ctaHow": "How it works",
       "ctaStaff": "Staff sign in",
-      "scrollHint": "Scroll to learn more"
+      "scrollHint": "Scroll to explore"
     },
     "stats": {
       "transparent": "Traceable donations",
@@ -191,6 +200,28 @@
       "marketTitle": "Market",
       "rights": "© {{year}} Wayna Markets. Wayna ecosystem."
     }
+  },
+  "explore": {
+    "kicker": "Wayna community",
+    "title": "Entrepreneurs you can meet today",
+    "subtitle": "No pressure: read their story, see their photos and socials. Giving is voluntary when it feels right.",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Name or story…",
+    "searchButton": "Search",
+    "filterType": "Category",
+    "filterDepartment": "Department",
+    "filterPoint": "Wayna location",
+    "filterAll": "All",
+    "resultsCount": "{{count}} entrepreneurs",
+    "emptyTitle": "No results for these filters",
+    "emptyBody": "Try another search or browse everyone again.",
+    "cardKicker": "Entrepreneur",
+    "cardStoryFallback": "Open the full profile with photos, video, and contact links.",
+    "viewProfile": "View profile",
+    "backToExplore": "Back to explore",
+    "hasSocial": "Social",
+    "badgeVideo": "Video",
+    "badgePhotos": "{{count}} photos"
   },
   "auth": {
     "welcome": "Welcome",
