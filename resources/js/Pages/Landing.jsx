@@ -86,7 +86,7 @@ export default function Landing({
             <Head title={t('landing.headTitle')} />
 
             <div className="min-h-screen bg-surface text-stone-900">
-                <WaynaNavBar href="#inicio">
+                <WaynaNavBar href="#inicio" sticky>
                     <nav className="hidden items-center gap-1 md:flex" aria-label={t('landing.footer.navTitle')}>
                         {NAV_SECTIONS.map(({ id, key }) => (
                             <NavAnchor key={id} id={id} label={t(`landing.nav.${key}`)} />

@@ -101,7 +101,12 @@ export default function LandingGaleriaWayna() {
                                             : 'border-transparent opacity-70 hover:opacity-100'
                                     }`}
                                 >
-                                    <img src={img.src} alt="" className="h-full w-full object-cover" />
+                                    <img
+                                        src={img.src}
+                                        alt=""
+                                        className="h-full w-full object-cover"
+                                        loading="lazy"
+                                    />
                                 </button>
                             ))}
                         </div>
@@ -124,26 +129,6 @@ export default function LandingGaleriaWayna() {
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-                    {LANDING_IMAGES.map((img, i) => (
-                        <button
-                            key={img.id}
-                            type="button"
-                            onClick={() => setLightbox(img)}
-                            className={`landing-gallery-tile group overflow-hidden rounded-2xl border bg-stone-100 text-left shadow-sm transition hover:shadow-md ${
-                                i === 0 ? 'col-span-2 aspect-[16/10] sm:min-h-[240px]' : 'aspect-[4/3]'
-                            } ${i === index ? 'border-wayna-400 ring-2 ring-wayna-200' : 'border-wayna-100'}`}
-                        >
-                            <img
-                                src={img.src}
-                                alt={t(img.altKey)}
-                                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                                loading="lazy"
-                            />
-                        </button>
-                    ))}
                 </div>
             </div>
 

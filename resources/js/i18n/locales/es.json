@@ -164,9 +164,7 @@
     },
     "statsBar": {
       "entrepreneurs": "Emprendedores activos",
-      "locations": "Puntos Wayna",
-      "networks": "Redes sociales",
-      "languages": "Idiomas"
+      "locations": "Puntos Wayna"
     },
     "heroSlides": {
       "slide1": {
@@ -194,7 +192,7 @@
     "gallery": {
       "kicker": "Vida en Wayna",
       "title": "Mercados, emprendedores y comunidad",
-      "subtitle": "Fotos reales de nuestros puntos Wayna — tocá una imagen para verla en grande.",
+      "subtitle": "Fotos reales de nuestros puntos Wayna — deslizá el carrusel o tocá la foto principal para verla en grande.",
       "tapToExpand": "Ver en grande",
       "waynaSign": "Letrero y mercado Wayna",
       "team": "Equipo y visitantes en el mercado",

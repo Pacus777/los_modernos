@@ -164,9 +164,7 @@
     },
     "statsBar": {
       "entrepreneurs": "Active entrepreneurs",
-      "locations": "Wayna locations",
-      "networks": "Social networks",
-      "languages": "Languages"
+      "locations": "Wayna locations"
     },
     "heroSlides": {
       "slide1": {
@@ -194,7 +192,7 @@
     "gallery": {
       "kicker": "Life at Wayna",
       "title": "Markets, entrepreneurs and community",
-      "subtitle": "Real photos from our Wayna locations — tap an image to view it full size.",
+      "subtitle": "Real photos from our Wayna locations — browse the carousel or tap the main photo to view it full size.",
       "tapToExpand": "View full size",
       "waynaSign": "Wayna sign and market",
       "team": "Team and visitors at the market",

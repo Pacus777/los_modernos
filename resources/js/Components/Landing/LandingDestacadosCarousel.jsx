@@ -3,10 +3,37 @@ import LandingScrollReveal from '@/Components/Landing/LandingScrollReveal';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+function scrollCardIntoTrack(track, card, behavior = 'smooth') {
+    if (!track || !card) {
+        return;
+    }
+    const targetLeft = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+    track.scrollTo({ left: Math.max(0, targetLeft), behavior });
+}
+
 export default function LandingDestacadosCarousel({ destacados = [] }) {
     const { t } = useTranslation();
     const trackRef = useRef(null);
+    const sectionRef = useRef(null);
     const indexRef = useRef(0);
+    const visibleRef = useRef(false);
+
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section) {
+            return undefined;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                visibleRef.current = entry.isIntersecting;
+            },
+            { threshold: 0.2 },
+        );
+        observer.observe(section);
+
+        return () => observer.disconnect();
+    }, []);
 
     useEffect(() => {
         if (destacados.length <= 1) {
@@ -19,13 +46,16 @@ export default function LandingDestacadosCarousel({ destacados = [] }) {
         }
 
         const id = window.setInterval(() => {
+            if (!visibleRef.current) {
+                return;
+            }
             const track = trackRef.current;
             if (!track) {
                 return;
             }
             indexRef.current = (indexRef.current + 1) % destacados.length;
             const card = track.children[indexRef.current];
-            card?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            scrollCardIntoTrack(track, card);
         }, 6000);
 
         return () => window.clearInterval(id);
@@ -37,15 +67,22 @@ export default function LandingDestacadosCarousel({ destacados = [] }) {
 
     const scrollByCard = (direction) => {
         const track = trackRef.current;
-        if (!track) {
+        if (!track || destacados.length === 0) {
             return;
         }
-        const width = track.clientWidth * 0.85;
-        track.scrollBy({ left: direction * width, behavior: 'smooth' });
+        const nextIndex = Math.min(
+            destacados.length - 1,
+            Math.max(0, indexRef.current + direction),
+        );
+        indexRef.current = nextIndex;
+        scrollCardIntoTrack(track, track.children[nextIndex]);
     };
 
     return (
-        <section className="border-b border-wayna-100/80 bg-gradient-to-b from-white to-surface py-14 sm:py-16">
+        <section
+            ref={sectionRef}
+            className="border-b border-wayna-100/80 bg-gradient-to-b from-white to-surface py-14 sm:py-16"
+        >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <LandingScrollReveal>
                     <header className="flex flex-wrap items-end justify-between gap-4">

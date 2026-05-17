@@ -52,15 +52,13 @@ export default function LandingStatsBar({ stats = {} }) {
 
     const items = [
         { label: t('landing.statsBar.entrepreneurs'), value: stats.emprendedores ?? 0 },
-        { label: t('landing.statsBar.locations'), value: stats.puntos ?? 2 },
-        { label: t('landing.statsBar.networks'), value: 4 },
-        { label: t('landing.statsBar.languages'), value: 2 },
+        { label: t('landing.statsBar.locations'), value: stats.puntos ?? 0 },
     ];
 
     return (
         <section ref={ref} className="relative z-10 -mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <LandingScrollReveal>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mx-auto grid max-w-2xl gap-3 sm:grid-cols-2">
                     {items.map((item, i) => (
                         <StatItem
                             key={item.label}

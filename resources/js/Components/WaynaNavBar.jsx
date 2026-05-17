@@ -8,9 +8,12 @@ export default function WaynaNavBar({
     children,
     className = '',
     logoSize = 'nav-lg',
+    sticky = false,
 }) {
     return (
-        <header className={`nav-wayna-bar ${className}`}>
+        <header
+            className={`nav-wayna-bar ${sticky ? 'sticky top-0 z-40' : ''} ${className}`.trim()}
+        >
             <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-4 px-4 sm:h-[4.75rem] sm:px-6 lg:px-8">
                 <WaynaBrand href={href} size={logoSize} tone="on-brand" />
 
