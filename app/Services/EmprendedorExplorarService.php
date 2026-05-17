@@ -61,6 +61,7 @@ class EmprendedorExplorarService
             $emprendedor->whatsapp,
             $emprendedor->instagram,
             $emprendedor->facebook,
+            $emprendedor->tiktok,
         );
 
         return [

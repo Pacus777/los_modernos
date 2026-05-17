@@ -2,6 +2,7 @@ import AdminBackLink from '@/Components/Admin/AdminBackLink';
 import AdminFormField from '@/Components/Admin/AdminFormField';
 import AdminFormStepActions from '@/Components/Admin/AdminFormStepActions';
 import AdminEmprendedorMediosFields from '@/Components/Admin/AdminEmprendedorMediosFields';
+import AdminEmprendedorRedesFields from '@/Components/Admin/AdminEmprendedorRedesFields';
 import AdminEmprendedorVistaPreviaMedios from '@/Components/Admin/AdminEmprendedorVistaPreviaMedios';
 import AdminFotografiaPerfilField from '@/Components/Admin/AdminFotografiaPerfilField';
 import AdminResumenEmprendedor from '@/Components/Admin/AdminResumenEmprendedor';
@@ -68,6 +69,10 @@ export default function Form({
                 ? emprendedor.video_url
                 : '',
         quitar_video: false,
+        whatsapp: emprendedor?.whatsapp || '',
+        instagram: emprendedor?.instagram || '',
+        facebook: emprendedor?.facebook || '',
+        tiktok: emprendedor?.tiktok || '',
     });
 
     const fotografiaActual = emprendedor?.fotografia
@@ -445,6 +450,12 @@ export default function Form({
                                                 emprendedor={emprendedor}
                                                 error={error}
                                                 esEdicion={esEdicion}
+                                            />
+
+                                            <AdminEmprendedorRedesFields
+                                                data={data}
+                                                setData={setData}
+                                                error={error}
                                             />
 
                                             <AdminEmprendedorVistaPreviaMedios

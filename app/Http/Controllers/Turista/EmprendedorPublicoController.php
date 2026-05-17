@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Turista;
 
 use App\Services\TipoCambioService;
 use App\Services\LibreTranslationService;
+use App\Support\RedesSocialesEmprendedor;
 use App\Http\Controllers\Controller;
 use App\Models\Campana;
 use App\Models\Donacion;
@@ -32,6 +33,7 @@ class EmprendedorPublicoController extends Controller
         $locale = $this->obtenerLocaleTurista($request);
 
         $emprendedor = Emprendedor::query()
+            ->where('estado', 'activo')
             ->with([
                 'campanas' => function ($query) {
                     $query
@@ -108,6 +110,13 @@ class EmprendedorPublicoController extends Controller
                 'galeria' => $emprendedor->urlsGaleriaPublica(),
                 'video' => $emprendedor->presentacionVideoPublico(),
             ],
+
+            'redes' => RedesSocialesEmprendedor::paraFrontend(
+                $emprendedor->whatsapp,
+                $emprendedor->instagram,
+                $emprendedor->facebook,
+                $emprendedor->tiktok,
+            ),
 
             'campanaActiva' => $campanaActiva ? [
                 'id' => $campanaActiva->id,
