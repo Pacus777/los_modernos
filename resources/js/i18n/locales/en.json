@@ -304,13 +304,34 @@
   },
   "auth": {
     "welcome": "Welcome",
-    "subtitle": "Sign in to continue to the system",
+    "subtitle": "Sign in for admin and cashier access",
     "email": "Email address",
     "password": "Password",
     "remember": "Remember me",
     "forgotPassword": "Forgot your password?",
     "login": "Log in",
     "loginTitle": "Log in",
-    "loginButton": "Log in"
+    "loginButton": "Log in",
+    "loggingIn": "Signing in…",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "backToHome": "Back to home",
+    "visual": {
+      "title": "Real entrepreneur stories and support for the community"
+    },
+    "showcase": {
+      "slide1": {
+        "title": "Everything in one place",
+        "body": "Entrepreneurs, donations and confirmations for the team."
+      },
+      "slide2": {
+        "title": "Built for the team",
+        "body": "Cashiers and admins coordinate support clearly at each Wayna location."
+      },
+      "slide3": {
+        "title": "Tourists and community",
+        "body": "Discover stories, connect on social media, and give when you want—no pressure."
+      }
+    }
   }
 }

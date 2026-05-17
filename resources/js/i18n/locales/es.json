@@ -304,13 +304,34 @@
   },
   "auth": {
     "welcome": "Bienvenido",
-    "subtitle": "Ingresa para continuar al sistema",
+    "subtitle": "Acceso para administración y caja",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "remember": "Recordarme",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "login": "Ingresar",
     "loginTitle": "Iniciar sesión",
-    "loginButton": "Ingresar"
+    "loginButton": "Ingresar",
+    "loggingIn": "Ingresando…",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "backToHome": "Volver al inicio",
+    "visual": {
+      "title": "Historias reales de emprendedores y apoyo para la comunidad"
+    },
+    "showcase": {
+      "slide1": {
+        "title": "Gestión en un solo lugar",
+        "body": "Emprendedores, donaciones y confirmaciones para el equipo."
+      },
+      "slide2": {
+        "title": "Hecho para el equipo",
+        "body": "Cajeros y administración coordinan apoyos con claridad en cada punto Wayna."
+      },
+      "slide3": {
+        "title": "Turistas y comunidad",
+        "body": "Conocé historias, contactá por redes y doná cuando quieras, sin presión."
+      }
+    }
   }
 }

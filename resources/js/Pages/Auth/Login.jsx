@@ -1,19 +1,13 @@
+import AuthLoginLayout from '@/Components/Auth/AuthLoginLayout';
 import Checkbox from '@/Components/Checkbox';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
+import PasswordInput from '@/Components/PasswordInput';
 import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-
-// 1. Se importa useTranslation para poder usar las traducciones de i18next.
 import { useTranslation } from 'react-i18next';
 
 export default function Login({ status, canResetPassword }) {
-    // 2. t() es la función que busca el texto según el idioma activo.
-    // Ejemplo: t('auth.welcome')
-    // Si el idioma activo es ES mostrará "Bienvenido".
-    // Si el idioma activo es EN mostrará "Welcome".
     const { t } = useTranslation();
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -31,99 +25,85 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <GuestLayout>
-            {/* 3. Incluso el título de la pestaña puede traducirse con t(). */}
+        <AuthLoginLayout navHref="/">
             <Head title={t('auth.loginTitle')} />
 
             {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
+                <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
                     {status}
                 </div>
             )}
 
-            <form
-                onSubmit={submit}
-                className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-2xl"
-            >
-                <div className="mb-6 text-center">
-                    {/* 4. Todo texto fijo se reemplaza por una clave de traducción. */}
-                    <h1 className="text-3xl font-bold text-gray-800">
-                        {t('auth.welcome')}
-                    </h1>
+            <div className="mb-6">
+                <h1 className="text-2xl font-black text-wayna-950 sm:text-3xl">{t('auth.welcome')}</h1>
+                <p className="mt-2 text-sm text-stone-600">{t('auth.subtitle')}</p>
+            </div>
 
-                    <p className="mt-2 text-gray-500">
-                        {t('auth.subtitle')}
-                    </p>
-                </div>
-
+            <form onSubmit={submit} className="space-y-5">
                 <div>
-                    {/* 5. Los labels también pueden usar traducción. */}
-                    <InputLabel htmlFor="email" value={t('auth.email')} />
-
+                    <InputLabel htmlFor="email" value={t('auth.email')} className="sr-only" />
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        placeholder={t('auth.email')}
+                        className="auth-login-field mt-0 block w-full"
                         autoComplete="username"
-                        isFocused={true}
+                        isFocused
                         onChange={(e) => setData('email', e.target.value)}
                     />
-
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value={t('auth.password')} />
-
-                    <TextInput
+                <div>
+                    <InputLabel htmlFor="password" value={t('auth.password')} className="sr-only" />
+                    <PasswordInput
                         id="password"
-                        type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full rounded-lg border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                        placeholder={t('auth.password')}
+                        inputClassName="auth-login-field mt-0 block w-full"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
-
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
-                        />
+                <label className="flex cursor-pointer items-center gap-2">
+                    <Checkbox
+                        name="remember"
+                        checked={data.remember}
+                        onChange={(e) => setData('remember', e.target.checked)}
+                    />
+                    <span className="text-sm text-stone-600">{t('auth.remember')}</span>
+                </label>
 
-                        <span className="ms-2 text-sm text-gray-600">
-                            {t('auth.remember')}
-                        </span>
-                    </label>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-sm">
+                    <Link
+                        href="/"
+                        className="font-semibold text-wayna-600 hover:text-wayna-700"
+                    >
+                        ← {t('auth.backToHome')}
+                    </Link>
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-wayna-500 focus:ring-offset-2"
+                            className="font-semibold text-wayna-600 hover:underline"
                         >
                             {t('auth.forgotPassword')}
                         </Link>
                     )}
-
-                    <PrimaryButton
-                        className="ms-4 rounded-lg bg-wayna-500 px-6 py-2 transition hover:bg-wayna-700"
-                        disabled={processing}
-                    >
-                        {t('auth.loginButton')}
-                    </PrimaryButton>
                 </div>
+
+                <button
+                    type="submit"
+                    disabled={processing}
+                    className="btn-wayna-primary-gradient auth-login-submit w-full !rounded-full !py-3.5 !text-sm !tracking-wide disabled:opacity-60"
+                >
+                    {processing ? t('auth.loggingIn') : t('auth.loginButton')}
+                </button>
             </form>
-        </GuestLayout>
+        </AuthLoginLayout>
     );
 }

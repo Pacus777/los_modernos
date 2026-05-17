@@ -54,7 +54,7 @@ class AuthenticatedSessionController extends Controller
         return redirect()
             ->route('login')
             ->withErrors([
-                'email' => 'Tu usuario no tiene un rol asignado. Contacta al administrador.',
+                'email' => __('auth.no_role'),
             ]);
     }
 
@@ -69,6 +69,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()
+            ->route('login')
+            ->with('status', __('auth.logged_out'));
     }
 }
