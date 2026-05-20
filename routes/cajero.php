@@ -20,6 +20,8 @@ Route::middleware(['auth', 'verified', 'check.role:admin,cajero', 'nocache'])
     ->prefix('cajero')
     ->name('cajero.')
     ->group(function () {
+        Route::redirect('/', '/cajero/efectivo')->name('home');
+
         Route::get('/efectivo', [PendienteController::class, 'index'])
             ->name('efectivo');
 

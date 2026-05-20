@@ -42,4 +42,16 @@ return [
 
     'payment_lock_ttl_seconds' => (int) env('WAYNA_PAYMENT_LOCK_TTL_SECONDS', 900),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Webhook Libélula (S3-02)
+    |--------------------------------------------------------------------------
+    |
+    | Si está vacío, no se valida firma (solo desarrollo local).
+    | En producción definir WAYNA_WEBHOOK_LIBELULA_SECRET.
+    |
+    */
+
+    'webhook_libelula_secret' => env('WAYNA_WEBHOOK_LIBELULA_SECRET'),
+
 ];
