@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use App\Models\Donacion;
 use App\Observers\DonacionObserver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,8 +25,38 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->configureRateLimiting();
+
         Vite::prefetch(concurrency: 3);
 
         Donacion::observe(DonacionObserver::class);
+    }
+
+    /**
+     * Límites de peticiones por endpoint (S3-03).
+     */
+    protected function configureRateLimiting(): void
+    {
+        RateLimiter::for('wayna-login', function (Request $request) {
+            return $this->limitFromConfig('login', $request);
+        });
+
+        RateLimiter::for('wayna-donaciones', function (Request $request) {
+            return $this->limitFromConfig('donaciones', $request);
+        });
+
+        RateLimiter::for('wayna-webhooks', function (Request $request) {
+            return $this->limitFromConfig('webhooks', $request);
+        });
+    }
+
+    private function limitFromConfig(string $endpoint, Request $request): Limit
+    {
+        $config = config("wayna.rate_limit.{$endpoint}", []);
+
+        return Limit::perMinutes(
+            max(1, (int) ($config['decay_minutes'] ?? 1)),
+            max(1, (int) ($config['max_attempts'] ?? 60)),
+        )->by($request->ip());
     }
 }

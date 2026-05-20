@@ -10,4 +10,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/webhooks/libelula', LibelulaWebhookController::class)
+    ->middleware('throttle:wayna-webhooks')
     ->name('webhooks.libelula');
