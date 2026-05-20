@@ -111,4 +111,19 @@ class User extends Authenticatable
         return in_array($this->nombreRol(), $roles, true);
     }
 
+    /**
+     * Verifica de forma simple si el usuario es un emprendedor.
+     */
+    public function esEmprendedor(): bool
+    {
+        return $this->tieneRol('emprendedor');
+    }
+
+    /**
+     * Verifica de forma simple si el usuario es administrador.
+     */
+    public function esAdmin(): bool
+    {
+        return $this->tieneRol('admin');
+    }
 }
