@@ -12,6 +12,8 @@ class TipoPago extends Model
         'codigo',
         'nombre',
         'descripcion',
+        'proveedor',
+        'requiere_validacion_manual',
         'activo',
     ];
 
@@ -19,6 +21,7 @@ class TipoPago extends Model
     {
         return [
             'activo' => 'boolean',
+            'requiere_validacion_manual' => 'boolean',
         ];
     }
 }

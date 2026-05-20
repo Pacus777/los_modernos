@@ -18,13 +18,23 @@ class Donacion extends Model
         'tipo_pago_id',
         'visitante_id',
         'monto',
+        'moneda',
         'metodo',
         'estado_pago',
         'referencia_pago',
+        'payment_uuid',
+        'transaction_id',
+        'proveedor_pago',
+        'estado_proveedor',
+        'checkout_url',
+        'pagado_en',
+        'metadata_pago',
     ];
 
     protected $casts = [
         'monto' => 'decimal:2',
+        'pagado_en' => 'datetime',
+        'metadata_pago' => 'array',
     ];
 
     public function campana(): BelongsTo
