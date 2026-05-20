@@ -56,6 +56,7 @@ class DonacionService
                 'metodo' => $data['metodo'],
                 'estado_pago' => Donacion::ESTADO_PENDIENTE,
                 'referencia_pago' => $referenciaPago,
+                'payment_uuid' => strtolower((string) $data['payment_uuid']),
             ]);
 
             $trazabilidad = $this->traceabilityService->registrarDonacionCreada($donacion);

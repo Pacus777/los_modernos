@@ -35,6 +35,7 @@ class DonacionController extends Controller
                 'monto' => ['required', 'numeric', 'min:1', 'max:999999.99'],
                 'metodo' => ['required', 'string', 'max:50'],
                 'referencia_pago' => ['nullable', 'string', 'max:150'],
+                'payment_uuid' => ['required', 'uuid'],
             ],
             [
                 'campana_id.exists' => __('donacion.campaign_unavailable'),

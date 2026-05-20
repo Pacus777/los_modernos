@@ -27,4 +27,19 @@ return [
 
     'pago_pendiente_minutos' => (int) env('WAYNA_PAGO_PENDIENTE_MINUTOS', 15),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Candado anti pago duplicado (S3-01)
+    |--------------------------------------------------------------------------
+    |
+    | payment_uuid del cliente + store Redis (recomendado en producción).
+    | En tests usar array vía phpunit.xml (WAYNA_PAYMENT_LOCK_STORE=array).
+    |
+    */
+
+    // redis en producción; database o array si no tenés extensión phpredis en PHP local
+    'payment_lock_store' => env('WAYNA_PAYMENT_LOCK_STORE', 'redis'),
+
+    'payment_lock_ttl_seconds' => (int) env('WAYNA_PAYMENT_LOCK_TTL_SECONDS', 900),
+
 ];

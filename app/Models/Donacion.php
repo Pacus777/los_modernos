@@ -21,6 +21,7 @@ class Donacion extends Model
         'metodo',
         'estado_pago',
         'referencia_pago',
+        'payment_uuid',
     ];
 
     protected $casts = [

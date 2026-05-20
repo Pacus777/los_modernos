@@ -23,7 +23,8 @@ use Inertia\Inertia;
 Route::get('/emprendedor/{id}', [EmprendedorPublicoController::class, 'show'])
     ->name('turista.emprendedor.show');
 
-    Route::post('/donaciones', [DonacionController::class, 'store'])
+Route::post('/donaciones', [DonacionController::class, 'store'])
+    ->middleware('prevent.duplicate.payment')
     ->name('turista.donaciones.store');
 
     Route::get('/donaciones/confirmacion', function () {

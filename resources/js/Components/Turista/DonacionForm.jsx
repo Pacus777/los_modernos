@@ -2,7 +2,7 @@ import { etiquetaTipoPagoT } from '@/utils/catalogosI18n';
 import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
 import { bolivianosAUsd, formatearUsd } from '@/utils/tipoCambioTurista';
 import { useForm, usePage } from '@inertiajs/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function DonacionForm({
@@ -23,7 +23,7 @@ export default function DonacionForm({
 
     const primeraCampanaId = listaCampanas[0]?.id ?? '';
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, transform } = useForm({
         campana_id: primeraCampanaId,
         tipo_pago_id: tipoPagoInicial?.id ?? '',
         visitante_id: '',
@@ -31,7 +31,15 @@ export default function DonacionForm({
         monto: 10,
         metodo: tipoPagoInicial?.codigo ?? tipoPagoInicial?.nombre ?? 'qr_digital',
         referencia_pago: '',
+        payment_uuid: '',
     });
+
+    const paymentUuidRef = useRef(null);
+
+    transform((formData) => ({
+        ...formData,
+        payment_uuid: paymentUuidRef.current ?? formData.payment_uuid ?? '',
+    }));
 
     const idsKey = listaCampanas.map((c) => c.id).join(',');
 
@@ -61,8 +69,23 @@ export default function DonacionForm({
     const submit = (e) => {
         e.preventDefault();
 
+        const paymentUuid =
+            paymentUuidRef.current ??
+            (typeof crypto !== 'undefined' && crypto.randomUUID
+                ? crypto.randomUUID()
+                : null);
+
+        if (!paymentUuid) {
+            return;
+        }
+
+        paymentUuidRef.current = paymentUuid;
+
         post(route('turista.donaciones.store'), {
             preserveScroll: true,
+            onSuccess: () => {
+                paymentUuidRef.current = null;
+            },
         });
     };
 
@@ -305,6 +328,12 @@ export default function DonacionForm({
             {errors.campana_id && (
                 <p className="mt-3 text-sm text-red-600">
                     {errors.campana_id}
+                </p>
+            )}
+
+            {errors.payment_uuid && (
+                <p className="mt-3 text-sm font-medium text-red-600" role="alert">
+                    {errors.payment_uuid}
                 </p>
             )}
 
