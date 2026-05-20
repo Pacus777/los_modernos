@@ -64,6 +64,17 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | 2FA admin — Google Authenticator (S3-04)
+    |--------------------------------------------------------------------------
+    */
+
+    'two_factor' => [
+        'issuer' => env('WAYNA_2FA_ISSUER', 'WAYNA Admin'),
+        'window' => (int) env('WAYNA_2FA_WINDOW', 1),
+    ],
+
     'rate_limit' => [
         'login' => [
             'max_attempts' => (int) env('WAYNA_RATE_LIMIT_LOGIN_MAX', 10),

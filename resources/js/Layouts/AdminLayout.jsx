@@ -129,6 +129,13 @@ export default function AdminLayout({ header, children }) {
                             >
                                 Perfil
                             </Link>
+                            <Link
+                                href={route('admin.two-factor.edit')}
+                                className="px-3 py-2.5 text-sm text-white/95 transition hover:bg-wayna-700"
+                                onClick={closeMobile}
+                            >
+                                Seguridad 2FA
+                            </Link>
                             <LogoutButton
                                 className="w-full border-t border-wayna-700/60 px-3 py-2.5 text-left text-sm text-white/95 transition hover:bg-wayna-700"
                                 onClick={closeMobile}
