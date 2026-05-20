@@ -56,6 +56,14 @@ class HandleInertiaRequests extends Middleware
             'role' => $request->user()?->role,
         ],
 
+        'adminSession' => fn () => $request->user()?->esAdmin()
+            ? [
+                'lifetimeMinutes' => (int) config('wayna.admin_session_lifetime_minutes', 30),
+                'warnMinutes' => (int) config('wayna.admin_session_warn_minutes', 5),
+                'lastActivity' => (int) $request->session()->get('admin_last_activity', time()),
+            ]
+            : null,
+
         'locale' => $request->session()->get('locale', 'es'),
 
         'availableLocales' => [

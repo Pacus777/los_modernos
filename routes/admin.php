@@ -20,7 +20,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::middleware(['auth', 'verified', 'check.role:admin', 'nocache'])
+Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'nocache'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -34,10 +34,16 @@ Route::middleware(['auth', 'verified', 'check.role:admin', 'nocache'])
             ->name('two-factor.desactivar');
     });
 
-Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.two_factor', 'nocache'])
+Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'admin.two_factor', 'nocache'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::post('sesion/tocar', function () {
+            session(['admin_last_activity' => time()]);
+
+            return back();
+        })->name('session.touch');
+
         Route::redirect('/', '/admin/dashboard');
 
         Route::get('/dashboard', [ReporteController::class, 'impacto'])

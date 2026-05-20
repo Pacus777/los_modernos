@@ -75,6 +75,15 @@ return [
         'window' => (int) env('WAYNA_2FA_WINDOW', 1),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sesión admin por inactividad (S3-05)
+    |--------------------------------------------------------------------------
+    */
+
+    'admin_session_lifetime_minutes' => (int) env('WAYNA_ADMIN_SESSION_MINUTES', 30),
+    'admin_session_warn_minutes' => (int) env('WAYNA_ADMIN_SESSION_WARN_MINUTES', 5),
+
     'rate_limit' => [
         'login' => [
             'max_attempts' => (int) env('WAYNA_RATE_LIMIT_LOGIN_MAX', 10),

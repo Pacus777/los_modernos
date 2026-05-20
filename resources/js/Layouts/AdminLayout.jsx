@@ -11,6 +11,7 @@ import { useReloadOnHistoryRestore } from '@/hooks/useReloadOnHistoryRestore';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminRealtimeNotifications from '@/Components/Admin/AdminRealtimeNotifications';
+import AdminSessionWarning from '@/Components/Admin/AdminSessionWarning';
 
 const NAV_ITEMS = [
     {
@@ -184,7 +185,8 @@ export default function AdminLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-surface">
-                    <AdminRealtimeNotifications />
+            <AdminSessionWarning />
+            <AdminRealtimeNotifications />
             {sidebarOpen && (
                 <button
                     type="button"

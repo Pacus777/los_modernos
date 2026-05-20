@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsureIsEmprendedor;
 use App\Http\Middleware\EnsureAdminTwoFactorPassed;
+use App\Http\Middleware\TouchAdminSessionActivity;
 use App\Http\Middleware\PreventDuplicatePayment;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -39,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest.redirect' => \App\Http\Middleware\RedirectAuthenticatedFromGuest::class,
             'prevent.duplicate.payment' => PreventDuplicatePayment::class,
             'admin.two_factor' => EnsureAdminTwoFactorPassed::class,
+            'admin.session' => TouchAdminSessionActivity::class,
         ]);
 
         //

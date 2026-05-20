@@ -9,6 +9,7 @@ return [
     'no_role' => 'Tu usuario no tiene un rol asignado. Contactá al administrador.',
 
     'logged_out' => 'Cerraste sesión correctamente.',
+    'admin_session_expired' => 'Tu sesión de administrador expiró por inactividad. Volvé a iniciar sesión.',
 
     'two_factor_challenge_title' => 'Verificación en dos pasos',
     'two_factor_challenge_hint' => 'Ingresá el código de 6 dígitos de Google Authenticator para :email.',
