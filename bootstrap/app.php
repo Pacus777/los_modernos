@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnsureIsEmprendedor;
 use App\Http\Middleware\PreventDuplicatePayment;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'check.role' => CheckRole::class,
+            'emprendedor' => EnsureIsEmprendedor::class,
             'nocache' => \App\Http\Middleware\PreventSensitivePageCache::class,
             'guest.redirect' => \App\Http\Middleware\RedirectAuthenticatedFromGuest::class,
             'prevent.duplicate.payment' => PreventDuplicatePayment::class,

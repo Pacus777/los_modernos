@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Emprendedor;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -31,6 +32,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function emprendedor(): HasOne
+    {
+        return $this->hasOne(Emprendedor::class, 'user_id');
     }
 
         /**
@@ -106,4 +111,19 @@ class User extends Authenticatable
         return in_array($this->nombreRol(), $roles, true);
     }
 
+    /**
+     * Verifica de forma simple si el usuario es un emprendedor.
+     */
+    public function esEmprendedor(): bool
+    {
+        return $this->tieneRol('emprendedor');
+    }
+
+    /**
+     * Verifica de forma simple si el usuario es administrador.
+     */
+    public function esAdmin(): bool
+    {
+        return $this->tieneRol('admin');
+    }
 }
