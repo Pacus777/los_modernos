@@ -88,7 +88,7 @@ export default function LandingHeroCarousel({ onExplore }) {
                                 src={heroImage.src}
                                 alt={t(heroImage.altKey)}
                                 className="landing-hero-image relative aspect-[4/3] w-full rounded-[1.75rem] object-cover shadow-2xl ring-4 ring-white/25 sm:aspect-[5/4] lg:aspect-[4/5] lg:max-h-[min(70vh,500px)]"
-                                fetchPriority={index === 0 ? 'high' : 'auto'}
+                                fetchpriority={index === 0 ? 'high' : 'auto'}
                                 decoding="async"
                             />
                         </div>

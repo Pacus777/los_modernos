@@ -2,8 +2,19 @@ import { etiquetaTipoPagoT } from '@/utils/catalogosI18n';
 import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
 import { bolivianosAUsd, formatearUsd } from '@/utils/tipoCambioTurista';
 import { useForm, usePage } from '@inertiajs/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
+function generarPaymentUuid() {
+    if (
+        typeof crypto !== 'undefined' &&
+        typeof crypto.randomUUID === 'function'
+    ) {
+        return crypto.randomUUID();
+    }
+
+    return `pay-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
 
 export default function DonacionForm({
     campanasActivas = [],
@@ -11,8 +22,26 @@ export default function DonacionForm({
     visitanteNombrePrefill = '',
 }) {
     const { t, i18n } = useTranslation();
-    const tipoCambio = usePage().props.tipoCambio ?? { activo: false, usd_por_bs: 0 };
+    const tipoCambio = usePage().props.tipoCambio ?? {
+        activo: false,
+        usd_por_bs: 0,
+    };
+
     const montosRapidos = [5, 10, 20, 50];
+
+    /*
+    |--------------------------------------------------------------------------
+    | S2-05: payment_uuid + bloqueo anti doble clic
+    |--------------------------------------------------------------------------
+    |
+    | payment_uuid identifica este intento de pago desde el frontend.
+    | submitLockRef evita doble envío inmediato aunque React todavía no haya
+    | actualizado el estado processing.
+    |
+    */
+
+    const paymentUuidInicial = useMemo(() => generarPaymentUuid(), []);
+    const submitLockRef = useRef(false);
 
     const listaCampanas = useMemo(
         () => (Array.isArray(campanasActivas) ? campanasActivas : []),
@@ -31,6 +60,7 @@ export default function DonacionForm({
         monto: 10,
         metodo: tipoPagoInicial?.codigo ?? tipoPagoInicial?.nombre ?? 'qr_digital',
         referencia_pago: '',
+        payment_uuid: paymentUuidInicial,
     });
 
     const idsKey = listaCampanas.map((c) => c.id).join(',');
@@ -50,20 +80,16 @@ export default function DonacionForm({
     }, [idsKey, listaCampanas, setData, data.campana_id]);
 
     const seleccionarMonto = (monto) => {
+        if (processing) return;
+
         setData('monto', monto);
     };
 
     const seleccionarTipoPago = (tipoPago) => {
+        if (processing) return;
+
         setData('tipo_pago_id', tipoPago.id);
         setData('metodo', tipoPago.codigo ?? tipoPago.nombre);
-    };
-
-    const submit = (e) => {
-        e.preventDefault();
-
-        post(route('turista.donaciones.store'), {
-            preserveScroll: true,
-        });
     };
 
     const campanaIdValido =
@@ -76,8 +102,33 @@ export default function DonacionForm({
         Number(data.monto) > 0 &&
         !processing;
 
+    const submit = (e) => {
+        e.preventDefault();
+
+        if (!puedeEnviar || submitLockRef.current) {
+            return;
+        }
+
+        submitLockRef.current = true;
+
+        post(route('turista.donaciones.store'), {
+            preserveScroll: true,
+            onError: () => {
+                submitLockRef.current = false;
+            },
+            onCancel: () => {
+                submitLockRef.current = false;
+            },
+            onFinish: () => {
+                submitLockRef.current = false;
+            },
+        });
+    };
+
     const tipoPagoSeleccionado = useMemo(
-        () => tipoPagos.find((tp) => Number(tp.id) === Number(data.tipo_pago_id)) ?? null,
+        () =>
+            tipoPagos.find((tp) => Number(tp.id) === Number(data.tipo_pago_id)) ??
+            null,
         [tipoPagos, data.tipo_pago_id],
     );
 
@@ -90,9 +141,11 @@ export default function DonacionForm({
         if (claseMetodoPago === 'efectivo') {
             return t('tourist.donationForm.instructionCash');
         }
+
         if (claseMetodoPago === 'qr') {
             return t('tourist.donationForm.instructionQr');
         }
+
         return t('tourist.donationForm.instructionOther');
     }, [claseMetodoPago, t]);
 
@@ -107,6 +160,7 @@ export default function DonacionForm({
         if (!tipoCambio.activo) {
             return null;
         }
+
         return bolivianosAUsd(data.monto, tipoCambio.usd_por_bs);
     }, [data.monto, tipoCambio.activo, tipoCambio.usd_por_bs]);
 
@@ -123,6 +177,13 @@ export default function DonacionForm({
             onSubmit={submit}
             className="rounded-2xl border border-surface-200 bg-surface-card p-4 shadow-sm"
         >
+            <input
+                type="hidden"
+                name="payment_uuid"
+                value={data.payment_uuid}
+                readOnly
+            />
+
             <h2 className="text-lg font-bold text-gray-900">
                 {t('tourist.donationForm.chooseTitle')}
             </h2>
@@ -132,26 +193,40 @@ export default function DonacionForm({
             </p>
 
             <div className="mt-4">
-                <label htmlFor="donacion-visitante-nombre" className="block text-sm font-medium text-gray-700">
+                <label
+                    htmlFor="donacion-visitante-nombre"
+                    className="block text-sm font-medium text-gray-700"
+                >
                     {t('tourist.donationForm.visitorNameLabel')}
                     <span className="ml-1 font-normal text-gray-400">
                         ({t('tourist.donationForm.optional')})
                     </span>
                 </label>
+
                 <input
                     id="donacion-visitante-nombre"
                     type="text"
                     maxLength={120}
                     value={data.visitante_nombre}
-                    onChange={(e) => setData('visitante_nombre', e.target.value)}
+                    onChange={(e) =>
+                        setData('visitante_nombre', e.target.value)
+                    }
                     disabled={processing}
                     autoComplete="name"
                     className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
-                    placeholder={t('tourist.donationForm.visitorNamePlaceholder')}
+                    placeholder={t(
+                        'tourist.donationForm.visitorNamePlaceholder',
+                    )}
                 />
-                <p className="mt-1.5 text-xs text-gray-500">{t('tourist.donationForm.visitorNameHint')}</p>
+
+                <p className="mt-1.5 text-xs text-gray-500">
+                    {t('tourist.donationForm.visitorNameHint')}
+                </p>
+
                 {errors.visitante_nombre && (
-                    <p className="mt-2 text-sm text-red-600">{errors.visitante_nombre}</p>
+                    <p className="mt-2 text-sm text-red-600">
+                        {errors.visitante_nombre}
+                    </p>
                 )}
             </div>
 
@@ -169,6 +244,7 @@ export default function DonacionForm({
                     >
                         {t('tourist.donationForm.campaignLabel')}
                     </label>
+
                     <select
                         id="donacion-campana-id"
                         value={data.campana_id}
@@ -238,15 +314,17 @@ export default function DonacionForm({
                         aria-live="polite"
                     >
                         <span className="font-semibold text-sky-900">
-                            {t('common.currencyBs')}{' '}
-                            {formatearBs(data.monto)}
+                            {t('common.currencyBs')} {formatearBs(data.monto)}
                         </span>
+
                         <span className="text-sky-700" aria-hidden>
                             ≈
                         </span>
+
                         <span className="font-bold text-sky-950">
                             {formatearUsd(equivalenteUsd, localeMoneda)}
                         </span>
+
                         <span className="w-full text-[11px] font-medium text-sky-800/80">
                             {t('tourist.donationForm.exchangeRateHint')}
                         </span>
@@ -269,7 +347,8 @@ export default function DonacionForm({
                                     onClick={() => seleccionarTipoPago(tipoPago)}
                                     disabled={processing}
                                     className={
-                                        Number(data.tipo_pago_id) === Number(tipoPago.id)
+                                        Number(data.tipo_pago_id) ===
+                                        Number(tipoPago.id)
                                             ? 'btn-wayna-chip-payment-selected'
                                             : 'btn-wayna-chip-payment'
                                     }
@@ -308,11 +387,20 @@ export default function DonacionForm({
                 </p>
             )}
 
+            {errors.payment_uuid && (
+                <p className="mt-3 text-sm text-red-600">
+                    {errors.payment_uuid}
+                </p>
+            )}
+
             <button
                 type="submit"
                 disabled={!puedeEnviar}
+                aria-busy={processing}
                 className={`btn-wayna-primary touch-target mt-5 min-h-11 w-full ${
-                    puedeEnviar ? '' : 'cursor-not-allowed !bg-stone-300 !shadow-none hover:!bg-stone-300'
+                    puedeEnviar
+                        ? ''
+                        : 'cursor-not-allowed !bg-stone-300 !shadow-none hover:!bg-stone-300'
                 }`}
             >
                 {processing
@@ -328,4 +416,3 @@ export default function DonacionForm({
         </form>
     );
 }
-

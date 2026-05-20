@@ -140,7 +140,7 @@ class QrCodeService
      */
     public function generarQrConfirmacionEfectivo(Donacion $donacion): string
     {
-        $urlConfirmacion = url("/cajero/efectivo/{$donacion->id}/confirmar");
+        $urlConfirmacion = route('cajero.efectivo.confirmar', $donacion);
 
         $rutaQr = "donaciones/qrs/efectivo/donacion-{$donacion->id}.png";
 
