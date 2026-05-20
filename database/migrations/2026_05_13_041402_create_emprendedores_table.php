@@ -17,6 +17,13 @@ return new class extends Migration
         Schema::create('emprendedores', function (Blueprint $table) {
             $table->id();
 
+            $table
+                ->foreignId('user_id')
+                ->nullable()
+                ->unique()
+                ->constrained('users')
+                ->nullOnDelete();
+
             /*
             |--------------------------------------------------------------------------
             | Datos públicos del emprendedor

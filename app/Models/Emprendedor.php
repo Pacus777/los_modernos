@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Services\EmprendedorMediosService;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class Emprendedor extends Model
@@ -41,6 +43,7 @@ class Emprendedor extends Model
     */
 
     protected $fillable = [
+        'user_id',
         'nombre',
         'apellidos',
         'descripcion',
@@ -141,6 +144,10 @@ class Emprendedor extends Model
     public function nombreCompleto(): string
     {
         return trim($this->nombre . ' ' . $this->apellidos);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function campanas(): HasMany
