@@ -30,4 +30,7 @@ enum AuditAction: string
     case EmprendedorPasswordChanged = 'emprendedor.password.changed';
     case EmprendedorProfileUpdated = 'emprendedor.profile.updated';
     case EmprendedorDonationsExported = 'emprendedor.donations.exported';
+    case EmprendedorMetaCreated = 'emprendedor.meta.created';
+    case EmprendedorMetaUpdated = 'emprendedor.meta.updated';
+    case EmprendedorMetaClosed = 'emprendedor.meta.closed';
 }

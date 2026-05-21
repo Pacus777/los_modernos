@@ -25,6 +25,10 @@ class UpdatePerfilPublicoRequest extends FormRequest
     {
         $this->sanitizeFields(['nombre', 'apellidos', 'descripcion']);
         $this->prepareWhatsAppRedes();
+
+        if (! $this->filled('descripcion')) {
+            $this->merge(['descripcion' => null]);
+        }
     }
 
     public function authorize(): bool
@@ -40,7 +44,7 @@ class UpdatePerfilPublicoRequest extends FormRequest
         return [
             'nombre' => ['required', 'string', 'max:100'],
             'apellidos' => ['required', 'string', 'max:120'],
-            'descripcion' => ['required', 'string', 'min:10', 'max:5000'],
+            'descripcion' => ['nullable', 'string', 'max:5000'],
             'tipo_emprendimiento' => ['required', 'string', Rule::in(TipoEmprendimiento::valores())],
             'departamento' => ['required', 'string', Rule::in(Departamento::valores())],
             'fotografia' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -61,8 +65,6 @@ class UpdatePerfilPublicoRequest extends FormRequest
             'tipo_emprendimiento.in' => 'El tipo de emprendimiento seleccionado no es válido.',
             'departamento.required' => 'Debés elegir el departamento.',
             'departamento.in' => 'El departamento seleccionado no es válido.',
-            'descripcion.required' => 'La descripción de tu emprendimiento es obligatoria.',
-            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
             'descripcion.max' => 'La descripción no puede superar los 5000 caracteres.',
             'fotografia.image' => 'El archivo debe ser una imagen válida.',
             'fotografia.mimes' => 'La fotografía debe estar en formato JPG, JPEG, PNG o WEBP.',

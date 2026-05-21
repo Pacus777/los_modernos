@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\Emprendedor\DashboardController;
 use App\Http\Controllers\Emprendedor\DonacionHistorialController;
+use App\Http\Controllers\Emprendedor\EmprendedorMetaController;
 use App\Http\Controllers\Emprendedor\ForcePasswordChangeController;
 use App\Http\Controllers\Emprendedor\PerfilController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Panel emprendedor (E-03 / E-04 / E-05 / E-06 / E-07)
+| Panel emprendedor (E-03 … E-09)
 |--------------------------------------------------------------------------
 */
 
@@ -47,4 +48,19 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
 
         Route::get('/donaciones/exportar/pdf', [DonacionHistorialController::class, 'exportarPdf'])
             ->name('donaciones.exportar.pdf');
+
+        Route::get('/meta/crear', [EmprendedorMetaController::class, 'create'])
+            ->name('meta.create');
+
+        Route::post('/meta', [EmprendedorMetaController::class, 'store'])
+            ->name('meta.store');
+
+        Route::get('/meta/editar', [EmprendedorMetaController::class, 'edit'])
+            ->name('meta.edit');
+
+        Route::put('/meta/{campana}', [EmprendedorMetaController::class, 'update'])
+            ->name('meta.update');
+
+        Route::post('/meta/{campana}/cerrar', [EmprendedorMetaController::class, 'close'])
+            ->name('meta.close');
     });

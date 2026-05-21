@@ -2,7 +2,8 @@ import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import LogoutButton from '@/Components/LogoutButton';
 import EmprendedorLayout from '@/Layouts/EmprendedorLayout';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
 const ETIQUETAS_ESTADO = {
     activo: 'Activo',
@@ -56,6 +57,7 @@ function formatearFecha(iso) {
  */
 export default function Dashboard({ panel, usuario }) {
     const { flash } = usePage().props;
+    const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const perfil = panel?.perfil;
     const progreso = panel?.progreso;
     const stats = panel?.estadisticas;
@@ -78,6 +80,12 @@ export default function Dashboard({ panel, usuario }) {
 
             <div className="mx-auto max-w-4xl space-y-8">
                 <AdminFlashSuccess message={flash?.success} />
+                {flash?.error ? (
+                    <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900">
+                        {flash.error}
+                    </p>
+                ) : null}
+                <ConfirmDialogPortal />
 
                 {panel && perfil ? (
                     <>
@@ -184,7 +192,7 @@ export default function Dashboard({ panel, usuario }) {
                         </section>
 
                         {campana ? (
-                            <section>
+                            <section className="space-y-4">
                                 <BarraProgreso
                                     porcentaje={progreso?.porcentaje ?? 0}
                                     montoRecaudado={progreso?.monto_recaudado ?? 0}
@@ -192,8 +200,8 @@ export default function Dashboard({ panel, usuario }) {
                                     titulo={campana.titulo}
                                 />
                                 {campana.fecha_fin ? (
-                                    <p className="mt-2 text-center text-xs text-stone-500">
-                                        Campaña activa hasta{' '}
+                                    <p className="text-center text-xs text-stone-500">
+                                        Meta activa hasta{' '}
                                         {new Date(campana.fecha_fin).toLocaleDateString('es-BO', {
                                             day: 'numeric',
                                             month: 'long',
@@ -201,20 +209,46 @@ export default function Dashboard({ panel, usuario }) {
                                         })}
                                     </p>
                                 ) : null}
+                                <div className="flex flex-wrap justify-center gap-3">
+                                    <Link
+                                        href={route('emprendedor.meta.edit')}
+                                        className="inline-flex items-center justify-center rounded-2xl bg-wayna-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-wayna-700"
+                                    >
+                                        Editar meta
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        className="inline-flex items-center justify-center rounded-2xl border border-stone-300 bg-white px-5 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-50"
+                                        onClick={() =>
+                                            requestConfirm({
+                                                title: '¿Cerrar tu meta?',
+                                                message:
+                                                    'Dejará de mostrarse en tu perfil público. Las donaciones ya registradas se conservan.',
+                                                confirmLabel: 'Sí, cerrar meta',
+                                                onConfirm: () =>
+                                                    router.post(
+                                                        route('emprendedor.meta.close', campana.id),
+                                                    ),
+                                            })
+                                        }
+                                    >
+                                        Cerrar meta
+                                    </button>
+                                </div>
                             </section>
-                        ) : Number(progreso?.meta ?? 0) > 0 ? (
-                            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                                Meta de referencia registrada:{' '}
-                                <strong>
-                                    Bs {Number(progreso.meta).toLocaleString('es-BO')}
-                                </strong>
-                                . Cuando el admin active una campaña, el progreso se mostrará acá.
-                            </div>
                         ) : (
-                            <p className="rounded-2xl border border-wayna-100 bg-wayna-50/50 px-5 py-4 text-sm text-stone-600">
-                                Aún no tenés una campaña activa. El equipo WAYNA puede configurarla desde
-                                administración.
-                            </p>
+                            <div className="rounded-2xl border border-wayna-200 bg-wayna-50/50 px-5 py-5 text-center">
+                                <p className="text-sm text-stone-700">
+                                    Todavía no tenés una meta de apoyo activa para que los turistas vean tu
+                                    progreso.
+                                </p>
+                                <Link
+                                    href={route('emprendedor.meta.create')}
+                                    className="mt-4 inline-flex items-center justify-center rounded-2xl bg-wayna-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-wayna-700"
+                                >
+                                    Crear mi meta de apoyo
+                                </Link>
+                            </div>
                         )}
 
                         <section className="overflow-hidden rounded-3xl border border-wayna-200 bg-white shadow-sm">

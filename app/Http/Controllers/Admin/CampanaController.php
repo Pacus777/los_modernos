@@ -48,12 +48,15 @@ class CampanaController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $emprendedorId = $request->integer('emprendedor_id') ?: null;
+
         return Inertia::render('Admin/Campanas/Form', [
             'modo' => 'crear',
             'campana' => null,
             'emprendedores' => $this->listaEmprendedores(),
+            'emprendedorIdPreseleccionado' => $emprendedorId,
             'fechaHoy' => now()->toDateString(),
         ]);
     }

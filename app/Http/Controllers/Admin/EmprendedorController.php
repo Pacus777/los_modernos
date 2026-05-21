@@ -257,9 +257,19 @@ class EmprendedorController extends Controller
     {
         $emprendedor->loadMissing('user');
 
+        $campanaActiva = $emprendedor->campanas()
+            ->where('estado', Campana::ESTADO_ACTIVA)
+            ->orderByDesc('fecha_inicio')
+            ->first();
+
         return Inertia::render('Admin/Emprendedores/Finalizar', [
             'emprendedor' => $emprendedor,
             'cuenta' => $cuentaService->resumenCuenta($emprendedor),
+            'campanaActiva' => $campanaActiva ? [
+                'id' => $campanaActiva->id,
+                'titulo' => $campanaActiva->titulo,
+                'meta_apoyo' => (float) $campanaActiva->meta_apoyo,
+            ] : null,
         ]);
     }
 

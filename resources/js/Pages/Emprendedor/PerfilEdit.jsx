@@ -203,8 +203,7 @@ export default function PerfilEdit({
                             <AdminFormField
                                 id="descripcion"
                                 label="Descripción del emprendimiento"
-                                required
-                                hint="Contá qué producís o vendés (mínimo 10 caracteres)."
+                                hint="Opcional. Contá qué producís o vendés para los turistas."
                                 error={error('descripcion')}
                             >
                                 <textarea

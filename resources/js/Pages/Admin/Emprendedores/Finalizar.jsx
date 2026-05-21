@@ -1,4 +1,5 @@
 import AdminBackLink from '@/Components/Admin/AdminBackLink';
+import AdminEmprendedorCampanaOpcional from '@/Components/Admin/AdminEmprendedorCampanaOpcional';
 import AdminEmprendedorCuentaPanel from '@/Components/Admin/AdminEmprendedorCuentaPanel';
 import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
 import {
@@ -26,7 +27,7 @@ function IconoCheck({ className }) {
 /**
  * E-03 — Último paso tras crear emprendedor: credenciales antes de cerrar el registro.
  */
-export default function Finalizar({ emprendedor, cuenta }) {
+export default function Finalizar({ emprendedor, cuenta, campanaActiva = null }) {
     const { flash } = usePage().props;
     const tieneCuenta = Boolean(cuenta?.tiene_cuenta);
     const nombreCompleto = `${emprendedor.nombre} ${emprendedor.apellidos}`.trim();
@@ -98,10 +99,10 @@ export default function Finalizar({ emprendedor, cuenta }) {
 
                         <nav aria-label="Progreso del registro" className="px-6 py-4 sm:px-8">
                             <ol className="flex items-center gap-2 text-xs font-bold text-stone-500">
-                                {['Datos', 'Tipo', 'Meta', 'Confirmación', 'Acceso'].map((etiqueta, i) => {
+                                {['Datos', 'Perfil', 'Confirmación', 'Campaña', 'Acceso'].map((etiqueta, i) => {
                                     const paso = i + 1;
-                                    const activo = paso === 5;
-                                    const listo = paso < 5;
+                                    const activo = paso === (campanaActiva ? 5 : 4);
+                                    const listo = paso < (campanaActiva ? 5 : 4);
 
                                     return (
                                         <li key={etiqueta} className="flex items-center gap-2">
@@ -134,6 +135,16 @@ export default function Finalizar({ emprendedor, cuenta }) {
                         </nav>
                     </div>
 
+                    <AdminEmprendedorCampanaOpcional
+                        emprendedorId={emprendedor.id}
+                        nombreCompleto={nombreCompleto}
+                        campanaActiva={campanaActiva}
+                    />
+
+                    <div className="mt-6">
+                        <p className="mb-3 text-center text-xs font-bold uppercase tracking-[0.15em] text-wayna-700">
+                            Acceso al panel del emprendedor
+                        </p>
                     <AdminEmprendedorCuentaPanel
                         emprendedorId={emprendedor.id}
                         emprendedor={{
@@ -146,6 +157,7 @@ export default function Finalizar({ emprendedor, cuenta }) {
                         modo="finalizar"
                         fotoSrc={fotoSrc}
                     />
+                    </div>
 
                     <div className="mt-8 flex flex-col-reverse gap-3 rounded-2xl border border-wayna-100 bg-white/90 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
                         <Link

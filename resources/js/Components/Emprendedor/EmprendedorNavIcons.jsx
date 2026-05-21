@@ -14,6 +14,14 @@ export function IconEditarPerfil({ className = 'h-5 w-5' }) {
     );
 }
 
+export function IconMeta({ className = 'h-5 w-5' }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+    );
+}
+
 export function IconDonaciones({ className = 'h-5 w-5' }) {
     return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

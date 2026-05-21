@@ -11,7 +11,7 @@ Protegidas por: `auth`, `verified`, `check.role:emprendedor`, `emprendedor.force
 
 ## Qué puede editar el emprendedor
 
-- Nombre, apellidos, descripción
+- Nombre, apellidos, descripción (opcional)
 - Tipo de emprendimiento y departamento
 - Foto de perfil, foto empresa, galería (máx. 4), video
 - Redes: WhatsApp, Instagram, Facebook, TikTok, sitio web

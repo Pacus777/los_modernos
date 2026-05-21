@@ -1,6 +1,7 @@
 import {
     IconDonaciones,
     IconEditarPerfil,
+    IconMeta,
     IconPanel,
     IconPerfilPublico,
 } from '@/Components/Emprendedor/EmprendedorNavIcons';
@@ -79,6 +80,12 @@ export default function EmprendedorLayout({
                 routeName: 'emprendedor.perfil.edit',
                 match: 'emprendedor.perfil.*',
                 Icon: IconEditarPerfil,
+            },
+            {
+                label: 'Mi meta de apoyo',
+                routeName: 'emprendedor.meta.edit',
+                match: 'emprendedor.meta.*',
+                Icon: IconMeta,
             },
             {
                 label: 'Mis donaciones',
