@@ -44,6 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.role' => CheckRole::class,
             'emprendedor' => EnsureIsEmprendedor::class,
             'emprendedor.force_password' => ForcePasswordChange::class,
+            'emprendedor.profile_complete' => \App\Http\Middleware\EnsureProfileComplete::class,
             'nocache' => \App\Http\Middleware\PreventSensitivePageCache::class,
             'guest.redirect' => \App\Http\Middleware\RedirectAuthenticatedFromGuest::class,
             'prevent.duplicate.payment' => PreventDuplicatePayment::class,

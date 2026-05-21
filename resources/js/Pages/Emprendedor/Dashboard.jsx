@@ -3,6 +3,7 @@ import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import LogoutButton from '@/Components/LogoutButton';
 import EmprendedorLayout from '@/Layouts/EmprendedorLayout';
 import EmprendedorDashboardGraficas from '@/Components/Emprendedor/EmprendedorDashboardGraficas';
+import OnboardingChecklist from '@/Components/Emprendedor/OnboardingChecklist';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
@@ -57,7 +58,7 @@ function formatearFecha(iso) {
  * E-05 — Panel principal del emprendedor (/emprendedor/dashboard).
  */
 export default function Dashboard({ panel, usuario }) {
-    const { flash } = usePage().props;
+    const { flash, emprendedorOnboarding } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const perfil = panel?.perfil;
     const progreso = panel?.progreso;
@@ -88,6 +89,10 @@ export default function Dashboard({ panel, usuario }) {
                     </p>
                 ) : null}
                 <ConfirmDialogPortal />
+
+                {emprendedorOnboarding && !emprendedorOnboarding.completo ? (
+                    <OnboardingChecklist />
+                ) : null}
 
                 {panel && perfil ? (
                     <>

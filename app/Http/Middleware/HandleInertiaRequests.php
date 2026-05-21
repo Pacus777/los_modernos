@@ -94,6 +94,22 @@ class HandleInertiaRequests extends Middleware
             return app(EmprendedorNotificacionService::class)->resumenParaNavbar($emprendedor);
         },
 
+        'emprendedorOnboarding' => function () use ($request) {
+            $user = $request->user();
+
+            if (! $user?->esEmprendedor()) {
+                return null;
+            }
+
+            $emprendedor = $user->emprendedor;
+
+            if (! $emprendedor) {
+                return null;
+            }
+
+            return app(\App\Services\EmprendedorOnboardingService::class)->checklist($emprendedor);
+        },
+
         'turistaNotificaciones' => function () use ($request) {
             $user = $request->user();
 

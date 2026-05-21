@@ -14,6 +14,8 @@ import {
 import EmprendedorLayout from '@/Layouts/EmprendedorLayout';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 
+import OnboardingChecklist from '@/Components/Emprendedor/OnboardingChecklist';
+
 /** Muestra solo los 8 dígitos locales (sin +591). */
 function whatsappCelularLocal(valor) {
     const digitos = String(valor ?? '').replace(/\D/g, '');
@@ -104,6 +106,8 @@ export default function PerfilEdit({
                         {flash.error}
                     </div>
                 ) : null}
+
+                <OnboardingChecklist />
 
                 <p className="rounded-2xl border border-wayna-100 bg-wayna-50/50 px-4 py-3 text-sm text-stone-600">
                     Estos datos aparecen en tu{' '}

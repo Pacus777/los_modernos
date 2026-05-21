@@ -34,14 +34,19 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
         Route::redirect('/', '/emprendedor/dashboard');
         Route::redirect('/panel', '/emprendedor/dashboard');
 
-        Route::get('/dashboard', DashboardController::class)
-            ->name('dashboard');
-
         Route::get('/perfil/editar', [PerfilController::class, 'edit'])
             ->name('perfil.edit');
 
         Route::put('/perfil', [PerfilController::class, 'update'])
             ->name('perfil.update');
+    });
+
+Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.force_password', 'emprendedor.profile_complete', 'nocache'])
+    ->prefix('emprendedor')
+    ->name('emprendedor.')
+    ->group(function () {
+        Route::get('/dashboard', DashboardController::class)
+            ->name('dashboard');
 
         Route::get('/publicaciones', [EmprendedorPostController::class, 'index'])
             ->name('publicaciones.index');
