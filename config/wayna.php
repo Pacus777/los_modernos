@@ -118,7 +118,6 @@ return [
 
     'emprendedor_cuenta' => [
         'enviar_correo' => env('WAYNA_EMPRENDEDOR_CUENTA_ENVIAR_CORREO', true),
-        'exigir_email_gmail' => env('WAYNA_EMPRENDEDOR_CUENTA_EXIGIR_GMAIL', true),
     ],
 
     'rate_limit' => [

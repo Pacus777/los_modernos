@@ -162,14 +162,31 @@ class EmprendedorCuentaTest extends TestCase
         ]);
     }
 
-    public function test_rechaza_correo_que_no_es_gmail(): void
+    public function test_acepta_correo_con_cualquier_dominio_valido(): void
+    {
+        Mail::fake();
+
+        $admin = $this->crearAdmin();
+        $emprendedor = $this->crearEmprendedor();
+        $this->asegurarRolEmprendedor();
+
+        $response = $this->actingAs($admin)->post(route('admin.emprendedores.cuenta.store', $emprendedor), [
+            'email' => 'alumno@unifranz.edu.bo',
+            'name' => 'Alumno Unifranz',
+        ]);
+
+        $response->assertRedirect(route('admin.emprendedores.edit', $emprendedor));
+        $this->assertSame('alumno@unifranz.edu.bo', $emprendedor->fresh()->user->email);
+    }
+
+    public function test_rechaza_correo_sin_formato_valido(): void
     {
         $admin = $this->crearAdmin();
         $emprendedor = $this->crearEmprendedor();
         $this->asegurarRolEmprendedor();
 
         $response = $this->actingAs($admin)->post(route('admin.emprendedores.cuenta.store', $emprendedor), [
-            'email' => 'usuario@hotmail.com',
+            'email' => 'usuario-sin-arroba',
         ]);
 
         $response->assertSessionHasErrors('email');

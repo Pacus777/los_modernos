@@ -9,7 +9,7 @@ Permitir que un **administrador** cree la cuenta de acceso (`users` + rol `empre
 | Momento | Pantalla |
 |---------|----------|
 | **Alta nueva** | Tras los 4 pasos → **Finalizar registro** (`/admin/emprendedores/{id}/finalizar`) |
-| **Edición** | Al final de **Editar emprendedor**, panel de cuenta |
+| **Directorio / edición** | Botón **Credenciales** → modal en listado de emprendedores |
 
 ## Flujo de alta
 
@@ -32,20 +32,12 @@ Permitir que un **administrador** cree la cuenta de acceso (`users` + rol `empre
 | Mailable | `App\Mail\EmprendedorCuentaCredencialesMail` |
 | Vista | `resources/views/mail/emprendedor-cuenta-credenciales.blade.php` |
 
-## Gmail obligatorio
+## Correo del emprendedor
 
-- Correo del emprendedor: solo **@gmail.com**
-- Envío: **SMTP de Gmail** (ver `docs/GMAIL-SMTP-WAYNA.md`)
+- Cualquier **email válido** con `@` (`@wayna.com`, `@unifranz.edu.bo`, Gmail, etc.).
+- Envío vía **SMTP** configurado en `.env` (ver `docs/GMAIL-SMTP-WAYNA.md`).
 
-```env
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=tu-cuenta@gmail.com
-MAIL_PASSWORD=contraseña-de-aplicacion-16-caracteres
-WAYNA_EMPRENDEDOR_CUENTA_EXIGIR_GMAIL=true
-```
-
-Probar: `php artisan wayna:probar-correo destino@gmail.com`
+Probar: `php artisan wayna:probar-correo destino@wayna.com`
 
 ## Auditoría (S3-09)
 

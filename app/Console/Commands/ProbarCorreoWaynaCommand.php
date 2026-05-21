@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Support\CorreoGmailEmprendedor;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -10,20 +9,20 @@ class ProbarCorreoWaynaCommand extends Command
 {
     protected $signature = 'wayna:probar-correo {destino : Correo de prueba}';
 
-    protected $description = 'Envía un correo de prueba (verifica Mailpit o SMTP en .env)';
+    protected $description = 'Envía un correo de prueba (verifica SMTP en .env)';
 
     public function handle(): int
     {
-        $destino = strtolower($this->argument('destino'));
+        $destino = strtolower(trim((string) $this->argument('destino')));
 
-        if (CorreoGmailEmprendedor::exigido() && ! CorreoGmailEmprendedor::esGmail($destino)) {
-            $this->error('WAYNA exige destino @gmail.com para credenciales de emprendedor.');
+        if (! filter_var($destino, FILTER_VALIDATE_EMAIL)) {
+            $this->error('Indicá un correo válido (debe incluir @ y un dominio, ej. usuario@wayna.com).');
 
             return self::FAILURE;
         }
 
         if (! filled(config('mail.mailers.smtp.username')) || ! filled(config('mail.mailers.smtp.password'))) {
-            $this->error('Completá MAIL_USERNAME y MAIL_PASSWORD (contraseña de aplicación Gmail) en .env');
+            $this->error('Completá MAIL_USERNAME y MAIL_PASSWORD en .env');
 
             return self::FAILURE;
         }
@@ -46,7 +45,6 @@ class ProbarCorreoWaynaCommand extends Command
             return self::SUCCESS;
         } catch (\Throwable $exception) {
             $this->error('No se pudo enviar: '.$exception->getMessage());
-            $this->line('Asegurate de que Mailpit esté iniciado en Laragon (Menu → Mailpit).');
 
             return self::FAILURE;
         }

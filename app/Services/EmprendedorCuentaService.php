@@ -6,7 +6,6 @@ use App\Enums\AuditAction;
 use App\Mail\EmprendedorCuentaCredencialesMail;
 use App\Models\Emprendedor;
 use App\Models\User;
-use App\Support\CorreoGmailEmprendedor;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -34,10 +33,6 @@ class EmprendedorCuentaService
     ): array {
         if ($this->tieneCuentaActiva($emprendedor)) {
             throw new RuntimeException('Este emprendedor ya tiene una cuenta de acceso vinculada.');
-        }
-
-        if (CorreoGmailEmprendedor::exigido() && ! CorreoGmailEmprendedor::esGmail($email)) {
-            throw new RuntimeException('El correo de acceso debe ser una cuenta Gmail (nombre@gmail.com).');
         }
 
         $passwordPlano = Str::password(12);
@@ -157,9 +152,9 @@ class EmprendedorCuentaService
             return false;
         }
 
-        if (! $this->smtpGmailConfigurado()) {
+        if (! $this->smtpConfigurado()) {
             report(new RuntimeException(
-                'Gmail SMTP no configurado: completá MAIL_USERNAME y MAIL_PASSWORD (contraseña de aplicación) en .env',
+                'SMTP no configurado: completá MAIL_USERNAME y MAIL_PASSWORD en .env',
             ));
 
             return false;
@@ -212,17 +207,9 @@ class EmprendedorCuentaService
             ->value('id');
     }
 
-    private function smtpGmailConfigurado(): bool
+    private function smtpConfigurado(): bool
     {
-        $host = strtolower((string) config('mail.mailers.smtp.host', ''));
-
-        if (! str_contains($host, 'gmail.com')) {
-            return filled(config('mail.mailers.smtp.username'))
-                && filled(config('mail.mailers.smtp.password'));
-        }
-
         return filled(config('mail.mailers.smtp.username'))
-            && str_ends_with(strtolower((string) config('mail.mailers.smtp.username')), '@gmail.com')
             && filled(config('mail.mailers.smtp.password'));
     }
 }

@@ -3,8 +3,6 @@
 namespace App\Http\Requests\Admin;
 
 use App\Models\Emprendedor;
-use App\Rules\CorreoGmail;
-use App\Support\CorreoGmailEmprendedor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,10 +30,6 @@ class CrearEmprendedorCuentaRequest extends FormRequest
             Rule::unique('users', 'email'),
         ];
 
-        if (CorreoGmailEmprendedor::exigido()) {
-            $reglasEmail[] = new CorreoGmail;
-        }
-
         return [
             'email' => $reglasEmail,
             'name' => ['nullable', 'string', 'max:255'],
@@ -51,7 +45,7 @@ class CrearEmprendedorCuentaRequest extends FormRequest
     {
         return [
             'email.required' => 'Indicá el correo del emprendedor.',
-            'email.email' => 'El correo no tiene un formato válido.',
+            'email.email' => 'El correo debe ser válido e incluir @ (ej. usuario@wayna.com).',
             'email.unique' => 'Ese correo ya está registrado en el sistema.',
         ];
     }

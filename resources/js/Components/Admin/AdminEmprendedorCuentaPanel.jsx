@@ -114,9 +114,10 @@ export default function AdminEmprendedorCuentaPanel({
                 <div className="flex gap-3 rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950">
                     <IconoCorreo className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
                     <p>
-                        Escribí el <strong className="text-amber-950">Gmail del emprendedor</strong> (por ejemplo{' '}
-                        <span className="whitespace-nowrap">nombre@gmail.com</span>). Ahí le llegará el correo con
-                        su usuario y contraseña. Si no lo encuentra, que revise la carpeta de spam.
+                        Escribí el <strong className="text-amber-950">correo del emprendedor</strong> (cualquier
+                        dominio: <span className="whitespace-nowrap">@wayna.com</span>,{' '}
+                        <span className="whitespace-nowrap">@unifranz.edu.bo</span>, Gmail, etc.). Ahí le llegará el
+                        mail con su usuario y contraseña. Si no lo encuentra, que revise spam.
                     </p>
                 </div>
 
@@ -193,7 +194,7 @@ export default function AdminEmprendedorCuentaPanel({
                                     className={`${adminInputClass} mt-2`}
                                     value={data.email}
                                     onChange={(e) => setData('email', e.target.value)}
-                                    placeholder="nombre.apellido@gmail.com"
+                                    placeholder="nombre.apellido@empresa.com"
                                 />
                                 {errors.email ? (
                                     <p className="mt-1.5 text-sm font-medium text-red-600">{errors.email}</p>
