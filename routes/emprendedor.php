@@ -7,6 +7,7 @@ use App\Http\Controllers\Emprendedor\EmprendedorMetaController;
 use App\Http\Controllers\Emprendedor\ForcePasswordChangeController;
 use App\Http\Controllers\Emprendedor\NotificacionPreferenciasController;
 use App\Http\Controllers\Emprendedor\PerfilController;
+use App\Http\Controllers\Emprendedor\EmprendedorPostController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,18 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
 
         Route::put('/perfil', [PerfilController::class, 'update'])
             ->name('perfil.update');
+
+        Route::get('/publicaciones', [EmprendedorPostController::class, 'index'])
+            ->name('publicaciones.index');
+
+        Route::post('/publicaciones', [EmprendedorPostController::class, 'store'])
+            ->name('publicaciones.store');
+
+        Route::put('/publicaciones/{post}', [EmprendedorPostController::class, 'update'])
+            ->name('publicaciones.update');
+
+        Route::delete('/publicaciones/{post}', [EmprendedorPostController::class, 'destroy'])
+            ->name('publicaciones.destroy');
 
         Route::get('/preferencias', [NotificacionPreferenciasController::class, 'edit'])
             ->name('preferencias.edit');
