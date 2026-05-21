@@ -167,4 +167,25 @@ class Emprendedor extends Model
             'punto_id'
         )->withTimestamps();
     }
+
+    /**
+     * Publicaciones del muro / feed (S4-01).
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(EmprendedorPost::class, 'emprendedor_id');
+    }
+
+    /**
+     * Turistas que siguen a este emprendedor (S4-01).
+     */
+    public function seguidoresVisitantes(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Visitante::class,
+            'emprendedor_seguidores',
+            'emprendedor_id',
+            'visitante_id',
+        )->withTimestamps();
+    }
 }
