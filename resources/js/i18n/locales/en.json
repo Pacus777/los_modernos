@@ -148,7 +148,7 @@
       "processing": "Processing...",
       "confirmWithAmount": "Confirm contribution of Bs {{amount}}",
       "pendingNote": "Your contribution will be registered as pending until it is confirmed.",
-      "exchangeRateHint": "Approximate reference exchange rate for foreign visitors."
+      "exchangeRateHint": "USD equivalent per the BCB referential dollar (bcb.gob.bo): sell {{usdToBob}} BOB · buy {{compra}} BOB per 1 USD."
     },
     "bcpQr": {
       "title": "Pay with WAYNA's BCP QR",

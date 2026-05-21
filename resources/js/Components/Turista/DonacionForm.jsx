@@ -328,7 +328,16 @@ export default function DonacionForm({
                         </span>
 
                         <span className="w-full text-[11px] font-medium text-sky-800/80">
-                            {t('tourist.donationForm.exchangeRateHint')}
+                            {t('tourist.donationForm.exchangeRateHint', {
+                                usdToBob: Number(tipoCambio.usd_to_bob ?? 0).toLocaleString(
+                                    localeMoneda,
+                                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                                ),
+                                compra: Number(tipoCambio.compra ?? tipoCambio.usd_to_bob ?? 0).toLocaleString(
+                                    localeMoneda,
+                                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                                ),
+                            })}
                         </span>
                     </p>
                 )}

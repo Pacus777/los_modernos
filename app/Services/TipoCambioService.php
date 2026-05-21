@@ -7,18 +7,33 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Tipo de cambio USD/BOB desde el Banco Central de Bolivia (BCB).
+ *
+ * Por defecto usa el valor referencial del dólar (compra/venta ~9,92 / 10,13),
+ * no el tipo de cambio oficial (~6,86 / 6,96).
+ */
 class TipoCambioService
 {
     public function obtenerUsdBobReferencial(): array
     {
         if (! config('tipocambio.enabled', true)) {
-            return $this->respuestaDesdeFallback();
+            return [
+                'activo' => false,
+                'usd_to_bob' => null,
+                'usd_por_bs' => 0.0,
+                'label' => 'Tipo de cambio desactivado',
+                'source' => (string) config('tipocambio.institucion_label'),
+                'tipo_bcb' => null,
+                'updated_at' => null,
+            ];
         }
 
-        $cacheMinutes = max((int) config('tipocambio.cache_minutes', 60), 1);
+        $cacheMinutes = max(1, (int) config('tipocambio.cache_minutes', 60));
+        $cacheKey = 'tipo_cambio_bcb_'.strtolower((string) config('tipocambio.tipo', 'referencial'));
 
         return Cache::remember(
-            'tipo_cambio_usd_bob_referencial',
+            $cacheKey,
             now()->addMinutes($cacheMinutes),
             fn () => $this->resolverTipoCambio()
         );
@@ -27,33 +42,59 @@ class TipoCambioService
     private function resolverTipoCambio(): array
     {
         try {
-            $desdeApi = $this->obtenerDesdeDolarApi();
+            $desdeBcb = $this->obtenerDesdeBcb();
 
-            if ($desdeApi !== null) {
+            if ($desdeBcb !== null) {
                 $registro = TipoCambio::query()->create([
                     'base' => 'USD',
                     'quote' => 'BOB',
-                    'compra' => $desdeApi['compra'],
-                    'venta' => $desdeApi['venta'],
-                    'promedio' => $desdeApi['promedio'],
-                    'fuente' => $desdeApi['fuente'],
-                    'tipo' => 'referencial',
+                    'compra' => $desdeBcb['compra'],
+                    'venta' => $desdeBcb['venta'],
+                    'promedio' => $desdeBcb['promedio'],
+                    'fuente' => $desdeBcb['fuente'],
+                    'tipo' => (string) config('tipocambio.tipo', 'referencial'),
                     'consultado_en' => now(),
-                    'metadata' => $desdeApi['metadata'] ?? [],
+                    'metadata' => $desdeBcb['metadata'] ?? [],
                 ]);
 
-                return $this->respuestaDesdeRegistro($registro);
+                return $this->respuestaDesdeRegistro($registro, $desdeBcb['label'] ?? null);
             }
         } catch (\Throwable $e) {
-            Log::warning('No se pudo obtener tipo de cambio referencial desde API.', [
+            Log::warning('No se pudo obtener tipo de cambio desde BCB.', [
                 'error' => $e->getMessage(),
             ]);
+        }
+
+        if (config('tipocambio.provider') !== 'bcb') {
+            try {
+                $desdeDolarApi = $this->obtenerDesdeDolarApi();
+
+                if ($desdeDolarApi !== null) {
+                    $registro = TipoCambio::query()->create([
+                        'base' => 'USD',
+                        'quote' => 'BOB',
+                        'compra' => $desdeDolarApi['compra'],
+                        'venta' => $desdeDolarApi['venta'],
+                        'promedio' => $desdeDolarApi['promedio'],
+                        'fuente' => $desdeDolarApi['fuente'],
+                        'tipo' => 'referencial',
+                        'consultado_en' => now(),
+                        'metadata' => $desdeDolarApi['metadata'] ?? [],
+                    ]);
+
+                    return $this->respuestaDesdeRegistro($registro);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('No se pudo obtener tipo de cambio desde DolarApi.', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         $ultimo = TipoCambio::query()
             ->where('base', 'USD')
             ->where('quote', 'BOB')
-            ->where('tipo', 'referencial')
+            ->where('tipo', config('tipocambio.tipo', 'referencial'))
             ->latest('consultado_en')
             ->first();
 
@@ -64,56 +105,93 @@ class TipoCambioService
         return $this->respuestaDesdeFallback();
     }
 
-    private function obtenerDesdeDolarApi(): ?array
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function obtenerDesdeBcb(): ?array
+    {
+        $tipo = strtolower((string) config('tipocambio.tipo', 'referencial'));
+
+        if ($tipo === 'oficial') {
+            return $this->obtenerBcbOficial();
+        }
+
+        return $this->obtenerBcbReferencial();
+    }
+
+    /**
+     * Valor referencial del dólar (el de la tabla «VALOR REFERENCIAL» en bcb.gob.bo).
+     *
+     * @return array<string, mixed>|null
+     */
+    private function obtenerBcbReferencial(): ?array
     {
         $response = Http::timeout(8)
             ->acceptJson()
-            ->get(config('tipocambio.api_url'));
+            ->get((string) config('tipocambio.bcb_api_url_referencial'));
 
         if (! $response->successful()) {
-            throw new \RuntimeException('API respondió con estado '.$response->status());
+            throw new \RuntimeException('BCB API respondió '.$response->status());
         }
 
         $data = $response->json();
+        $tc = data_get($data, 'tc_referencial_usd');
 
-        /*
-        | La API puede devolver una lista de cotizaciones.
-        | Buscamos una opción referencial/paralela si existe.
-        */
-
-        $items = is_array($data) && array_is_list($data)
-            ? $data
-            : [$data];
-
-        $item = collect($items)->first(function ($row) {
-            $nombre = strtolower((string) data_get($row, 'nombre', ''));
-            $casa = strtolower((string) data_get($row, 'casa', ''));
-            $tipo = strtolower((string) data_get($row, 'tipo', ''));
-
-            return str_contains($nombre, 'blue')
-                || str_contains($nombre, 'paralelo')
-                || str_contains($nombre, 'referencial')
-                || str_contains($casa, 'blue')
-                || str_contains($casa, 'paralelo')
-                || str_contains($tipo, 'referencial');
-        }) ?? collect($items)->first();
-
-        if (! $item) {
+        if (! is_array($tc)) {
             return null;
         }
 
+        $compra = $this->extraerNumero(data_get($tc, 'compra'));
+        $venta = $this->extraerNumero(data_get($tc, 'venta'));
+
+        if ($venta <= 0 && $compra > 0) {
+            $venta = $compra;
+        }
+
+        if ($venta <= 0) {
+            return null;
+        }
+
+        return [
+            'compra' => $compra > 0 ? $compra : null,
+            'venta' => $venta,
+            'promedio' => $compra > 0 ? round(($compra + $venta) / 2, 4) : $venta,
+            'fuente' => data_get($data, 'fuente', (string) config('tipocambio.institucion_label')),
+            'label' => 'Dólar referencial BCB (venta)',
+            'tipo_bcb' => 'referencial',
+            'metadata' => [
+                'raw' => $tc,
+                'fecha' => data_get($tc, 'fecha'),
+                'api_url' => config('tipocambio.bcb_api_url_referencial'),
+                'proveedor_api' => 'bcb.cucu.bo',
+            ],
+        ];
+    }
+
+    /**
+     * Tipo de cambio oficial BCB (tabla «TIPO DE CAMBIO» en bcb.gob.bo).
+     *
+     * @return array<string, mixed>|null
+     */
+    private function obtenerBcbOficial(): ?array
+    {
+        $response = Http::timeout(8)
+            ->acceptJson()
+            ->get((string) config('tipocambio.bcb_api_url_oficial'));
+
+        if (! $response->successful()) {
+            throw new \RuntimeException('BCB API oficial respondió '.$response->status());
+        }
+
+        $data = $response->json();
+        $detalle = collect(data_get($data, 'tc_oficial.detalle', []));
+
         $compra = $this->extraerNumero(
-            data_get($item, 'compra')
-            ?? data_get($item, 'buy')
-            ?? data_get($item, 'bid')
+            $detalle->firstWhere('fecha_label', 'Compra')['valor'] ?? data_get($data, 'tc_oficial.valor')
         );
 
         $venta = $this->extraerNumero(
-            data_get($item, 'venta')
-            ?? data_get($item, 'sell')
-            ?? data_get($item, 'ask')
-            ?? data_get($item, 'promedio')
-            ?? data_get($item, 'rate')
+            $detalle->firstWhere('fecha_label', 'Venta')['valor'] ?? 0
         );
 
         if ($venta <= 0 && $compra > 0) {
@@ -124,15 +202,68 @@ class TipoCambioService
             return null;
         }
 
-        $promedio = $compra > 0
-            ? round(($compra + $venta) / 2, 4)
-            : $venta;
+        return [
+            'compra' => $compra > 0 ? $compra : null,
+            'venta' => $venta,
+            'promedio' => $compra > 0 ? round(($compra + $venta) / 2, 4) : $venta,
+            'fuente' => data_get($data, 'fuente', (string) config('tipocambio.institucion_label')),
+            'label' => 'Tipo de cambio oficial BCB (venta)',
+            'tipo_bcb' => 'oficial',
+            'metadata' => [
+                'raw' => data_get($data, 'tc_oficial'),
+                'fecha' => data_get($data, 'tc_oficial.fecha'),
+                'api_url' => config('tipocambio.bcb_api_url_oficial'),
+                'proveedor_api' => 'bcb.cucu.bo',
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function obtenerDesdeDolarApi(): ?array
+    {
+        $response = Http::timeout(8)
+            ->acceptJson()
+            ->get(config('tipocambio.api_url'));
+
+        if (! $response->successful()) {
+            throw new \RuntimeException('DolarApi respondió '.$response->status());
+        }
+
+        $data = $response->json();
+        $items = is_array($data) && array_is_list($data) ? $data : [$data];
+        $casaPreferida = strtolower((string) config('tipocambio.casa_preferida', 'oficial'));
+
+        $item = collect($items)->first(function ($row) use ($casaPreferida) {
+            $casa = strtolower((string) data_get($row, 'casa', ''));
+            $nombre = strtolower((string) data_get($row, 'nombre', ''));
+
+            return $casa === $casaPreferida || str_contains($nombre, $casaPreferida);
+        }) ?? collect($items)->first();
+
+        if (! $item) {
+            return null;
+        }
+
+        $compra = $this->extraerNumero(data_get($item, 'compra'));
+        $venta = $this->extraerNumero(data_get($item, 'venta'));
+
+        if ($venta <= 0 && $compra > 0) {
+            $venta = $compra;
+        }
+
+        if ($venta <= 0) {
+            return null;
+        }
 
         return [
             'compra' => $compra > 0 ? $compra : null,
             'venta' => $venta,
-            'promedio' => $promedio,
-            'fuente' => 'DolarApi Bolivia',
+            'promedio' => $compra > 0 ? round(($compra + $venta) / 2, 4) : $venta,
+            'fuente' => 'DolarApi Bolivia (respaldo)',
+            'label' => 'Dólar oficial vía DolarApi (respaldo)',
+            'tipo_bcb' => 'oficial',
             'metadata' => [
                 'raw' => $item,
                 'api_url' => config('tipocambio.api_url'),
@@ -148,6 +279,10 @@ class TipoCambioService
             return $this->respuestaDesdeFallback();
         }
 
+        $tipoBcb = data_get($tipoCambio->metadata, 'tipo_bcb')
+            ?? $tipoCambio->tipo
+            ?? config('tipocambio.tipo', 'referencial');
+
         return [
             'activo' => true,
             'usd_to_bob' => round($usdToBob, 4),
@@ -155,29 +290,32 @@ class TipoCambioService
             'compra' => $tipoCambio->compra ? (float) $tipoCambio->compra : null,
             'venta' => (float) $tipoCambio->venta,
             'promedio' => $tipoCambio->promedio ? (float) $tipoCambio->promedio : null,
-            'label' => $label ?? 'Tipo de cambio referencial',
+            'label' => $label ?? 'Dólar referencial BCB (venta)',
             'source' => $tipoCambio->fuente,
+            'tipo_bcb' => $tipoBcb,
             'updated_at' => optional($tipoCambio->consultado_en)->toISOString(),
         ];
     }
 
     private function respuestaDesdeFallback(): array
     {
-        $usdToBob = (float) config('tipocambio.fallback_usd_to_bob', 10.25);
+        $venta = (float) config('tipocambio.fallback_usd_to_bob', 10.13);
+        $compra = (float) config('tipocambio.fallback_compra', 9.92);
 
-        if ($usdToBob <= 0) {
-            $usdToBob = 10.25;
+        if ($venta <= 0) {
+            $venta = 10.13;
         }
 
         return [
             'activo' => true,
-            'usd_to_bob' => round($usdToBob, 4),
-            'usd_por_bs' => round(1 / $usdToBob, 6),
-            'compra' => null,
-            'venta' => round($usdToBob, 4),
-            'promedio' => null,
-            'label' => 'Tipo de cambio referencial de respaldo',
-            'source' => 'Fallback local',
+            'usd_to_bob' => round($venta, 4),
+            'usd_por_bs' => round(1 / $venta, 6),
+            'compra' => $compra > 0 ? $compra : null,
+            'venta' => round($venta, 4),
+            'promedio' => $compra > 0 ? round(($compra + $venta) / 2, 4) : $venta,
+            'label' => 'Dólar referencial BCB (respaldo local)',
+            'source' => (string) config('tipocambio.institucion_label'),
+            'tipo_bcb' => 'referencial',
             'updated_at' => now()->toISOString(),
         ];
     }

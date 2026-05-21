@@ -148,7 +148,7 @@
       "processing": "Procesando...",
       "confirmWithAmount": "Confirmar aporte de Bs {{amount}}",
       "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado.",
-      "exchangeRateHint": "Tipo de cambio referencial aproximado para turistas extranjeros."
+      "exchangeRateHint": "Equivalente en USD según el valor referencial del dólar del BCB (bcb.gob.bo): venta {{usdToBob}} Bs · compra {{compra}} Bs por 1 USD."
     },
     "bcpQr": {
       "title": "Pago con QR BCP de WAYNA",
