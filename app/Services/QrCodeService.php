@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Donacion;
 use App\Models\Emprendedor;
+use App\Support\WaynaBcpQr;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -77,6 +78,10 @@ class QrCodeService
      */
     public function generarQrPago(Donacion $donacion): string
     {
+        if (WaynaBcpQr::aplicaADonacion($donacion)) {
+            return WaynaBcpQr::urlImagen();
+        }
+
         $metodo = strtolower($donacion->metodo);
 
         if (str_contains($metodo, 'efectivo')) {
@@ -91,6 +96,10 @@ class QrCodeService
      */
     public function urlPublicaQrPagoExistente(Donacion $donacion): ?string
     {
+        if (WaynaBcpQr::aplicaADonacion($donacion)) {
+            return WaynaBcpQr::urlImagen();
+        }
+
         $metodo = strtolower($donacion->metodo);
         $rutaRelativa = str_contains($metodo, 'efectivo')
             ? "donaciones/qrs/efectivo/donacion-{$donacion->id}.png"

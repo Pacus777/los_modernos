@@ -143,12 +143,27 @@
       "amountPlaceholder": "e.g. 30",
       "paymentMethod": "Payment method",
       "instructionCash": "Hand the amount to the cashier and wait for confirmation.",
-      "instructionQr": "Scan the code with your banking app.",
+      "instructionQr": "Pay with WAYNA's BCP QR and your unique reference code.",
       "instructionOther": "Follow the instructions at the Wayna desk to complete your contribution.",
       "processing": "Processing...",
       "confirmWithAmount": "Confirm contribution of Bs {{amount}}",
       "pendingNote": "Your contribution will be registered as pending until it is confirmed.",
-      "exchangeRateHint": "Approximate reference exchange rate for foreign visitors."
+      "exchangeRateHint": "USD equivalent per the BCB referential dollar (bcb.gob.bo): sell {{usdToBob}} BOB · buy {{compra}} BOB per 1 USD."
+    },
+    "bcpQr": {
+      "title": "Pay with WAYNA's BCP QR",
+      "subtitlePreview": "After you confirm, you will get a reference code. Use it with this QR in the BCP app.",
+      "subtitleConfirm": "Scan WAYNA's account QR and complete payment in bolivianos from your BCP app.",
+      "step1": "Open the BCP app or BCP Mobile Banking on your phone.",
+      "step2": "Choose pay with QR or Simple QR.",
+      "step3": "Scan the WAYNA QR below (the same QR for every contribution).",
+      "step4": "Enter the exact amount of your contribution in bolivianos (Bs).",
+      "step5": "In the payment detail or memo, paste your WAYNA reference code so we can match your payment.",
+      "amountLabel": "Amount to pay",
+      "qrAlt": "WAYNA static BCP QR code",
+      "tapToEnlarge": "Tap the QR to view it larger",
+      "tapToShrink": "Tap to shrink",
+      "footnote": "Your contribution stays pending until a WAYNA admin or cashier validates the payment in the system."
     }
   },
   "admin": {
@@ -205,7 +220,8 @@
       "market": "Wayna Markets",
       "staffLogin": "Team login",
       "adminLogin": "Log in",
-      "adminPanel": "Admin area"
+      "adminPanel": "My dashboard",
+      "logout": "Log out"
     },
     "hero": {
       "kicker": "Wayna entrepreneur network",
@@ -392,6 +408,13 @@
         "title": "Tourists and community",
         "body": "Discover stories, connect on social media, and give when you want—no pressure."
       }
+    }
+  },
+  "emprendedor": {
+    "nav": {
+      "dashboard": "My dashboard",
+      "editProfile": "Edit profile",
+      "backToPanel": "Back to my dashboard"
     }
   }
 }

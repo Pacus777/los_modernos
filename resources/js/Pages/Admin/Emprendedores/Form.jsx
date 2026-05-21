@@ -68,7 +68,6 @@ export default function Form({
         departamento:
             emprendedor?.departamento?.value ?? emprendedor?.departamento ?? '',
         estado: emprendedor?.estado || 'activo',
-        meta_monto: emprendedor?.meta_monto ?? '',
         fotografia: null,
         foto_empresa: null,
         galeria: [],
@@ -122,8 +121,8 @@ export default function Form({
             errors.departamento
         ) {
             setPaso(2);
-        } else if (errors.estado || errors.meta_monto) {
-            setPaso(3);
+        } else if (errors.estado) {
+            setPaso(1);
         }
     }, [errors]);
 
@@ -137,6 +136,9 @@ export default function Form({
             if (!data.apellidos.trim()) {
                 locales.apellidos = 'Los apellidos son obligatorios.';
             }
+            if (!data.estado) {
+                locales.estado = 'Debés elegir un estado.';
+            }
         }
 
         if (numeroPaso === 2) {
@@ -145,24 +147,6 @@ export default function Form({
             }
             if (!data.departamento) {
                 locales.departamento = 'Debés elegir el departamento.';
-            }
-            const desc = data.descripcion?.trim() ?? '';
-            if (!desc) {
-                locales.descripcion = 'La descripción del emprendimiento es obligatoria.';
-            } else if (desc.length < 10) {
-                locales.descripcion =
-                    'Escribí al menos 10 caracteres (qué produce o vende el emprendimiento).';
-            }
-        }
-
-        if (numeroPaso === 3) {
-            if (!data.estado) {
-                locales.estado = 'Debés elegir un estado.';
-            }
-            if (data.meta_monto === '' || data.meta_monto === null) {
-                locales.meta_monto = 'La meta económica es obligatoria.';
-            } else if (Number(data.meta_monto) < 0.01) {
-                locales.meta_monto = 'La meta debe ser mayor a cero.';
             }
         }
 
@@ -200,18 +184,15 @@ export default function Form({
     const submit = (e) => {
         e.preventDefault();
 
-        if (!validarPaso(1) || !validarPaso(2) || !validarPaso(3)) {
-            if (!data.nombre.trim() || !data.apellidos.trim()) {
-                setPaso(1);
-            } else if (
-                !data.tipo_emprendimiento ||
-                !data.departamento ||
-                !data.descripcion?.trim() ||
-                data.descripcion.trim().length < 10
+        if (!validarPaso(1) || !validarPaso(2)) {
+            if (
+                !data.nombre.trim() ||
+                !data.apellidos.trim() ||
+                !data.estado
             ) {
-                setPaso(2);
+                setPaso(1);
             } else {
-                setPaso(3);
+                setPaso(2);
             }
             return;
         }
@@ -249,7 +230,7 @@ export default function Form({
                     <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
                         {esEdicion
                             ? 'Completá el registro por pasos; los datos se conservan al avanzar o retroceder.'
-                            : 'Registro guiado en 4 pasos. Al final confirmás y se genera el QR de perfil.'}
+                            : 'Registro en 3 pasos. Después definís la campaña (meta) y el acceso al panel.'}
                     </p>
                 </div>
             }
@@ -262,6 +243,14 @@ export default function Form({
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                     <AdminBackLink href={route('admin.emprendedores.index')} />
                     <AdminFlashSuccess message={flash?.success} />
+                    {flash?.error ? (
+                        <div
+                            className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900"
+                            role="alert"
+                        >
+                            {flash.error}
+                        </div>
+                    ) : null}
 
                     <div className="overflow-hidden rounded-3xl border border-wayna-200/90 bg-white shadow-2xl shadow-wayna-900/[0.08] ring-1 ring-black/[0.03]">
                         <div className="header-wayna-gradient px-6 py-5 sm:px-8">
@@ -284,10 +273,11 @@ export default function Form({
                                 processing={processing}
                                 onAnterior={irAnterior}
                                 onSiguiente={irSiguiente}
-                                guardarLabel="Guardar"
+                                guardarLabel={esEdicion ? 'Guardar cambios' : 'Continuar al acceso'}
+                                guardandoLabel={esEdicion ? 'Guardando…' : 'Guardando perfil…'}
                             />
                             <div className="min-h-[280px] bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
-                                {paso >= 2 && paso <= 3 && nombreCompleto ? (
+                                {paso >= 2 && nombreCompleto ? (
                                     <AdminResumenEmprendedor
                                         titulo="Emprendedor en registro"
                                         nombre={nombreCompleto}
@@ -298,7 +288,7 @@ export default function Form({
                                             data.departamento,
                                         )}
                                         descripcion={
-                                            paso >= 3 ? data.descripcion?.trim() || null : null
+                                            paso >= 2 ? data.descripcion?.trim() || null : null
                                         }
                                         onCambiar={() => {
                                             setErroresPaso({});
@@ -351,13 +341,39 @@ export default function Form({
                                                     placeholder="Ej. Sánchez López"
                                                 />
                                             </AdminFormField>
+                                            <AdminFormField
+                                                id="estado"
+                                                label="Estado en WAYNA"
+                                                required
+                                                error={error('estado')}
+                                            >
+                                                <select
+                                                    id="estado"
+                                                    required
+                                                    value={data.estado}
+                                                    onChange={(e) =>
+                                                        setData('estado', e.target.value)
+                                                    }
+                                                    className={adminInputClass}
+                                                >
+                                                    <option value="activo">
+                                                        Activo (visible para turistas)
+                                                    </option>
+                                                    <option value="inactivo">Inactivo</option>
+                                                </select>
+                                            </AdminFormField>
                                         </div>
+                                        <p className="mt-4 rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3 text-xs text-stone-600">
+                                            La <strong>meta de recaudación</strong> se configura en una{' '}
+                                            <strong>campaña</strong> después del alta (o desde el panel del
+                                            emprendedor).
+                                        </p>
                                     </div>
                                 )}
 
                                 {paso === 2 && (
                                     <div className={adminSectionCard}>
-                                        <p className={adminLabelUpper}>Tipo, departamento y fotografía</p>
+                                        <p className={adminLabelUpper}>Perfil público</p>
                                         <p className="mt-1 text-sm text-stone-600">
                                             Completá los campos marcados con{' '}
                                             <span className="font-bold text-wayna-600">*</span>.
@@ -430,14 +446,12 @@ export default function Form({
                                             <AdminFormField
                                                 id="descripcion"
                                                 label="Descripción del emprendimiento"
-                                                required
-                                                hint="Qué produce o vende; lo verán los turistas en Wayna (mínimo 10 caracteres)."
+                                                hint="Opcional. Qué produce o vende; lo verán los turistas en Wayna."
                                                 error={error('descripcion')}
                                             >
                                                 <textarea
                                                     id="descripcion"
                                                     rows={5}
-                                                    required
                                                     value={data.descripcion}
                                                     onChange={(e) =>
                                                         setData('descripcion', e.target.value)
@@ -480,83 +494,28 @@ export default function Form({
                                     </div>
                                 )}
 
-                                {paso === 3 && (
-                                    <div className={adminSectionCard}>
-                                        <p className={adminLabelUpper}>Meta y estado</p>
-                                        <p className="mt-1 text-sm text-stone-600">
-                                            Completá los campos marcados con{' '}
-                                            <span className="font-bold text-wayna-600">*</span>.
-                                        </p>
-                                        <div className={`mt-4 ${adminFormStack}`}>
-                                            <AdminFormField
-                                                id="estado"
-                                                label="Estado"
-                                                required
-                                                error={error('estado')}
-                                            >
-                                                <select
-                                                    id="estado"
-                                                    required
-                                                    value={data.estado}
-                                                    onChange={(e) =>
-                                                        setData('estado', e.target.value)
-                                                    }
-                                                    className={adminInputClass}
-                                                >
-                                                    <option value="activo">
-                                                        Activo (visible)
-                                                    </option>
-                                                    <option value="inactivo">Inactivo</option>
-                                                </select>
-                                            </AdminFormField>
-                                            <AdminFormField
-                                                id="meta_monto"
-                                                label="Meta económica referencial (Bs)"
-                                                required
-                                                error={error('meta_monto')}
-                                            >
-                                                <div className={adminInputMoneyWrap}>
-                                                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-bold text-wayna-600">
-                                                        Bs
-                                                    </span>
-                                                    <input
-                                                        id="meta_monto"
-                                                        type="number"
-                                                        required
-                                                        min="0.01"
-                                                        step="0.01"
-                                                        value={data.meta_monto}
-                                                        onChange={(e) =>
-                                                            setData('meta_monto', e.target.value)
-                                                        }
-                                                        className={`${adminInputClass} pl-11`}
-                                                        placeholder="0.00"
-                                                    />
-                                                </div>
-                                            </AdminFormField>
-                                        </div>
-                                        {esEdicion && emprendedor?.qr_url ? (
-                                            <div className="mt-5 rounded-2xl border border-wayna-200 bg-wayna-50/60 px-4 py-3 text-sm text-stone-600">
+                                {esEdicion && paso === 2 ? (
+                                    <div className="mb-4 space-y-3">
+                                        {emprendedor?.qr_url ? (
+                                            <div className="rounded-2xl border border-wayna-200 bg-wayna-50/60 px-4 py-3 text-sm text-stone-600">
                                                 El código QR de perfil ya existe y se conserva al
                                                 guardar.
                                             </div>
-                                        ) : null}
-                                        {esEdicion && !emprendedor?.qr_url ? (
-                                            <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-4 text-sm text-amber-900/90">
+                                        ) : (
+                                            <div className="rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-4 text-sm text-amber-900/90">
                                                 <p className="font-semibold text-amber-950">
                                                     Código QR pendiente
                                                 </p>
                                                 <p className="mt-1">
                                                     En el listado, usá <strong>Ver QR</strong> para
-                                                    abrir la tarjeta y generar el código en el
-                                                    recuadro derecho.
+                                                    generar el código.
                                                 </p>
                                             </div>
-                                        ) : null}
+                                        )}
                                     </div>
-                                )}
+                                ) : null}
 
-                                {paso === 4 && (
+                                {paso === 3 && (
                                     <div className="space-y-4">
                                         <div className={adminSectionCard}>
                                             <p className={adminLabelUpper}>
@@ -611,15 +570,12 @@ export default function Form({
                                                         {data.estado}
                                                     </dd>
                                                 </div>
-                                                <div className="grid gap-1 px-4 py-3 sm:grid-cols-3">
-                                                    <dt className="text-xs font-bold uppercase text-wayna-700">
-                                                        Meta referencial
-                                                    </dt>
-                                                    <dd className="sm:col-span-2 text-sm font-semibold text-wayna-950">
-                                                        Bs. {formatearBs(data.meta_monto)}
-                                                    </dd>
-                                                </div>
                                             </dl>
+                                            <p className="mt-4 rounded-xl border border-wayna-100 bg-wayna-50/60 px-4 py-3 text-sm text-stone-600">
+                                                Tras guardar podrás crear la{' '}
+                                                <strong>campaña con la meta en Bs.</strong> antes de
+                                                configurar el acceso del emprendedor.
+                                            </p>
                                         </div>
 
                                         <AdminEmprendedorVistaPreviaMedios
@@ -630,8 +586,8 @@ export default function Form({
 
                                         {!esEdicion && (
                                             <p className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-900">
-                                                Al guardar se creará el emprendedor y se generará
-                                                automáticamente su código QR de perfil.
+                                                Al continuar se guardará el perfil y el QR. Luego elegís si
+                                                creás la campaña (meta) y configurás el acceso al panel.
                                             </p>
                                         )}
                                     </div>
@@ -645,10 +601,12 @@ export default function Form({
                                 processing={processing}
                                 onAnterior={irAnterior}
                                 onSiguiente={irSiguiente}
-                                guardarLabel="Guardar"
+                                guardarLabel={esEdicion ? 'Guardar cambios' : 'Continuar al acceso'}
+                                guardandoLabel={esEdicion ? 'Guardando…' : 'Guardando perfil…'}
                             />
                         </form>
                     </div>
+
                 </div>
             </div>
 

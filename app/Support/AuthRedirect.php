@@ -14,13 +14,20 @@ class AuthRedirect
         return match ($rol) {
             'admin' => route('admin.dashboard'),
             'cajero' => route('cajero.efectivo'),
+            'emprendedor' => route('emprendedor.dashboard'),
             default => route('turista.explorar'),
         };
     }
 
     public static function redirectAfterLogin(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $rol = $request->user()?->rol?->nombre;
+        $user = $request->user();
+        $rol = $user?->rol?->nombre;
+
+        if ($rol === 'emprendedor' && $user?->debeCambiarPassword()) {
+            return redirect()->route('emprendedor.password.force');
+        }
+
         $default = self::homeRouteForRole($rol);
 
         $intended = $request->session()->pull('url.intended');

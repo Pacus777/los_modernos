@@ -36,6 +36,11 @@ class RoleUserTestSeeder extends Seeder
             ['nombre' => 'cajero']
         );
 
+        Rol::updateOrCreate(
+            ['nombre' => 'emprendedor'],
+            ['nombre' => 'emprendedor']
+        );
+
         $admin = config('seeding.admin');
         $adminUser = User::updateOrCreate(
             ['email' => $admin['email']],

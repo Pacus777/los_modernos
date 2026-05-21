@@ -43,9 +43,8 @@ class EmprendedorTipoEmprendimientoTest extends TestCase
             'estado' => 'activo',
         ]);
 
-        $response->assertRedirect(route('admin.emprendedores.index'));
-
         $emprendedor = Emprendedor::query()->where('nombre', 'Ana')->first();
+        $response->assertRedirect(route('admin.emprendedores.finalizar', $emprendedor));
 
         $this->assertNotNull($emprendedor);
         $this->assertSame(TipoEmprendimiento::Gastronomia, $emprendedor->tipo_emprendimiento);

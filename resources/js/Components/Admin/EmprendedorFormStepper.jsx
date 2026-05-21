@@ -2,10 +2,9 @@
  * Indicador visual de pasos (T-A7) para el formulario de emprendedor.
  */
 export const PASOS_EMPRENDEDOR = [
-    { id: 1, titulo: 'Datos básicos', corto: '1' },
-    { id: 2, titulo: 'Tipo y región', corto: '2' },
-    { id: 3, titulo: 'Meta y estado', corto: '3' },
-    { id: 4, titulo: 'Confirmación', corto: '4' },
+    { id: 1, titulo: 'Datos y estado', corto: '1' },
+    { id: 2, titulo: 'Perfil público', corto: '2' },
+    { id: 3, titulo: 'Confirmación', corto: '3' },
 ];
 
 export default function EmprendedorFormStepper({ pasoActual, onSeleccionar }) {

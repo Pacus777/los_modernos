@@ -30,7 +30,7 @@ export default function AdminFormField({
             {hint ? (
                 <p className="text-xs leading-relaxed text-stone-500">{hint}</p>
             ) : null}
-            <div className="w-full min-w-0">{children}</div>
+            <div className="form-field-control w-full min-w-0">{children}</div>
             {error ? (
                 <p className="text-sm font-medium text-red-600" role="alert">
                     {error}

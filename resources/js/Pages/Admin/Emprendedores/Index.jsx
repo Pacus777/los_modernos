@@ -1,4 +1,5 @@
 import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
+import EmprendedorCuentaModal from '@/Components/Admin/EmprendedorCuentaModal';
 import EmprendedorDetalleModal from '@/Components/Admin/EmprendedorDetalleModal';
 import EmprendedorDirectorioTarjeta from '@/Components/Admin/EmprendedorDirectorioTarjeta';
 import {
@@ -8,6 +9,7 @@ import {
     adminPaginationBtnActive,
     adminPaginationBtnIdle,
     adminPrimaryGradientBtn,
+    adminTableActionCredenciales,
     adminTableActionDanger,
     adminTableActionEdit,
     adminTableHeadRow,
@@ -49,8 +51,20 @@ export default function Index({ emprendedores, topDonacionesEmprendedores = [] }
     const { flash } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const [detalle, setDetalle] = useState({ open: false, emprendedor: null });
+    const [credenciales, setCredenciales] = useState({ open: false, emprendedor: null });
     const [panelQrEmprendedorId, setPanelQrEmprendedorId] = useState(null);
     const [generandoId, setGenerandoId] = useState(null);
+
+    const emprendedorCredencialesActivo = useMemo(() => {
+        if (!credenciales.emprendedor?.id) {
+            return null;
+        }
+
+        return (
+            emprendedores.data.find((e) => e.id === credenciales.emprendedor.id) ??
+            credenciales.emprendedor
+        );
+    }, [credenciales.emprendedor, emprendedores.data]);
 
     const emprendedorPanelQr = useMemo(() => {
         if (!panelQrEmprendedorId) {
@@ -98,6 +112,14 @@ export default function Index({ emprendedores, topDonacionesEmprendedores = [] }
 
     const cerrarDetalle = () => {
         setDetalle({ open: false, emprendedor: null });
+    };
+
+    const abrirCredenciales = (emprendedor) => {
+        setCredenciales({ open: true, emprendedor });
+    };
+
+    const cerrarCredenciales = () => {
+        setCredenciales({ open: false, emprendedor: null });
     };
 
     const generarQrPara = (emprendedor) => {
@@ -177,6 +199,14 @@ export default function Index({ emprendedores, topDonacionesEmprendedores = [] }
 
                 <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <AdminFlashSuccess message={flash?.success} />
+                    {flash?.error ? (
+                        <div
+                            className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900"
+                            role="alert"
+                        >
+                            {flash.error}
+                        </div>
+                    ) : null}
 
                         <div className="mb-6 rounded-3xl border border-wayna-200/80 bg-white/95 p-4 shadow-sm backdrop-blur-sm sm:p-5">
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -429,6 +459,13 @@ export default function Index({ emprendedores, topDonacionesEmprendedores = [] }
                                                 onClick={detenerClic}
                                             >
                                                 <div className="flex flex-wrap justify-end gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => abrirCredenciales(emprendedor)}
+                                                        className={adminTableActionCredenciales}
+                                                    >
+                                                        Credenciales
+                                                    </button>
                                                     <Link
                                                         href={route('admin.emprendedores.edit', emprendedor.id)}
                                                         className={adminTableActionEdit}
@@ -517,6 +554,17 @@ export default function Index({ emprendedores, topDonacionesEmprendedores = [] }
                 </div>
             </div>
             <ConfirmDialogPortal />
+            <EmprendedorCuentaModal
+                show={credenciales.open}
+                emprendedor={emprendedorCredencialesActivo}
+                cuenta={emprendedorCredencialesActivo?.cuenta ?? {}}
+                fotoSrc={
+                    emprendedorCredencialesActivo
+                        ? obtenerUrlFotografia(emprendedorCredencialesActivo.fotografia)
+                        : null
+                }
+                onClose={cerrarCredenciales}
+            />
             <EmprendedorDetalleModal
                 show={detalle.open}
                 emprendedor={detalle.emprendedor}

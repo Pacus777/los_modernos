@@ -19,6 +19,10 @@ class UpdateEmprendedorRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->sanitizeFields(['nombre', 'apellidos', 'descripcion']);
+
+        if (! $this->filled('descripcion')) {
+            $this->merge(['descripcion' => null]);
+        }
     }
     /**
      * Autoriza esta solicitud.
@@ -41,11 +45,10 @@ class UpdateEmprendedorRequest extends FormRequest
         return [
             'nombre' => ['required', 'string', 'max:100'],
             'apellidos' => ['required', 'string', 'max:120'],
-            'descripcion' => ['required', 'string', 'min:10', 'max:5000'],
+            'descripcion' => ['nullable', 'string', 'max:5000'],
             'tipo_emprendimiento' => ['required', 'string', Rule::in(TipoEmprendimiento::valores())],
             'departamento' => ['required', 'string', Rule::in(Departamento::valores())],
             'estado' => ['required', 'string', 'in:activo,inactivo'],
-            'meta_monto' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
             'fotografia' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             ...$this->reglasMediosEmprendedor(),
             ...$this->reglasRedesSocialesEmprendedor(),
@@ -61,15 +64,10 @@ class UpdateEmprendedorRequest extends FormRequest
             'nombre.required' => 'El nombre del emprendedor es obligatorio.',
             'apellidos.required' => 'Los apellidos del emprendedor son obligatorios.',
             'estado.in' => 'El estado debe ser activo o inactivo.',
-            'meta_monto.required' => 'La meta económica es obligatoria.',
-            'meta_monto.numeric' => 'La meta económica debe ser un número.',
-            'meta_monto.min' => 'La meta debe ser mayor a cero.',
             'tipo_emprendimiento.required' => 'Debés elegir el tipo de emprendimiento.',
             'tipo_emprendimiento.in' => 'El tipo de emprendimiento seleccionado no es válido.',
             'departamento.required' => 'Debés elegir el departamento.',
             'departamento.in' => 'El departamento seleccionado no es válido.',
-            'descripcion.required' => 'La descripción del emprendimiento es obligatoria.',
-            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
             'descripcion.max' => 'La descripción no puede superar los 5000 caracteres.',
             'fotografia.image' => 'El archivo debe ser una imagen válida.',
             'fotografia.mimes' => 'La fotografía debe estar en formato JPG, JPEG, PNG o WEBP.',

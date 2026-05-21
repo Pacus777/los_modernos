@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\AuditAction;
+use App\Services\AuditLogService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -53,6 +55,12 @@ class LoginRequest extends FormRequest
 
         if (! Auth::attempt($this->only('email', 'password'), $this->wantsRemember())) {
             RateLimiter::hit($this->throttleKey());
+
+            app(AuditLogService::class)->registrar(
+                AuditAction::AuthLoginFailed,
+                metadata: ['email' => $this->string('email')->lower()->toString()],
+                request: $this,
+            );
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\AuditLogService;
 use App\Support\AuthRedirect;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,13 +33,20 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request, AuditLogService $auditLogService): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
         $user = $request->user();
+
+        $auditLogService->registrar(
+            AuditAction::AuthLoginSuccess,
+            actor: $user,
+            metadata: ['rol' => $user->rol?->nombre],
+            request: $request,
+        );
 
         $request->session()->forget('two_factor_passed');
 
@@ -48,7 +57,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return match ($rol) {
-            'admin', 'cajero' => AuthRedirect::redirectAfterLogin($request),
+            'admin', 'cajero', 'emprendedor' => AuthRedirect::redirectAfterLogin($request),
             default => $this->logoutUserWithoutRole($request),
         };
     }
@@ -70,8 +79,14 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): HttpFoundationResponse
+    public function destroy(Request $request, AuditLogService $auditLogService): HttpFoundationResponse
     {
+        $auditLogService->registrar(
+            AuditAction::AuthLogout,
+            actor: $request->user(),
+            request: $request,
+        );
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

@@ -2,6 +2,7 @@ import AdminPaginator from '@/Components/Admin/AdminPaginator';
 import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
 import DonacionDetalleModal from '@/Components/Admin/DonacionDetalleModal';
 import {
+    adminInputClass,
     adminListCardOuter,
     adminTableHeadRow,
     adminTableRowHover,
@@ -263,7 +264,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                 onChange={(e) =>
                                     filterForm.setData('emprendedor_id', e.target.value)
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             >
                                 <option value="">Todos los emprendedores</option>
                                 {emprendedores.map((e) => (
@@ -282,7 +283,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                 onChange={(e) =>
                                     filterForm.setData('rango_monto', e.target.value)
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             >
                                 <option value="">Todos los rangos</option>
                                 {rangosMonto.map((opt) => (
@@ -304,7 +305,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                         e.target.value,
                                     )
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             >
                                 {ESTADOS_PAGO.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
@@ -326,7 +327,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                         e.target.value,
                                     )
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             />
                         </div>
                         <div>
@@ -342,7 +343,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                         e.target.value,
                                     )
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             />
                         </div>
                     </div>

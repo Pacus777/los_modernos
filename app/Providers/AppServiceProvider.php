@@ -6,9 +6,13 @@ use App\Models\Donacion;
 use App\Observers\DonacionObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use App\Listeners\NotifyTelegramOnBackupResult;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Backup\Events\BackupHasFailed;
+use Spatie\Backup\Events\BackupWasSuccessful;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +34,19 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
 
         Donacion::observe(DonacionObserver::class);
+
+        $this->registerBackupTelegramListeners();
+    }
+
+    /**
+     * Alertas Telegram tras backup:run (S3-08).
+     */
+    protected function registerBackupTelegramListeners(): void
+    {
+        $listener = NotifyTelegramOnBackupResult::class;
+
+        Event::listen(BackupWasSuccessful::class, [$listener, 'onSuccess']);
+        Event::listen(BackupHasFailed::class, [$listener, 'onFailure']);
     }
 
     /**

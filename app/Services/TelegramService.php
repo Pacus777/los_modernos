@@ -148,4 +148,78 @@ TEXT;
             ]);
         }
     }
+
+    /**
+     * Alertas de respaldo automático (S3-08).
+     */
+    public function notificarRespaldoExitoso(string $nombreRespaldo, string $rutaDestino): void
+    {
+        if (! config('services.telegram.backup_alerts')) {
+            return;
+        }
+
+        $fecha = now()->timezone('America/La_Paz')->format('d/m/Y H:i');
+
+        $this->enviarMensaje(<<<TEXT
+✅ Respaldo WAYNA completado
+
+Nombre: {$nombreRespaldo}
+Destino: {$rutaDestino}
+Fecha: {$fecha}
+TEXT);
+    }
+
+    public function notificarRespaldoFallido(string $nombreRespaldo, string $error): void
+    {
+        if (! config('services.telegram.backup_alerts')) {
+            return;
+        }
+
+        $fecha = now()->timezone('America/La_Paz')->format('d/m/Y H:i');
+        $error = mb_substr($error, 0, 500);
+
+        $this->enviarMensaje(<<<TEXT
+❌ Falló el respaldo WAYNA
+
+Nombre: {$nombreRespaldo}
+Fecha: {$fecha}
+Error: {$error}
+TEXT);
+    }
+
+    /**
+     * Envía texto plano al chat configurado (donaciones, backups, etc.).
+     */
+    public function enviarMensaje(string $mensaje): void
+    {
+        $botToken = config('services.telegram.bot_token');
+        $chatId = config('services.telegram.chat_id');
+
+        if (! $botToken || ! $chatId) {
+            Log::warning('Telegram no configurado: falta TELEGRAM_BOT_TOKEN o TELEGRAM_CHAT_ID.');
+
+            return;
+        }
+
+        try {
+            $response = Http::timeout(10)->post(
+                "https://api.telegram.org/bot{$botToken}/sendMessage",
+                [
+                    'chat_id' => $chatId,
+                    'text' => $mensaje,
+                ],
+            );
+
+            if ($response->failed()) {
+                Log::warning('Telegram respondió con error.', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Error al enviar mensaje por Telegram.', [
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

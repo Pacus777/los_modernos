@@ -23,7 +23,7 @@ export const adminFormGrid2 = 'grid grid-cols-1 gap-5 sm:grid-cols-2';
 export const adminLabelRequiredMark = 'ml-0.5 font-bold text-wayna-600';
 
 export const adminSectionCard =
-    'rounded-2xl border border-wayna-100 bg-surface-card/90 p-5 shadow-sm sm:p-6';
+    'rounded-2xl border border-wayna-200/60 bg-white p-5 shadow-md shadow-wayna-900/[0.04] ring-1 ring-wayna-100/40 sm:p-6';
 
 export const adminBackdropShort =
     'pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-surface-muted/90 via-surface/40 to-transparent';
@@ -54,6 +54,9 @@ export const adminTableActionEdit =
 
 export const adminTableActionDanger =
     'rounded-xl border border-red-200 bg-surface-card px-3 py-1.5 text-xs font-bold text-red-700 shadow-sm transition hover:bg-red-50 sm:text-sm';
+
+export const adminTableActionCredenciales =
+    'rounded-xl border border-amber-200 bg-amber-50/80 px-3 py-1.5 text-xs font-bold text-amber-950 shadow-sm transition hover:border-amber-300 hover:bg-amber-100 sm:text-sm';
 
 export const adminPaginationBtnActive =
     'rounded-xl px-3 py-1.5 text-sm font-semibold bg-wayna-500 text-white shadow-md shadow-wayna-600/25';

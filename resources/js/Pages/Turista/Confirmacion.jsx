@@ -1,6 +1,7 @@
 import QrPreviewModal from '@/Components/QrPreviewModal';
 import ReferenciaPagoDestacada from '@/Components/ReferenciaPagoDestacada';
 import TemporizadorPagoPendiente from '@/Components/Turista/TemporizadorPagoPendiente';
+import WaynaQrBcpEstatico from '@/Components/Turista/WaynaQrBcpEstatico';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -23,10 +24,13 @@ export default function Confirmacion() {
         : '/';
 
     const qrUrl = page.props.qr_pago_url ?? flash.qr_pago_url;
+    const waynaBcpQr = page.props.wayna_bcp_qr ?? null;
+    const usaQrBcpEstatico = Boolean(confirmacion?.usa_qr_bcp_estatico && waynaBcpQr);
+    const checkoutUrl = confirmacion?.checkout_url ?? null;
     const referencia =
         confirmacion?.referencia_pago ?? flash.referencia_pago;
     const successMessage = t('tourist.confirmation.successRegistered');
-    const tieneDatosDonacion = Boolean(qrUrl || referencia);
+    const tieneDatosDonacion = Boolean(usaQrBcpEstatico || qrUrl || referencia || checkoutUrl);
 
     const plazoPago = confirmacion?.plazo_pago ?? null;
 
@@ -79,9 +83,33 @@ export default function Confirmacion() {
                                 <TemporizadorPagoPendiente plazoPago={plazoPago} />
                             )}
 
-                            <ReferenciaPagoDestacada referencia={referencia} variant="turista" />
+                            {!usaQrBcpEstatico && (
+                                <ReferenciaPagoDestacada referencia={referencia} variant="turista" />
+                            )}
 
-                            {qrUrl && (
+                            {usaQrBcpEstatico && (
+                                <WaynaQrBcpEstatico
+                                    config={waynaBcpQr}
+                                    monto={confirmacion?.monto}
+                                    referenciaPago={referencia}
+                                    variant="confirmacion"
+                                />
+                            )}
+
+                            {checkoutUrl && (
+                                <div className="flex justify-center">
+                                    <a
+                                        href={checkoutUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-wayna-primary touch-target min-h-11 px-6 py-3 text-center text-sm font-bold"
+                                    >
+                                        Ir a pagar con Libélula
+                                    </a>
+                                </div>
+                            )}
+
+                            {qrUrl && !usaQrBcpEstatico && (
                                 <div className="flex flex-col items-center gap-3">
                                     <button
                                         type="button"

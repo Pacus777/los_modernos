@@ -61,6 +61,8 @@ class Emprendedor extends Model
         'qr_url',
         'estado',
         'meta_monto',
+        'notificar_donaciones_email',
+        'notificar_donaciones_panel',
     ];
 
     /*
@@ -75,6 +77,8 @@ class Emprendedor extends Model
 
     protected $casts = [
         'meta_monto' => 'decimal:2',
+        'notificar_donaciones_email' => 'boolean',
+        'notificar_donaciones_panel' => 'boolean',
         'tipo_emprendimiento' => TipoEmprendimiento::class,
         'departamento' => Departamento::class,
         'galeria' => 'array',
@@ -165,6 +169,27 @@ class Emprendedor extends Model
             'emprendedor_punto',
             'emprendedor_id',
             'punto_id'
+        )->withTimestamps();
+    }
+
+    /**
+     * Publicaciones del muro / feed (S4-01).
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(EmprendedorPost::class, 'emprendedor_id');
+    }
+
+    /**
+     * Turistas que siguen a este emprendedor (S4-01).
+     */
+    public function seguidoresVisitantes(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Visitante::class,
+            'emprendedor_seguidores',
+            'emprendedor_id',
+            'visitante_id',
         )->withTimestamps();
     }
 }

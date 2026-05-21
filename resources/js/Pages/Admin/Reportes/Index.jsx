@@ -1,5 +1,6 @@
 import {
     adminBackdropShort,
+    adminInputClass,
     adminListCardHeader,
     adminListCardOuter,
 } from '@/Components/Admin/adminUi';
@@ -205,7 +206,7 @@ export default function Index({
                                     id="emprendedor_id"
                                     value={emprendedorId}
                                     onChange={(e) => setEmprendedorId(e.target.value)}
-                                    className="mt-1 block w-full rounded-xl border-wayna-200 bg-white text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                    className={`${adminInputClass} mt-1 text-sm`}
                                 >
                                     <option value="">Todos</option>
 
@@ -229,7 +230,7 @@ export default function Index({
                                     id="estado_pago"
                                     value={estadoPago}
                                     onChange={(e) => setEstadoPago(e.target.value)}
-                                    className="mt-1 block w-full rounded-xl border-wayna-200 bg-white text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                    className={`${adminInputClass} mt-1 text-sm`}
                                 >
                                     <option value="">Todos</option>
 
@@ -254,7 +255,7 @@ export default function Index({
                                     type="date"
                                     value={fechaInicio}
                                     onChange={(e) => setFechaInicio(e.target.value)}
-                                    className="mt-1 block w-full rounded-xl border-wayna-200 bg-white text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                    className={`${adminInputClass} mt-1 text-sm`}
                                 />
                             </div>
 
@@ -271,7 +272,7 @@ export default function Index({
                                     type="date"
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
-                                    className="mt-1 block w-full rounded-xl border-wayna-200 bg-white text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                    className={`${adminInputClass} mt-1 text-sm`}
                                 />
                             </div>
 

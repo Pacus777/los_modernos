@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Donacion;
 use App\Services\QrCodeService;
 use App\Support\PagoPendienteTurista;
+use App\Support\WaynaBcpQr;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -24,10 +25,14 @@ class DonacionConfirmacionController extends Controller
             abort(404);
         }
 
-        $donacion->loadMissing('campana');
+        $donacion->loadMissing(['campana', 'tipoPago']);
 
-        $qrPagoUrl = $qrCodeService->urlPublicaQrPagoExistente($donacion)
-            ?? $qrCodeService->generarQrPago($donacion);
+        $usaQrBcpEstatico = WaynaBcpQr::aplicaADonacion($donacion);
+
+        $qrPagoUrl = $usaQrBcpEstatico
+            ? WaynaBcpQr::urlImagen()
+            : ($qrCodeService->urlPublicaQrPagoExistente($donacion)
+                ?? $qrCodeService->generarQrPago($donacion));
 
         $success = $request->session()->pull('success');
 
@@ -38,9 +43,14 @@ class DonacionConfirmacionController extends Controller
                 'monto' => (string) $donacion->monto,
                 'metodo' => $donacion->metodo,
                 'plazo_pago' => PagoPendienteTurista::paraConfirmacion($donacion),
+                'checkout_url' => $donacion->checkout_url,
+                'es_libelula' => $donacion->fueProcesadaPorLibelula()
+                    || $donacion->tipoPago?->esLibelula(),
+                'usa_qr_bcp_estatico' => $usaQrBcpEstatico,
             ],
             'emprendedor_id' => $donacion->campana?->emprendedor_id,
-            'qr_pago_url' => $qrPagoUrl,
+            'qr_pago_url' => $usaQrBcpEstatico ? null : $qrPagoUrl,
+            'wayna_bcp_qr' => $usaQrBcpEstatico ? WaynaBcpQr::paraFrontend($donacion) : null,
             'success' => $success,
         ]);
     }

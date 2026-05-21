@@ -143,12 +143,27 @@
       "amountPlaceholder": "Ej. 30",
       "paymentMethod": "Método de pago",
       "instructionCash": "Entrega el monto al cajero y espera confirmación.",
-      "instructionQr": "Escanea el código con tu app bancaria.",
+      "instructionQr": "Pagá con el QR BCP de WAYNA y tu código de referencia único.",
       "instructionOther": "Seguí las indicaciones del punto Wayna para completar tu aporte.",
       "processing": "Procesando...",
       "confirmWithAmount": "Confirmar aporte de Bs {{amount}}",
       "pendingNote": "Tu aporte se registrará como pendiente hasta ser confirmado.",
-      "exchangeRateHint": "Tipo de cambio referencial aproximado para turistas extranjeros."
+      "exchangeRateHint": "Equivalente en USD según el valor referencial del dólar del BCB (bcb.gob.bo): venta {{usdToBob}} Bs · compra {{compra}} Bs por 1 USD."
+    },
+    "bcpQr": {
+      "title": "Pago con QR BCP de WAYNA",
+      "subtitlePreview": "Al confirmar tu aporte recibirás un código de referencia. Usalo junto a este QR en la app del BCP.",
+      "subtitleConfirm": "Escaneá el QR de la cuenta WAYNA y completá el pago en bolivianos desde tu app BCP.",
+      "step1": "Abrí la app BCP o Banca Móvil BCP en tu celular.",
+      "step2": "Elegí pagar con QR o QR Simple.",
+      "step3": "Escaneá el código QR de WAYNA que aparece abajo (es el mismo para todos los aportes).",
+      "step4": "Ingresá el monto exacto de tu aporte en bolivianos (Bs).",
+      "step5": "En detalle o glosa pegá tu código de referencia WAYNA para que podamos identificar tu pago.",
+      "amountLabel": "Monto a pagar",
+      "qrAlt": "QR BCP estático de WAYNA Conecta",
+      "tapToEnlarge": "Tocá el QR para verlo en grande",
+      "tapToShrink": "Tocá para achicar",
+      "footnote": "Tu aporte queda pendiente hasta que un administrador o cajero WAYNA valide el pago en el sistema."
     }
   },
   "admin": {
@@ -205,7 +220,8 @@
       "market": "Wayna Mercados",
       "staffLogin": "Acceso equipo",
       "adminLogin": "Iniciar sesión",
-      "adminPanel": "Área administrativa"
+      "adminPanel": "Mi panel",
+      "logout": "Cerrar sesión"
     },
     "hero": {
       "kicker": "Red de emprendedores Wayna",
@@ -392,6 +408,13 @@
         "title": "Turistas y comunidad",
         "body": "Conocé historias, contactá por redes y doná cuando quieras, sin presión."
       }
+    }
+  },
+  "emprendedor": {
+    "nav": {
+      "dashboard": "Mi panel",
+      "editProfile": "Editar perfil",
+      "backToPanel": "Volver a mi panel"
     }
   }
 }

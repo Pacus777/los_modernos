@@ -44,7 +44,13 @@ function etiquetaEstado(estado) {
 /**
  * Formulario crear / editar campaña por pasos.
  */
-export default function Form({ modo, campana, emprendedores = [], fechaHoy: fechaHoyProp }) {
+export default function Form({
+    modo,
+    campana,
+    emprendedores = [],
+    emprendedorIdPreseleccionado = null,
+    fechaHoy: fechaHoyProp,
+}) {
     const esEdicion = modo === 'editar';
     const hoy = fechaHoyProp || fechaLocalHoy();
     const fechaInicioOriginal = fechaParaInput(campana?.fecha_inicio);
@@ -52,7 +58,9 @@ export default function Form({ modo, campana, emprendedores = [], fechaHoy: fech
     const [erroresPaso, setErroresPaso] = useState({});
 
     const { data, setData, post, put, processing, errors } = useForm({
-        emprendedor_id: campana?.emprendedor_id ?? '',
+        emprendedor_id:
+            campana?.emprendedor_id ??
+            (emprendedorIdPreseleccionado ? String(emprendedorIdPreseleccionado) : ''),
         titulo: campana?.titulo ?? '',
         meta_apoyo: campana?.meta_apoyo ?? '',
         fecha_inicio: fechaInicioOriginal || hoy,

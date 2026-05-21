@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Donacion;
+use App\Models\User;
 use App\Support\ReferenciaPagoWayna;
 use Illuminate\Support\Facades\DB;
 use App\Models\Campana;
@@ -16,6 +18,8 @@ class DonacionService
         protected QrCodeService $qrCodeService,
         protected TraceabilityService $traceabilityService,
         protected TelegramService $telegramService,
+        protected AuditLogService $auditLogService,
+        protected LibelulaService $libelulaService,
     ) {
     }
 
@@ -61,15 +65,30 @@ class DonacionService
 
             $trazabilidad = $this->traceabilityService->registrarDonacionCreada($donacion);
 
-            /*
-             * Genera el QR correspondiente al método de pago.
-             * Por ahora puede ser QR de pago o QR de confirmación manual.
-             */
-            $qrPagoUrl = $this->qrCodeService->generarQrPago($donacion);
+            $donacion->loadMissing('tipoPago');
+
+            $qrPagoUrl = null;
+            $checkoutUrl = null;
+
+            if ($donacion->tipoPago?->esLibelula()) {
+                $deuda = $this->libelulaService->crearDeuda(
+                    $donacion->loadMissing('visitante'),
+                    ['email' => $data['email_cliente'] ?? null],
+                );
+
+                $donacion->refresh();
+                $checkoutUrl = $deuda->urlPasarela;
+                $qrPagoUrl = $deuda->qrSimpleUrl;
+            }
+
+            if (! $qrPagoUrl) {
+                $qrPagoUrl = $this->qrCodeService->generarQrPago($donacion->fresh());
+            }
 
             return [
-                'donacion' => $donacion,
+                'donacion' => $donacion->fresh(),
                 'qr_pago_url' => $qrPagoUrl,
+                'checkout_url' => $checkoutUrl ?? $donacion->checkout_url,
                 'trazabilidad' => $trazabilidad,
             ];
         });
@@ -106,7 +125,7 @@ class DonacionService
      */
     public function confirmarPagoEfectivo(Donacion $donacion, ?int $usuarioId = null): Donacion
     {
-        return DB::transaction(function () use ($donacion, $usuarioId) {
+        $donacionConfirmada = DB::transaction(function () use ($donacion, $usuarioId) {
             /*
             |--------------------------------------------------------------------------
             | 1. Bloquear la donación
@@ -167,6 +186,17 @@ class DonacionService
 
             return $donacion->refresh();
         });
+
+        $actor = $usuarioId !== null ? User::query()->find($usuarioId) : null;
+
+        $this->auditLogService->registrar(
+            AuditAction::CajeroDonationCashConfirmed,
+            subject: $donacionConfirmada,
+            actor: $actor,
+            metadata: ['monto' => (float) $donacionConfirmada->monto],
+        );
+
+        return $donacionConfirmada;
     }
 
     /**

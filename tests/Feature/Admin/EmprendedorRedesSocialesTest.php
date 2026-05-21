@@ -33,9 +33,8 @@ class EmprendedorRedesSocialesTest extends TestCase
             'sitio_web' => 'wayna.example.com',
         ]);
 
-        $response->assertRedirect(route('admin.emprendedores.index'));
-
         $emprendedor = Emprendedor::query()->where('nombre', 'Rosa')->first();
+        $response->assertRedirect(route('admin.emprendedores.finalizar', $emprendedor));
 
         $this->assertNotNull($emprendedor);
         $this->assertSame('59171234567', $emprendedor->whatsapp);

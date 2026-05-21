@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Donacion;
 use Illuminate\Support\Facades\DB;
+use App\Enums\AuditAction;
 use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Http\Controllers\Controller;
@@ -16,6 +17,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\Admin\StoreEmprendedorRequest;
 use App\Http\Requests\Admin\UpdateEmprendedorRequest;
+use App\Services\AuditLogService;
+use App\Services\EmprendedorCuentaService;
 use App\Services\EmprendedorMediosService;
 use App\Services\ImageStorageService;
 use App\Services\QrCodeService;
@@ -23,6 +26,11 @@ use Illuminate\Support\Facades\Storage;
 
 class EmprendedorController extends Controller
 {
+    public function __construct(
+        protected AuditLogService $auditLogService,
+    ) {
+    }
+
     /*
     |--------------------------------------------------------------------------
     | EmprendedorController
@@ -50,7 +58,7 @@ class EmprendedorController extends Controller
      * Esta pantalla será usada por el administrador para revisar,
      * editar o desactivar emprendedores.
      */
-    public function index(): Response
+    public function index(EmprendedorCuentaService $cuentaService): Response
     {
         /*
         |--------------------------------------------------------------------------
@@ -67,10 +75,18 @@ class EmprendedorController extends Controller
         $emprendedores = Emprendedor::query()
             ->with([
                 'campanas' => fn ($q) => $q->latest('id'),
+                'user',
             ])
             ->latest()
             ->paginate(10)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(function (Emprendedor $emprendedor) use ($cuentaService) {
+                return [
+                    ...$emprendedor->toArray(),
+                    'nombre_completo' => $emprendedor->nombreCompleto(),
+                    'cuenta' => $cuentaService->resumenCuenta($emprendedor),
+                ];
+            });
 
         /*
         |--------------------------------------------------------------------------
@@ -221,9 +237,54 @@ class EmprendedorController extends Controller
             'qr_url' => $rutaQr,
         ]);
 
+        $this->auditLogService->registrar(
+            AuditAction::AdminEntrepreneurCreated,
+            subject: $emprendedor->fresh(),
+            actor: $request->user(),
+            metadata: ['nombre' => $emprendedor->nombreCompleto()],
+            request: $request,
+        );
+
+        return redirect()
+            ->route('admin.emprendedores.finalizar', $emprendedor)
+            ->with('success', 'Perfil guardado. Configurá el acceso al sistema para cerrar el registro.');
+    }
+
+    /**
+     * E-03: paso final tras el alta — credenciales antes de volver al listado.
+     */
+    public function finalizar(Emprendedor $emprendedor, EmprendedorCuentaService $cuentaService): Response
+    {
+        $emprendedor->loadMissing('user');
+
+        $campanaActiva = $emprendedor->campanas()
+            ->where('estado', Campana::ESTADO_ACTIVA)
+            ->orderByDesc('fecha_inicio')
+            ->first();
+
+        return Inertia::render('Admin/Emprendedores/Finalizar', [
+            'emprendedor' => $emprendedor,
+            'cuenta' => $cuentaService->resumenCuenta($emprendedor),
+            'campanaActiva' => $campanaActiva ? [
+                'id' => $campanaActiva->id,
+                'titulo' => $campanaActiva->titulo,
+                'meta_apoyo' => (float) $campanaActiva->meta_apoyo,
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Cierra el flujo de registro y vuelve al directorio (E-03).
+     */
+    public function completarRegistro(Emprendedor $emprendedor): RedirectResponse
+    {
+        $mensaje = $emprendedor->user_id
+            ? 'Registro de '.$emprendedor->nombreCompleto().' completado con cuenta de acceso.'
+            : 'Registro de '.$emprendedor->nombreCompleto().' completado. Podés crear la cuenta más tarde desde Editar.';
+
         return redirect()
             ->route('admin.emprendedores.index')
-            ->with('success', 'Emprendedor creado correctamente.');
+            ->with('success', $mensaje);
     }
 
     /**
@@ -242,6 +303,8 @@ class EmprendedorController extends Controller
      */
     public function edit(Emprendedor $emprendedor): Response
     {
+        $emprendedor->loadMissing('user');
+
         return Inertia::render('Admin/Emprendedores/Form', [
             'modo' => 'editar',
             'emprendedor' => $emprendedor,
@@ -326,6 +389,14 @@ class EmprendedorController extends Controller
 
         $emprendedorMediosService->sincronizarDesdeRequest($emprendedor->fresh(), $request);
 
+        $this->auditLogService->registrar(
+            AuditAction::AdminEntrepreneurUpdated,
+            subject: $emprendedor->fresh(),
+            actor: $request->user(),
+            metadata: ['nombre' => $emprendedor->nombreCompleto()],
+            request: $request,
+        );
+
         return redirect()
             ->route('admin.emprendedores.index')
             ->with('success', 'Emprendedor actualizado correctamente.');
@@ -361,11 +432,19 @@ class EmprendedorController extends Controller
      * - No se rompen futuras relaciones con campañas o donaciones.
      * - El turista ya no lo ve porque estado = inactivo.
      */
-    public function destroy(Emprendedor $emprendedor): RedirectResponse
+    public function destroy(Emprendedor $emprendedor, Request $request): RedirectResponse
     {
         $emprendedor->update([
             'estado' => 'inactivo',
         ]);
+
+        $this->auditLogService->registrar(
+            AuditAction::AdminEntrepreneurDeactivated,
+            subject: $emprendedor->fresh(),
+            actor: $request->user(),
+            metadata: ['nombre' => $emprendedor->nombreCompleto()],
+            request: $request,
+        );
 
         return redirect()
             ->route('admin.emprendedores.index')

@@ -50,6 +50,27 @@ class LoginRedirectTest extends TestCase
         $response->assertRedirect($editUrl);
     }
 
+    public function test_emprendedor_login_redirige_a_explorar(): void
+    {
+        $rol = Rol::query()->firstOrCreate(['nombre' => 'emprendedor']);
+        $user = User::factory()->create([
+            'email' => 'emprendedor.login@gmail.com',
+            'password' => 'password',
+        ]);
+        UserRol::query()->create([
+            'user_id' => $user->id,
+            'role_id' => $rol->id,
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('emprendedor.dashboard'));
+        $this->assertAuthenticatedAs($user);
+    }
+
     public function test_dashboard_redirige_admin_al_panel_wayna(): void
     {
         $admin = $this->crearAdmin();

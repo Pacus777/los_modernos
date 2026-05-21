@@ -3,6 +3,7 @@ import AdminRangoMontoBadge from '@/Components/Admin/AdminRangoMontoBadge';
 import BarraProgresoMeta from '@/Components/BarraProgresoMeta';
 import {
     adminBackdropShort,
+    adminInputClass,
     adminListCardHeader,
     adminListCardOuter,
     adminPaginationBtnActive,
@@ -190,7 +191,7 @@ export default function Index({ campanas, filters = {}, rangosMonto = [] }) {
                                         onChange={(e) =>
                                             filterForm.setData('rango_monto', e.target.value)
                                         }
-                                        className="mt-1 w-full rounded-lg border border-wayna-200 bg-white px-3 py-2 text-sm"
+                                        className={`${adminInputClass} mt-1 text-sm`}
                                     >
                                         <option value="">Todos los rangos</option>
                                         {rangosMonto.map((opt) => (

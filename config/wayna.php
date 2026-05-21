@@ -4,16 +4,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Tipo de cambio referencial turista (T-A24)
+    | Tipo de cambio turista (T-A24) — ver config/tipocambio.php
     |--------------------------------------------------------------------------
     |
-    | Cuántos dólares estadounidenses equivale 1 boliviano (Bs).
-    | Ejemplo: 0.145 → Bs 50 ≈ USD 7.25
-    | Sin API externa; ajustar en .env (WAYNA_USD_POR_BS).
+    | El dólar mostrado al turista sale del Banco Central de Bolivia (oficial),
+    | vía TipoCambioService + DolarApi. WAYNA_USD_POR_BS solo legado local.
     |
     */
 
-    'usd_por_bs' => (float) env('WAYNA_USD_POR_BS', 0.145),
+    'usd_por_bs' => (float) env('WAYNA_USD_POR_BS', 0),
 
     /*
     |--------------------------------------------------------------------------
@@ -26,6 +25,23 @@ return [
     */
 
     'pago_pendiente_minutos' => (int) env('WAYNA_PAGO_PENDIENTE_MINUTOS', 15),
+
+    /*
+    |--------------------------------------------------------------------------
+    | QR BCP estático WAYNA (S2-07)
+    |--------------------------------------------------------------------------
+    |
+    | Imagen única del proyecto para pagos QR / billetera (tipo banco).
+    | Reemplazar WAYNA_BCP_QR_IMAGE por el PNG oficial que entregue BCP.
+    |
+    */
+
+    'bcp_qr' => [
+        'enabled' => env('WAYNA_BCP_QR_ENABLED', true),
+        'image_path' => env('WAYNA_BCP_QR_IMAGE', '/images/wayna-qr-bcp.svg'),
+        'titular' => env('WAYNA_BCP_QR_TITULAR', 'WAYNA Conecta'),
+        'banco' => env('WAYNA_BCP_QR_BANCO', 'BCP'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -83,6 +99,42 @@ return [
 
     'admin_session_lifetime_minutes' => (int) env('WAYNA_ADMIN_SESSION_MINUTES', 30),
     'admin_session_warn_minutes' => (int) env('WAYNA_ADMIN_SESSION_WARN_MINUTES', 5),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Respaldos automáticos (S3-08 — spatie/laravel-backup)
+    |--------------------------------------------------------------------------
+    |
+    | Requiere `php artisan schedule:run` cada minuto (cron o Task Scheduler).
+    | En Laragon/Windows: habilitar extensión zip en php.ini.
+    |
+    */
+
+    'backup' => [
+        'enabled' => env('WAYNA_BACKUP_ENABLED', true),
+        'cleanup_at' => env('WAYNA_BACKUP_CLEANUP_AT', '01:00'),
+        'run_at' => env('WAYNA_BACKUP_RUN_AT', '01:30'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auditoría de acciones críticas (S3-09)
+    |--------------------------------------------------------------------------
+    */
+
+    'audit_log' => [
+        'enabled' => env('WAYNA_AUDIT_LOG_ENABLED', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cuenta emprendedor creada por admin (E-03)
+    |--------------------------------------------------------------------------
+    */
+
+    'emprendedor_cuenta' => [
+        'enviar_correo' => env('WAYNA_EMPRENDEDOR_CUENTA_ENVIAR_CORREO', true),
+    ],
 
     'rate_limit' => [
         'login' => [

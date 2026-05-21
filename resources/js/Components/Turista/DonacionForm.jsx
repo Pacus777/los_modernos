@@ -1,3 +1,4 @@
+import WaynaQrBcpEstatico from '@/Components/Turista/WaynaQrBcpEstatico';
 import { etiquetaTipoPagoT } from '@/utils/catalogosI18n';
 import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
 import { bolivianosAUsd, formatearUsd } from '@/utils/tipoCambioTurista';
@@ -26,6 +27,7 @@ export default function DonacionForm({
         activo: false,
         usd_por_bs: 0,
     };
+    const waynaBcpQr = usePage().props.waynaBcpQr ?? { habilitado: false };
 
     const montosRapidos = [5, 10, 20, 50];
 
@@ -213,7 +215,7 @@ export default function DonacionForm({
                     }
                     disabled={processing}
                     autoComplete="name"
-                    className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                    className="input-wayna mt-1 w-full"
                     placeholder={t(
                         'tourist.donationForm.visitorNamePlaceholder',
                     )}
@@ -250,7 +252,7 @@ export default function DonacionForm({
                         value={data.campana_id}
                         onChange={(e) => setData('campana_id', e.target.value)}
                         disabled={processing}
-                        className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                        className="input-wayna mt-1 w-full"
                     >
                         {listaCampanas.map((c) => (
                             <option key={c.id} value={c.id}>
@@ -297,7 +299,7 @@ export default function DonacionForm({
                     value={data.monto}
                     onChange={(e) => setData('monto', e.target.value)}
                     disabled={processing}
-                    className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                    className="input-wayna mt-1 w-full"
                     placeholder={t('tourist.donationForm.amountPlaceholder')}
                 />
 
@@ -326,7 +328,16 @@ export default function DonacionForm({
                         </span>
 
                         <span className="w-full text-[11px] font-medium text-sky-800/80">
-                            {t('tourist.donationForm.exchangeRateHint')}
+                            {t('tourist.donationForm.exchangeRateHint', {
+                                usdToBob: Number(tipoCambio.usd_to_bob ?? 0).toLocaleString(
+                                    localeMoneda,
+                                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                                ),
+                                compra: Number(tipoCambio.compra ?? tipoCambio.usd_to_bob ?? 0).toLocaleString(
+                                    localeMoneda,
+                                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                                ),
+                            })}
                         </span>
                     </p>
                 )}
@@ -370,6 +381,16 @@ export default function DonacionForm({
                             aria-live="polite"
                         >
                             {instruccionMetodoPago}
+                        </div>
+                    )}
+
+                    {claseMetodoPago === 'qr' && waynaBcpQr?.habilitado && (
+                        <div className="mt-4">
+                            <WaynaQrBcpEstatico
+                                config={waynaBcpQr}
+                                monto={data.monto}
+                                variant="preview"
+                            />
                         </div>
                     )}
 

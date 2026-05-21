@@ -58,9 +58,8 @@ class EmprendedorFotografiaWebpTest extends TestCase
             'fotografia' => UploadedFile::fake()->image('foto.png', 400, 400),
         ]);
 
-        $response->assertRedirect(route('admin.emprendedores.index'));
-
         $emprendedor = Emprendedor::query()->where('nombre', 'Camila')->first();
+        $response->assertRedirect(route('admin.emprendedores.finalizar', $emprendedor));
 
         $this->assertNotNull($emprendedor);
         $this->assertNotNull($emprendedor->fotografia);

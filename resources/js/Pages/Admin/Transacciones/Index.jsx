@@ -1,4 +1,5 @@
 import {
+    adminInputClass,
     adminListCardOuter,
     adminPaginationBtnActive,
     adminPaginationBtnIdle,
@@ -177,7 +178,7 @@ export default function Index({ transacciones, filters }) {
                                 onChange={(e) =>
                                     filterForm.setData('estado', e.target.value)
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                                 placeholder={t(
                                     'admin.traceability.filterEstadoPlaceholder',
                                 )}
@@ -193,7 +194,7 @@ export default function Index({ transacciones, filters }) {
                                 onChange={(e) =>
                                     filterForm.setData('origen', e.target.value)
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                                 placeholder={t(
                                     'admin.traceability.filterOrigenPlaceholder',
                                 )}
@@ -212,7 +213,7 @@ export default function Index({ transacciones, filters }) {
                                         e.target.value,
                                     )
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             />
                         </div>
                         <div>
@@ -228,7 +229,7 @@ export default function Index({ transacciones, filters }) {
                                         e.target.value,
                                     )
                                 }
-                                className="mt-1 w-full rounded-lg border border-wayna-200 px-3 py-2 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             />
                         </div>
                     </div>
