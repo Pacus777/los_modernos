@@ -53,4 +53,4 @@ php artisan test --filter=EmprendedorCuenta
 ## Dependencias
 
 - **E-01:** rol `emprendedor` y `user_id` en `emprendedores` (ya en el proyecto).
-- Tras login, el emprendedor entra a **`/emprendedor/panel`** (`emprendedor.dashboard`). Funciones avanzadas en E-04 / E-07.
+- Tras login, el emprendedor entra a **`/emprendedor/dashboard`** (`emprendedor.dashboard`). `/emprendedor/panel` redirige ahí. Detalle del panel en **E-05**.

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Panel emprendedor (E-03 / E-04)
+| Panel emprendedor (E-03 / E-04 / E-05)
 |--------------------------------------------------------------------------
 */
 
@@ -25,8 +25,9 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
     ->prefix('emprendedor')
     ->name('emprendedor.')
     ->group(function () {
-        Route::redirect('/', '/emprendedor/panel');
+        Route::redirect('/', '/emprendedor/dashboard');
+        Route::redirect('/panel', '/emprendedor/dashboard');
 
-        Route::get('/panel', DashboardController::class)
+        Route::get('/dashboard', DashboardController::class)
             ->name('dashboard');
     });
