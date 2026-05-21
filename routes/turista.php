@@ -43,16 +43,30 @@ Route::post('/donaciones', [DonacionController::class, 'store'])
     ->middleware(['throttle:wayna-donaciones', 'prevent.duplicate.payment'])
     ->name('turista.donaciones.store');
 
-    Route::get('/donaciones/confirmacion', function () {
-        return Inertia::render('Turista/Confirmacion', [
-            'confirmacion' => null,
-            'qr_pago_url' => null,
-            'success' => null,
-        ]);
-    });
+Route::get('/donaciones/confirmacion', function () {
+    return Inertia::render('Turista/Confirmacion', [
+        'confirmacion' => null,
+        'qr_pago_url' => null,
+        'success' => null,
+    ]);
+})->name('turista.donaciones.confirmacion.empty');
 
-    Route::get('/donaciones/confirmacion/{donacion}', [DonacionConfirmacionController::class, 'show'])
-        ->name('turista.donaciones.confirmacion');
+/*
+|--------------------------------------------------------------------------
+| S2-06: página final de donación
+|--------------------------------------------------------------------------
+|
+| /donacion/exitosa/{donacion} queda como URL principal del flujo nuevo.
+| /donaciones/confirmacion/{donacion} se conserva por compatibilidad con
+| QR, enlaces anteriores y retorno antiguo de pasarelas.
+|
+*/
+
+Route::get('/donacion/exitosa/{donacion}', [DonacionConfirmacionController::class, 'show'])
+    ->name('turista.donaciones.exitosa');
+
+Route::get('/donaciones/confirmacion/{donacion}', [DonacionConfirmacionController::class, 'show'])
+    ->name('turista.donaciones.confirmacion');
 
     Route::get('/punto/{slug}', [PuntoController::class, 'show'])
         ->name('punto.show');
