@@ -3,6 +3,7 @@ import DashboardGraficas from '@/Components/Admin/DashboardGraficas';
 import RecaudacionDetalleModal from '@/Components/Admin/RecaudacionDetalleModal';
 import {
     adminBackdropShort,
+    adminInputClass,
     adminListCardOuter,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
@@ -349,7 +350,7 @@ export default function Dashboard({
                                         type="date"
                                         value={fechaInicio}
                                         onChange={(e) => setFechaInicio(e.target.value)}
-                                        className="mt-1 block w-full rounded-xl border-wayna-200 bg-white py-2 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                        className={`${adminInputClass} mt-1 text-sm`}
                                     />
                                 </div>
 
@@ -365,7 +366,7 @@ export default function Dashboard({
                                         type="date"
                                         value={fechaFin}
                                         onChange={(e) => setFechaFin(e.target.value)}
-                                        className="mt-1 block w-full rounded-xl border-wayna-200 bg-white py-2 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                        className={`${adminInputClass} mt-1 text-sm`}
                                     />
                                 </div>
 

@@ -166,6 +166,8 @@ class EmprendedorPublicoController extends Controller
                 ->all(),
 
             'visitanteNombrePrefill' => $visitanteService->nombreEnSesion($request),
+
+            'esPerfilPropio' => $request->user()?->emprendedor?->id === $emprendedor->id,
         ]);
     }
 

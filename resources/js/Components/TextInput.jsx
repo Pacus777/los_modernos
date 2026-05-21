@@ -20,10 +20,7 @@ export default forwardRef(function TextInput(
         <input
             {...props}
             type={type}
-            className={
-                'rounded-md border-gray-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500 ' +
-                className
-            }
+            className={`input-wayna ${className}`.trim()}
             ref={localRef}
         />
     );

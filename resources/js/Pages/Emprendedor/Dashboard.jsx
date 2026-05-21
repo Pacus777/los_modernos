@@ -129,8 +129,14 @@ export default function Dashboard({ panel, usuario }) {
 
                             <div className="flex flex-wrap gap-3 border-t border-wayna-100 px-6 py-4">
                                 <Link
-                                    href={panel.acciones.perfil_publico_url}
+                                    href={route('emprendedor.perfil.edit')}
                                     className="inline-flex items-center justify-center rounded-2xl bg-wayna-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-wayna-700"
+                                >
+                                    Editar perfil público
+                                </Link>
+                                <Link
+                                    href={panel.acciones.perfil_publico_url}
+                                    className="inline-flex items-center justify-center rounded-2xl border border-wayna-200 bg-white px-5 py-2.5 text-sm font-bold text-wayna-800 transition hover:border-wayna-300 hover:bg-wayna-50"
                                 >
                                     Ver perfil público
                                 </Link>
@@ -260,8 +266,14 @@ export default function Dashboard({ panel, usuario }) {
                         </section>
 
                         <p className="rounded-2xl border border-wayna-100 bg-surface-muted/50 px-4 py-3 text-sm text-stone-600">
-                            Próximamente vas a poder editar tu perfil y publicar novedades desde acá
-                            (E-06 / E-07). Por ahora revisá tu perfil público y el progreso de tu campaña.
+                            Actualizá fotos, descripción y redes con{' '}
+                            <Link
+                                href={route('emprendedor.perfil.edit')}
+                                className="font-semibold text-wayna-700 underline underline-offset-2"
+                            >
+                                Editar perfil público
+                            </Link>
+                            . Las publicaciones del muro llegan en E-07.
                         </p>
                     </>
                 ) : (

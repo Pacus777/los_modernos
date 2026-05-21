@@ -53,8 +53,27 @@ class HandleInertiaRequests extends Middleware
 
         'auth' => [
             'user' => $request->user(),
-            'role' => $request->user()?->role,
+            'role' => fn () => $request->user()?->nombreRol(),
         ],
+
+        'emprendedorContext' => function () use ($request) {
+            $user = $request->user();
+
+            if (! $user?->esEmprendedor()) {
+                return null;
+            }
+
+            $emprendedor = $user->emprendedor;
+
+            if (! $emprendedor) {
+                return null;
+            }
+
+            return [
+                'id' => $emprendedor->id,
+                'perfil_publico_url' => route('turista.emprendedor.show', $emprendedor),
+            ];
+        },
 
         'adminSession' => fn () => $request->user()?->esAdmin()
             ? [

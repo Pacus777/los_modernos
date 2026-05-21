@@ -161,7 +161,7 @@ export default function ChatWidget() {
                                 value={pregunta}
                                 onChange={(e) => setPregunta(e.target.value)}
                                 placeholder={t('chat.placeholder')}
-                                className="block w-full resize-none rounded-2xl border-wayna-200 text-sm shadow-sm focus:border-wayna-500 focus:ring-wayna-500"
+                                className="input-wayna min-h-[2.5rem] resize-none text-sm"
                                 maxLength={300}
                             />
 

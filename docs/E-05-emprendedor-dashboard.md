@@ -29,7 +29,7 @@ php artisan test --filter=DashboardTest
 php artisan test --filter=ForcePasswordChange
 ```
 
-## Próximas tareas
+## Relacionado
 
-- **E-06:** edición de perfil desde el panel.
+- **E-06:** edición de perfil público (`emprendedor.perfil.edit`).
 - **E-07:** publicaciones / muro del emprendedor.

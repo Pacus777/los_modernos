@@ -28,4 +28,5 @@ enum AuditAction: string
     case AdminEntrepreneurCredentialsResent = 'admin.entrepreneur.credentials_resent';
 
     case EmprendedorPasswordChanged = 'emprendedor.password.changed';
+    case EmprendedorProfileUpdated = 'emprendedor.profile.updated';
 }

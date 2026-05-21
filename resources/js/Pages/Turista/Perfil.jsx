@@ -1,48 +1,45 @@
 import WaynaEnterTransition from '@/Components/Wayna/WaynaEnterTransition';
 import GuestLayout from '@/Layouts/GuestLayout';
+import EmprendedorLayout from '@/Layouts/EmprendedorLayout';
 import DonacionForm from '@/Components/Turista/DonacionForm';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import PerfilCabeceraInsta from '@/Components/Turista/PerfilCabeceraInsta';
 import PerfilGaleriaGrid from '@/Components/Turista/PerfilGaleriaGrid';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
 function scrollToDonar() {
     document.getElementById('donar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-export default function Perfil({
+function ContenidoPerfil({
     emprendedor,
     medios,
     redes,
     campanaActiva,
-    campanasActivas = [],
+    campanasActivas,
     progreso,
     tipoPagos,
-    visitanteNombrePrefill = '',
+    visitanteNombrePrefill,
+    mostrarVolverExplorar,
+    volverHref,
+    volverTexto,
 }) {
     const { t } = useTranslation();
-
     const nombreCompleto = `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim();
 
     return (
-        <WaynaEnterTransition variant="navigate">
-        <GuestLayout
-            variant="full"
-            navHref="/"
-            contentClassName="max-w-lg sm:max-w-xl lg:max-w-2xl"
-            chatContextEmprendedorId={emprendedor.id}
-        >
-            <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
-
-            <p className="mb-3">
-                <Link
-                    href="/"
-                    className="inline-flex items-center gap-1 text-sm font-bold text-wayna-700 underline decoration-wayna-300 underline-offset-4 hover:text-wayna-900"
-                >
-                    ← {t('explore.backToExplore')}
-                </Link>
-            </p>
+        <>
+            {mostrarVolverExplorar ? (
+                <p className="mb-3">
+                    <Link
+                        href={volverHref}
+                        className="inline-flex items-center gap-1 text-sm font-bold text-wayna-700 underline decoration-wayna-300 underline-offset-4 hover:text-wayna-900"
+                    >
+                        ← {volverTexto}
+                    </Link>
+                </p>
+            ) : null}
 
             <article className="perfil-ig overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-lg shadow-wayna-900/5">
                 <PerfilCabeceraInsta
@@ -105,9 +102,77 @@ export default function Perfil({
                     />
                 )}
             </section>
-
-        </GuestLayout>
-        </WaynaEnterTransition>
+        </>
     );
 }
 
+export default function Perfil({
+    emprendedor,
+    medios,
+    redes,
+    campanaActiva,
+    campanasActivas = [],
+    progreso,
+    tipoPagos,
+    visitanteNombrePrefill = '',
+}) {
+    const { t } = useTranslation();
+    const { auth } = usePage().props;
+    const esEmprendedor = auth?.role === 'emprendedor';
+
+    const nombreCompleto = `${emprendedor.nombre ?? ''} ${emprendedor.apellidos ?? ''}`.trim();
+
+    const contenido = (
+        <ContenidoPerfil
+            emprendedor={emprendedor}
+            medios={medios}
+            redes={redes}
+            campanaActiva={campanaActiva}
+            campanasActivas={campanasActivas}
+            progreso={progreso}
+            tipoPagos={tipoPagos}
+            visitanteNombrePrefill={visitanteNombrePrefill}
+            mostrarVolverExplorar={!esEmprendedor}
+            volverHref="/"
+            volverTexto={t('explore.backToExplore')}
+        />
+    );
+
+    if (esEmprendedor) {
+        return (
+            <WaynaEnterTransition variant="navigate">
+                <EmprendedorLayout
+                    chatContextEmprendedorId={emprendedor.id}
+                    contentClassName="mx-auto w-full max-w-lg px-4 py-6 sm:max-w-xl sm:px-6 lg:max-w-2xl"
+                    header={
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-wayna-600">
+                                Vista previa
+                            </p>
+                            <h2 className="mt-1 text-2xl font-bold text-wayna-950">
+                                Tu perfil público
+                            </h2>
+                            <p className="mt-1 text-sm text-stone-600">{nombreCompleto}</p>
+                        </div>
+                    }
+                >
+                    <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
+                    {contenido}
+                </EmprendedorLayout>
+            </WaynaEnterTransition>
+        );
+    }
+
+    return (
+        <WaynaEnterTransition variant="navigate">
+            <GuestLayout
+                variant="full"
+                contentClassName="max-w-lg sm:max-w-xl lg:max-w-2xl"
+                chatContextEmprendedorId={emprendedor.id}
+            >
+                <Head title={t('tourist.profile.headTitle', { name: nombreCompleto })} />
+                {contenido}
+            </GuestLayout>
+        </WaynaEnterTransition>
+    );
+}

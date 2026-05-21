@@ -394,5 +394,12 @@
         "body": "Conocé historias, contactá por redes y doná cuando quieras, sin presión."
       }
     }
+  },
+  "emprendedor": {
+    "nav": {
+      "dashboard": "Mi panel",
+      "editProfile": "Editar perfil",
+      "backToPanel": "Volver a mi panel"
+    }
   }
 }

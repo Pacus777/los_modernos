@@ -23,7 +23,7 @@ export const adminFormGrid2 = 'grid grid-cols-1 gap-5 sm:grid-cols-2';
 export const adminLabelRequiredMark = 'ml-0.5 font-bold text-wayna-600';
 
 export const adminSectionCard =
-    'rounded-2xl border border-wayna-100 bg-surface-card/90 p-5 shadow-sm sm:p-6';
+    'rounded-2xl border border-wayna-200/60 bg-white p-5 shadow-md shadow-wayna-900/[0.04] ring-1 ring-wayna-100/40 sm:p-6';
 
 export const adminBackdropShort =
     'pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-surface-muted/90 via-surface/40 to-transparent';

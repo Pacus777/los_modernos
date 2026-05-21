@@ -1,3 +1,4 @@
+import { adminInputClass } from '@/Components/Admin/adminUi';
 import EmprendedorTarjetaExplorar from '@/Components/Turista/EmprendedorTarjetaExplorar';
 import { opcionesDepartamentoT, opcionesTipoEmprendimientoT } from '@/utils/catalogosI18n';
 import { router } from '@inertiajs/react';
@@ -70,7 +71,7 @@ export default function ExplorarEmprendedores({
                                 value={busqueda}
                                 onChange={(e) => setBusqueda(e.target.value)}
                                 placeholder={t('explore.searchPlaceholder')}
-                                className="mt-1 w-full rounded-2xl border border-surface-200 px-4 py-2.5 text-sm focus:border-wayna-400 focus:ring-wayna-400"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             />
                         </div>
 
@@ -84,7 +85,7 @@ export default function ExplorarEmprendedores({
                                 onChange={(e) =>
                                     aplicarFiltros({ tipo_emprendimiento: e.target.value })
                                 }
-                                className="mt-1 w-full rounded-2xl border border-surface-200 px-3 py-2.5 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             >
                                 <option value="">{t('explore.filterAll')}</option>
                                 {tiposEmprendimiento.map((opt) => (
@@ -103,7 +104,7 @@ export default function ExplorarEmprendedores({
                                 id="explorar-depto"
                                 value={filtros.departamento ?? ''}
                                 onChange={(e) => aplicarFiltros({ departamento: e.target.value })}
-                                className="mt-1 w-full rounded-2xl border border-surface-200 px-3 py-2.5 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             >
                                 <option value="">{t('explore.filterAll')}</option>
                                 {departamentos.map((opt) => (
@@ -122,7 +123,7 @@ export default function ExplorarEmprendedores({
                                 id="explorar-punto"
                                 value={filtros.punto_id ?? ''}
                                 onChange={(e) => aplicarFiltros({ punto_id: e.target.value })}
-                                className="mt-1 w-full rounded-2xl border border-surface-200 px-3 py-2.5 text-sm"
+                                className={`${adminInputClass} mt-1 text-sm`}
                             >
                                 <option value="">{t('explore.filterAll')}</option>
                                 {(catalogos.puntos ?? []).map((punto) => (

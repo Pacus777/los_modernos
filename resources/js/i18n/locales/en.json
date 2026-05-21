@@ -394,5 +394,12 @@
         "body": "Discover stories, connect on social media, and give when you want—no pressure."
       }
     }
+  },
+  "emprendedor": {
+    "nav": {
+      "dashboard": "My dashboard",
+      "editProfile": "Edit profile",
+      "backToPanel": "Back to my dashboard"
+    }
   }
 }

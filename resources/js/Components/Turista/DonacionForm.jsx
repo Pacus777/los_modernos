@@ -213,7 +213,7 @@ export default function DonacionForm({
                     }
                     disabled={processing}
                     autoComplete="name"
-                    className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                    className="input-wayna mt-1 w-full"
                     placeholder={t(
                         'tourist.donationForm.visitorNamePlaceholder',
                     )}
@@ -250,7 +250,7 @@ export default function DonacionForm({
                         value={data.campana_id}
                         onChange={(e) => setData('campana_id', e.target.value)}
                         disabled={processing}
-                        className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                        className="input-wayna mt-1 w-full"
                     >
                         {listaCampanas.map((c) => (
                             <option key={c.id} value={c.id}>
@@ -297,7 +297,7 @@ export default function DonacionForm({
                     value={data.monto}
                     onChange={(e) => setData('monto', e.target.value)}
                     disabled={processing}
-                    className="mt-1 block w-full rounded-xl border-gray-300 focus:border-wayna-500 focus:ring-wayna-500"
+                    className="input-wayna mt-1 w-full"
                     placeholder={t('tourist.donationForm.amountPlaceholder')}
                 />
 
