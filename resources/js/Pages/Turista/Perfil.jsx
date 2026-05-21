@@ -5,6 +5,7 @@ import DonacionForm from '@/Components/Turista/DonacionForm';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import PerfilCabeceraInsta from '@/Components/Turista/PerfilCabeceraInsta';
 import PerfilGaleriaGrid from '@/Components/Turista/PerfilGaleriaGrid';
+import PerfilFeedPosts from '@/Components/Turista/PerfilFeedPosts';
 import SeguirEmprendedorCard from '@/Components/Turista/SeguirEmprendedorCard';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +24,7 @@ function ContenidoPerfil({
     tipoPagos,
     visitanteNombrePrefill,
     seguimiento,
+    posts = [],
     mostrarVolverExplorar,
     esPerfilPropio,
     volverHref,
@@ -73,6 +75,8 @@ function ContenidoPerfil({
 
                 <PerfilGaleriaGrid medios={medios} nombreEmprendimiento={nombreCompleto} />
             </article>
+
+            <PerfilFeedPosts posts={posts} />
 
             {!esPerfilPropio ? (
                 <SeguirEmprendedorCard
@@ -126,6 +130,7 @@ export default function Perfil({
     tipoPagos,
     visitanteNombrePrefill = '',
     seguimiento = {},
+    posts = [],
     esPerfilPropio = false,
 }) {
     const { t } = useTranslation();
@@ -145,6 +150,7 @@ export default function Perfil({
             tipoPagos={tipoPagos}
             visitanteNombrePrefill={visitanteNombrePrefill}
             seguimiento={seguimiento}
+            posts={posts}
             esPerfilPropio={esPerfilPropio}
             mostrarVolverExplorar={!esEmprendedor}
             volverHref="/"

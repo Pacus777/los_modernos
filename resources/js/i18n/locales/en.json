@@ -126,6 +126,17 @@
       "videoTitle": "Video",
       "videoUnsupported": "Your browser cannot play this video."
     },
+    "reactions": {
+      "feedTitle": "Updates",
+      "feedSubtitle": "Tap to react; you can only pick one at a time.",
+      "groupLabel": "Reactions to this post",
+      "types": {
+        "me_gusta": "Like, {{count}}",
+        "aplauso": "Applause, {{count}}",
+        "apoyo": "Support, {{count}}",
+        "inspirado": "Inspired, {{count}}"
+      }
+    },
     "follow": {
       "title": "Follow without an account",
       "subtitle": "Leave your email and we will notify you about updates. Confirm the link we send you.",

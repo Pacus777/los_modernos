@@ -126,6 +126,17 @@
       "videoTitle": "Video",
       "videoUnsupported": "Tu navegador no puede reproducir este video."
     },
+    "reactions": {
+      "feedTitle": "Novedades",
+      "feedSubtitle": "Reaccioná con un toque; solo podés elegir una a la vez.",
+      "groupLabel": "Reacciones a la publicación",
+      "types": {
+        "me_gusta": "Me gusta, {{count}}",
+        "aplauso": "Aplauso, {{count}}",
+        "apoyo": "Apoyo, {{count}}",
+        "inspirado": "Inspirado, {{count}}"
+      }
+    },
     "follow": {
       "title": "Seguir sin crear cuenta",
       "subtitle": "Dejá tu correo y te avisamos cuando haya novedades. Confirmá el enlace que te enviamos.",

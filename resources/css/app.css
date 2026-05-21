@@ -1067,3 +1067,19 @@ body.landing-intro-active {
         display: none !important;
     }
 }
+
+@keyframes post-reaccion-pop {
+    0% {
+        transform: scale(1);
+    }
+    35% {
+        transform: scale(1.18);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.post-reaccion-btn--pop {
+    animation: post-reaccion-pop 0.38s ease-out;
+}

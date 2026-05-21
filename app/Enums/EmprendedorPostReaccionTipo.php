@@ -10,6 +10,7 @@ enum EmprendedorPostReaccionTipo: string
     case MeGusta = 'me_gusta';
     case Aplauso = 'aplauso';
     case Apoyo = 'apoyo';
+    case Inspirado = 'inspirado';
 
     /** @return list<string> */
     public static function valores(): array
