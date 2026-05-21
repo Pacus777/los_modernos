@@ -1,6 +1,7 @@
 import LanguageSelector from '@/Components/LanguageSelector';
 import ChatWidget, { ChatWidgetProvider } from '@/Components/Turista/ChatWidget';
 import WaynaNavBar from '@/Components/WaynaNavBar';
+import { Link } from '@inertiajs/react';
 
 /**
  * Invitado / turista — barra #f07e26, contenido sobre base #E8E6E0.
@@ -15,7 +16,17 @@ export default function GuestLayout({
     contentClassName = '',
     chatContextEmprendedorId = null,
 }) {
-    const navExtras = <LanguageSelector variant="on-brand" compact />;
+    const navExtras = (
+        <div className="flex items-center gap-3 sm:gap-5">
+            <Link
+                href={route('turista.emprendedores.index')}
+                className="text-xs sm:text-sm font-bold text-white hover:text-orange-100 transition duration-150"
+            >
+                Explorar
+            </Link>
+            <LanguageSelector variant="on-brand" compact />
+        </div>
+    );
 
     if (variant === 'full') {
         return (

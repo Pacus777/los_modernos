@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Turista\DonacionConfirmacionController;
 use App\Http\Controllers\Turista\EmprendedorPublicoController;
+use App\Http\Controllers\Turista\EmprendedorFeedController;
 use App\Http\Controllers\Turista\DonacionController;
 use App\Http\Controllers\Turista\PuntoController;
 use App\Http\Controllers\Turista\ChatController;
@@ -20,7 +21,11 @@ use Inertia\Inertia;
 | El QR del emprendedor apuntará a:
 | /emprendedor/{id}
 |
+|
 */
+
+Route::get('/emprendedores', EmprendedorFeedController::class)
+    ->name('turista.emprendedores.index');
 
 Route::get('/emprendedores/{slug}', [EmprendedorPublicoController::class, 'showBySlug'])
     ->name('turista.emprendedores.show');
