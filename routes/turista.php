@@ -22,6 +22,9 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('/emprendedores/{slug}', [EmprendedorPublicoController::class, 'showBySlug'])
+    ->name('turista.emprendedores.show');
+
 Route::get('/emprendedor/{id}', [EmprendedorPublicoController::class, 'show'])
     ->name('turista.emprendedor.show');
 

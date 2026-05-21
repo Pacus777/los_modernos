@@ -44,6 +44,7 @@ class Emprendedor extends Model
 
     protected $fillable = [
         'user_id',
+        'slug',
         'nombre',
         'apellidos',
         'descripcion',
@@ -191,5 +192,59 @@ class Emprendedor extends Model
             'emprendedor_id',
             'visitante_id',
         )->withTimestamps();
+    }
+
+    /**
+     * Ciclo de vida para generación automática de slugs únicos.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Emprendedor $emprendedor) {
+            if (empty($emprendedor->slug)) {
+                $emprendedor->slug = static::generarSlugUnico($emprendedor->nombreCompleto());
+            }
+        });
+
+        static::updating(function (Emprendedor $emprendedor) {
+            if (empty($emprendedor->slug)) {
+                $emprendedor->slug = static::generarSlugUnico($emprendedor->nombreCompleto(), $emprendedor->id);
+            }
+        });
+    }
+
+    /**
+     * Genera un slug único a partir de un nombre, controlando colisiones.
+     */
+    public static function generarSlugUnico(string $nombre, ?int $excluirId = null): string
+    {
+        $base = \Illuminate\Support\Str::slug($nombre);
+        if (empty($base)) {
+            $base = 'emprendedor';
+        }
+
+        $slug = $base;
+        $contador = 1;
+
+        $query = static::query();
+        if ($excluirId) {
+            $query->where('id', '!=', $excluirId);
+        }
+
+        while ((clone $query)->where('slug', $slug)->exists()) {
+            $contador++;
+            $slug = "{$base}-{$contador}";
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Genera la ruta pública del perfil (con slug si existe).
+     */
+    public function rutaPublica(): string
+    {
+        return $this->slug
+            ? route('turista.emprendedores.show', $this->slug)
+            : route('turista.emprendedor.show', $this->id);
     }
 }

@@ -30,7 +30,7 @@ class PerfilController extends Controller
             'emprendedor' => $emprendedor,
             'tiposEmprendimiento' => TipoEmprendimiento::opcionesParaFormulario(),
             'departamentos' => Departamento::opcionesParaFormulario(),
-            'perfil_publico_url' => route('turista.emprendedor.show', $emprendedor),
+            'perfil_publico_url' => $emprendedor->rutaPublica(),
         ]);
     }
 

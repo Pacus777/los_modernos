@@ -74,7 +74,7 @@ class HandleInertiaRequests extends Middleware
 
             return [
                 'id' => $emprendedor->id,
-                'perfil_publico_url' => route('turista.emprendedor.show', $emprendedor),
+                'perfil_publico_url' => $emprendedor->rutaPublica(),
             ];
         },
 

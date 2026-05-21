@@ -36,7 +36,7 @@ class EmprendedorDashboardService
             'graficas' => $this->graficas($emprendedor),
             'ultimas_donaciones' => $this->ultimasDonaciones($emprendedor),
             'acciones' => [
-                'perfil_publico_url' => route('turista.emprendedor.show', $emprendedor),
+                'perfil_publico_url' => $emprendedor->rutaPublica(),
                 'qr_url' => $emprendedor->qr_url
                     ? EmprendedorMediosService::urlAlmacenPublico($emprendedor->qr_url)
                     : null,
