@@ -18,6 +18,19 @@ use Inertia\Response;
 
 class EmprendedorMetaController extends Controller
 {
+    public function index(Request $request, EmprendedorMetaService $metaService): Response|RedirectResponse
+    {
+        $emprendedor = $this->emprendedorVinculado($request);
+
+        if (! $emprendedor) {
+            return $this->sinVinculo();
+        }
+
+        return Inertia::render('Emprendedor/MisMetas/Index', [
+            'gestion' => $metaService->datosGestionMetas($emprendedor),
+        ]);
+    }
+
     public function create(Request $request, EmprendedorMetaService $metaService): Response|RedirectResponse
     {
         $emprendedor = $this->emprendedorVinculado($request);
@@ -30,7 +43,7 @@ class EmprendedorMetaController extends Controller
 
         if ($metaService->tieneCampanaActiva($emprendedor)) {
             return redirect()
-                ->route('emprendedor.meta.edit')
+                ->route('emprendedor.mis-metas.index')
                 ->with('error', 'Ya tenés una meta activa. Podés editarla o cerrarla.');
         }
 
@@ -53,7 +66,7 @@ class EmprendedorMetaController extends Controller
 
         if (! $campana) {
             return redirect()
-                ->route('emprendedor.meta.create')
+                ->route('emprendedor.mis-metas.index')
                 ->with('error', 'No tenés una meta activa. Creá una para mostrar tu progreso a los turistas.');
         }
 
@@ -95,7 +108,7 @@ class EmprendedorMetaController extends Controller
         );
 
         return redirect()
-            ->route('emprendedor.dashboard')
+            ->route('emprendedor.mis-metas.index')
             ->with('success', 'Tu meta de apoyo quedó activa. Los turistas ya pueden ver tu progreso.');
     }
 
@@ -119,7 +132,7 @@ class EmprendedorMetaController extends Controller
         );
 
         return redirect()
-            ->route('emprendedor.dashboard')
+            ->route('emprendedor.mis-metas.index')
             ->with('success', 'Tu meta de apoyo se actualizó correctamente.');
     }
 
@@ -149,7 +162,7 @@ class EmprendedorMetaController extends Controller
             : 'Tu meta de apoyo se cerró correctamente.';
 
         return redirect()
-            ->route('emprendedor.dashboard')
+            ->route('emprendedor.mis-metas.index')
             ->with('success', $mensaje);
     }
 

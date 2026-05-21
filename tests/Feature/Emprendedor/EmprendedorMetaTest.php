@@ -35,7 +35,7 @@ class EmprendedorMetaTest extends TestCase
             'fecha_fin' => $fin,
         ]);
 
-        $response->assertRedirect(route('emprendedor.dashboard'));
+        $response->assertRedirect(route('emprendedor.mis-metas.index'));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('campanas', [
@@ -80,7 +80,7 @@ class EmprendedorMetaTest extends TestCase
             'fecha_fin' => now()->addMonths(2)->toDateString(),
         ]);
 
-        $response->assertRedirect(route('emprendedor.dashboard'));
+        $response->assertRedirect(route('emprendedor.mis-metas.index'));
         $campana->refresh();
         $this->assertSame('Meta actualizada', $campana->titulo);
         $this->assertEquals(5000.0, (float) $campana->meta_apoyo);
@@ -98,7 +98,7 @@ class EmprendedorMetaTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('emprendedor.meta.close', $campana));
 
-        $response->assertRedirect(route('emprendedor.dashboard'));
+        $response->assertRedirect(route('emprendedor.mis-metas.index'));
         $campana->refresh();
         $this->assertSame(Campana::ESTADO_FINALIZADA, $campana->estado);
 
@@ -138,6 +138,31 @@ class EmprendedorMetaTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Emprendedor/Meta/Form')
                 ->where('modo', 'crear'));
+    }
+
+    public function test_vista_mis_metas_lista_campanas(): void
+    {
+        [$user, $emprendedor] = $this->escenarioEmprendedor();
+        $activa = $this->crearCampanaActiva($emprendedor);
+
+        Campana::query()->create([
+            'emprendedor_id' => $emprendedor->id,
+            'titulo' => 'Meta cerrada',
+            'meta_apoyo' => 1000,
+            'monto_recaudado' => 400,
+            'fecha_inicio' => now()->subMonths(3),
+            'fecha_fin' => now()->subMonth(),
+            'estado' => Campana::ESTADO_FINALIZADA,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('emprendedor.mis-metas.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Emprendedor/MisMetas/Index')
+                ->has('gestion.campanas', 2)
+                ->where('gestion.puede_crear', false)
+                ->where('gestion.campana_activa_id', $activa->id));
     }
 
     /**

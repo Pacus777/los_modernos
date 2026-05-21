@@ -211,10 +211,10 @@ export default function Dashboard({ panel, usuario }) {
                                 ) : null}
                                 <div className="flex flex-wrap justify-center gap-3">
                                     <Link
-                                        href={route('emprendedor.meta.edit')}
+                                        href={route('emprendedor.mis-metas.index')}
                                         className="inline-flex items-center justify-center rounded-2xl bg-wayna-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-wayna-700"
                                     >
-                                        Editar meta
+                                        Gestionar meta
                                     </Link>
                                     <button
                                         type="button"
@@ -243,10 +243,10 @@ export default function Dashboard({ panel, usuario }) {
                                     progreso.
                                 </p>
                                 <Link
-                                    href={route('emprendedor.meta.create')}
+                                    href={route('emprendedor.mis-metas.index')}
                                     className="mt-4 inline-flex items-center justify-center rounded-2xl bg-wayna-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-wayna-700"
                                 >
-                                    Crear mi meta de apoyo
+                                    Ir a mis metas
                                 </Link>
                             </div>
                         )}

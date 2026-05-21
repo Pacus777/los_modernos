@@ -170,8 +170,8 @@ export default function Form({ modo, campana, fechaHoy: fechaHoyProp }) {
                               ? 'Guardar cambios'
                               : 'Activar mi meta'}
                     </button>
-                    <Link href={route('emprendedor.dashboard')} className={adminFormFooterSecondaryBtn}>
-                        Volver al panel
+                    <Link href={route('emprendedor.mis-metas.index')} className={adminFormFooterSecondaryBtn}>
+                        Volver a mis metas
                     </Link>
                 </div>
             </form>

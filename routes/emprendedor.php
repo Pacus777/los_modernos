@@ -66,6 +66,9 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
         Route::get('/donaciones/exportar/pdf', [DonacionHistorialController::class, 'exportarPdf'])
             ->name('donaciones.exportar.pdf');
 
+        Route::get('/mis-metas', [EmprendedorMetaController::class, 'index'])
+            ->name('mis-metas.index');
+
         Route::get('/meta/crear', [EmprendedorMetaController::class, 'create'])
             ->name('meta.create');
 
