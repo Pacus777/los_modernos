@@ -24,7 +24,7 @@ class DonacionConfirmacionController extends Controller
             abort(404);
         }
 
-        $donacion->loadMissing('campana');
+        $donacion->loadMissing(['campana', 'tipoPago']);
 
         $qrPagoUrl = $qrCodeService->urlPublicaQrPagoExistente($donacion)
             ?? $qrCodeService->generarQrPago($donacion);
@@ -38,6 +38,9 @@ class DonacionConfirmacionController extends Controller
                 'monto' => (string) $donacion->monto,
                 'metodo' => $donacion->metodo,
                 'plazo_pago' => PagoPendienteTurista::paraConfirmacion($donacion),
+                'checkout_url' => $donacion->checkout_url,
+                'es_libelula' => $donacion->fueProcesadaPorLibelula()
+                    || $donacion->tipoPago?->esLibelula(),
             ],
             'emprendedor_id' => $donacion->campana?->emprendedor_id,
             'qr_pago_url' => $qrPagoUrl,

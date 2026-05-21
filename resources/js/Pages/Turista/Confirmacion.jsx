@@ -23,10 +23,11 @@ export default function Confirmacion() {
         : '/';
 
     const qrUrl = page.props.qr_pago_url ?? flash.qr_pago_url;
+    const checkoutUrl = confirmacion?.checkout_url ?? null;
     const referencia =
         confirmacion?.referencia_pago ?? flash.referencia_pago;
     const successMessage = t('tourist.confirmation.successRegistered');
-    const tieneDatosDonacion = Boolean(qrUrl || referencia);
+    const tieneDatosDonacion = Boolean(qrUrl || referencia || checkoutUrl);
 
     const plazoPago = confirmacion?.plazo_pago ?? null;
 
@@ -80,6 +81,19 @@ export default function Confirmacion() {
                             )}
 
                             <ReferenciaPagoDestacada referencia={referencia} variant="turista" />
+
+                            {checkoutUrl && (
+                                <div className="flex justify-center">
+                                    <a
+                                        href={checkoutUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-wayna-primary touch-target min-h-11 px-6 py-3 text-center text-sm font-bold"
+                                    >
+                                        Ir a pagar con Libélula
+                                    </a>
+                                </div>
+                            )}
 
                             {qrUrl && (
                                 <div className="flex flex-col items-center gap-3">

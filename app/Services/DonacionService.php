@@ -19,6 +19,7 @@ class DonacionService
         protected TraceabilityService $traceabilityService,
         protected TelegramService $telegramService,
         protected AuditLogService $auditLogService,
+        protected LibelulaService $libelulaService,
     ) {
     }
 
@@ -64,15 +65,30 @@ class DonacionService
 
             $trazabilidad = $this->traceabilityService->registrarDonacionCreada($donacion);
 
-            /*
-             * Genera el QR correspondiente al método de pago.
-             * Por ahora puede ser QR de pago o QR de confirmación manual.
-             */
-            $qrPagoUrl = $this->qrCodeService->generarQrPago($donacion);
+            $donacion->loadMissing('tipoPago');
+
+            $qrPagoUrl = null;
+            $checkoutUrl = null;
+
+            if ($donacion->tipoPago?->esLibelula()) {
+                $deuda = $this->libelulaService->crearDeuda(
+                    $donacion->loadMissing('visitante'),
+                    ['email' => $data['email_cliente'] ?? null],
+                );
+
+                $donacion->refresh();
+                $checkoutUrl = $deuda->urlPasarela;
+                $qrPagoUrl = $deuda->qrSimpleUrl;
+            }
+
+            if (! $qrPagoUrl) {
+                $qrPagoUrl = $this->qrCodeService->generarQrPago($donacion->fresh());
+            }
 
             return [
-                'donacion' => $donacion,
+                'donacion' => $donacion->fresh(),
                 'qr_pago_url' => $qrPagoUrl,
+                'checkout_url' => $checkoutUrl ?? $donacion->checkout_url,
                 'trazabilidad' => $trazabilidad,
             ];
         });
