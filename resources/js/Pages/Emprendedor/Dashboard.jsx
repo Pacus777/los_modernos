@@ -218,13 +218,21 @@ export default function Dashboard({ panel, usuario }) {
                         )}
 
                         <section className="overflow-hidden rounded-3xl border border-wayna-200 bg-white shadow-sm">
-                            <div className="border-b border-wayna-100 px-5 py-4">
-                                <h3 className="text-sm font-bold text-wayna-950">
-                                    Últimos aportes
-                                </h3>
-                                <p className="mt-0.5 text-xs text-stone-500">
-                                    Movimientos recientes vinculados a tus campañas
-                                </p>
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-wayna-100 px-5 py-4">
+                                <div>
+                                    <h3 className="text-sm font-bold text-wayna-950">
+                                        Últimos aportes
+                                    </h3>
+                                    <p className="mt-0.5 text-xs text-stone-500">
+                                        Movimientos recientes vinculados a tus campañas
+                                    </p>
+                                </div>
+                                <Link
+                                    href={route('emprendedor.donaciones.index')}
+                                    className="text-xs font-bold text-wayna-700 underline underline-offset-2 hover:text-wayna-900"
+                                >
+                                    Ver historial completo
+                                </Link>
                             </div>
                             {panel.ultimas_donaciones?.length > 0 ? (
                                 <ul className="divide-y divide-wayna-50">

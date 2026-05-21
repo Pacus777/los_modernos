@@ -1,4 +1,5 @@
 import {
+    IconDonaciones,
     IconEditarPerfil,
     IconPanel,
     IconPerfilPublico,
@@ -78,6 +79,12 @@ export default function EmprendedorLayout({
                 routeName: 'emprendedor.perfil.edit',
                 match: 'emprendedor.perfil.*',
                 Icon: IconEditarPerfil,
+            },
+            {
+                label: 'Mis donaciones',
+                routeName: 'emprendedor.donaciones.index',
+                match: 'emprendedor.donaciones.*',
+                Icon: IconDonaciones,
             },
         ];
 

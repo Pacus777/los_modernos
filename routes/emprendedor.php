@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\Emprendedor\DashboardController;
+use App\Http\Controllers\Emprendedor\DonacionHistorialController;
 use App\Http\Controllers\Emprendedor\ForcePasswordChangeController;
 use App\Http\Controllers\Emprendedor\PerfilController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Panel emprendedor (E-03 / E-04 / E-05 / E-06)
+| Panel emprendedor (E-03 / E-04 / E-05 / E-06 / E-07)
 |--------------------------------------------------------------------------
 */
 
@@ -37,4 +38,13 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
 
         Route::put('/perfil', [PerfilController::class, 'update'])
             ->name('perfil.update');
+
+        Route::get('/donaciones', [DonacionHistorialController::class, 'index'])
+            ->name('donaciones.index');
+
+        Route::get('/donaciones/exportar', [DonacionHistorialController::class, 'exportarExcel'])
+            ->name('donaciones.exportar');
+
+        Route::get('/donaciones/exportar/pdf', [DonacionHistorialController::class, 'exportarPdf'])
+            ->name('donaciones.exportar.pdf');
     });

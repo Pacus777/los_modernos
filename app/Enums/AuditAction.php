@@ -29,4 +29,5 @@ enum AuditAction: string
 
     case EmprendedorPasswordChanged = 'emprendedor.password.changed';
     case EmprendedorProfileUpdated = 'emprendedor.profile.updated';
+    case EmprendedorDonationsExported = 'emprendedor.donations.exported';
 }
