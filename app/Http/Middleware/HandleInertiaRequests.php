@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\EmprendedorNotificacionService;
 use App\Support\TipoCambioTurista;
 use Closure;
 use Illuminate\Http\Request;
@@ -73,6 +74,22 @@ class HandleInertiaRequests extends Middleware
                 'id' => $emprendedor->id,
                 'perfil_publico_url' => route('turista.emprendedor.show', $emprendedor),
             ];
+        },
+
+        'emprendedorNotificaciones' => function () use ($request) {
+            $user = $request->user();
+
+            if (! $user?->esEmprendedor()) {
+                return null;
+            }
+
+            $emprendedor = $user->emprendedor;
+
+            if (! $emprendedor) {
+                return null;
+            }
+
+            return app(EmprendedorNotificacionService::class)->resumenParaNavbar($emprendedor);
         },
 
         'adminSession' => fn () => $request->user()?->esAdmin()

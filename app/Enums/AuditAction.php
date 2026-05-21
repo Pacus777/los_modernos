@@ -33,4 +33,5 @@ enum AuditAction: string
     case EmprendedorMetaCreated = 'emprendedor.meta.created';
     case EmprendedorMetaUpdated = 'emprendedor.meta.updated';
     case EmprendedorMetaClosed = 'emprendedor.meta.closed';
+    case EmprendedorNotificationPreferencesUpdated = 'emprendedor.notifications.updated';
 }

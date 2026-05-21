@@ -2,11 +2,14 @@ import {
     IconDonaciones,
     IconEditarPerfil,
     IconMeta,
+    IconNotificaciones,
     IconPanel,
     IconPerfilPublico,
+    IconPreferencias,
 } from '@/Components/Emprendedor/EmprendedorNavIcons';
 import { WaynaBrand } from '@/Components/ApplicationLogo';
 import ChatWidget, { ChatWidgetProvider } from '@/Components/Turista/ChatWidget';
+import EmprendedorNotificacionesBell from '@/Components/Emprendedor/EmprendedorNotificacionesBell';
 import LogoutButton from '@/Components/LogoutButton';
 import { useReloadOnHistoryRestore } from '@/hooks/useReloadOnHistoryRestore';
 import { Link, usePage } from '@inertiajs/react';
@@ -92,6 +95,18 @@ export default function EmprendedorLayout({
                 routeName: 'emprendedor.donaciones.index',
                 match: 'emprendedor.donaciones.*',
                 Icon: IconDonaciones,
+            },
+            {
+                label: 'Mis avisos',
+                routeName: 'emprendedor.notificaciones.index',
+                match: 'emprendedor.notificaciones.*',
+                Icon: IconNotificaciones,
+            },
+            {
+                label: 'Preferencias',
+                routeName: 'emprendedor.preferencias.edit',
+                match: 'emprendedor.preferencias.*',
+                Icon: IconPreferencias,
             },
         ];
 
@@ -244,13 +259,14 @@ export default function EmprendedorLayout({
                         </div>
                     </div>
 
-                    {header ? (
-                        <header className="border-b border-wayna-100 bg-white shadow-sm">
-                            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                                {header}
+                    <header className="border-b border-wayna-100 bg-white shadow-sm">
+                        <div className="mx-auto flex max-w-7xl items-start justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
+                            <div className="min-w-0 flex-1">{header ?? null}</div>
+                            <div className="shrink-0 pt-0.5">
+                                <EmprendedorNotificacionesBell />
                             </div>
-                        </header>
-                    ) : null}
+                        </div>
+                    </header>
 
                     <main className={`flex-1 ${contentClassName}`.trim()}>{children}</main>
                 </div>

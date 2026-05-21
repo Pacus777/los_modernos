@@ -61,6 +61,8 @@ class Emprendedor extends Model
         'qr_url',
         'estado',
         'meta_monto',
+        'notificar_donaciones_email',
+        'notificar_donaciones_panel',
     ];
 
     /*
@@ -75,6 +77,8 @@ class Emprendedor extends Model
 
     protected $casts = [
         'meta_monto' => 'decimal:2',
+        'notificar_donaciones_email' => 'boolean',
+        'notificar_donaciones_panel' => 'boolean',
         'tipo_emprendimiento' => TipoEmprendimiento::class,
         'departamento' => Departamento::class,
         'galeria' => 'array',

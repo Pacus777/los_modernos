@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Emprendedor\DashboardController;
 use App\Http\Controllers\Emprendedor\DonacionHistorialController;
+use App\Http\Controllers\Emprendedor\EmprendedorNotificacionController;
 use App\Http\Controllers\Emprendedor\EmprendedorMetaController;
 use App\Http\Controllers\Emprendedor\ForcePasswordChangeController;
+use App\Http\Controllers\Emprendedor\NotificacionPreferenciasController;
 use App\Http\Controllers\Emprendedor\PerfilController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +41,21 @@ Route::middleware(['auth', 'verified', 'check.role:emprendedor', 'emprendedor.fo
 
         Route::put('/perfil', [PerfilController::class, 'update'])
             ->name('perfil.update');
+
+        Route::get('/preferencias', [NotificacionPreferenciasController::class, 'edit'])
+            ->name('preferencias.edit');
+
+        Route::put('/preferencias', [NotificacionPreferenciasController::class, 'update'])
+            ->name('preferencias.update');
+
+        Route::get('/notificaciones', [EmprendedorNotificacionController::class, 'index'])
+            ->name('notificaciones.index');
+
+        Route::patch('/notificaciones/{notificacion}/leer', [EmprendedorNotificacionController::class, 'marcarLeida'])
+            ->name('notificaciones.leer');
+
+        Route::post('/notificaciones/marcar-todas', [EmprendedorNotificacionController::class, 'marcarTodasLeidas'])
+            ->name('notificaciones.marcar-todas');
 
         Route::get('/donaciones', [DonacionHistorialController::class, 'index'])
             ->name('donaciones.index');
