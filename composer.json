@@ -16,6 +16,7 @@
         "laravel/tinker": "^3.0",
         "pragmarx/google2fa": "^9.0",
         "pusher/pusher-php-server": "*",
+        "spatie/laravel-backup": "^10.0.2",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
@@ -82,6 +83,7 @@
         }
     },
     "config": {
+        "platform-check": false,
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,

@@ -84,6 +84,22 @@ return [
     'admin_session_lifetime_minutes' => (int) env('WAYNA_ADMIN_SESSION_MINUTES', 30),
     'admin_session_warn_minutes' => (int) env('WAYNA_ADMIN_SESSION_WARN_MINUTES', 5),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Respaldos automáticos (S3-08 — spatie/laravel-backup)
+    |--------------------------------------------------------------------------
+    |
+    | Requiere `php artisan schedule:run` cada minuto (cron o Task Scheduler).
+    | En Laragon/Windows: habilitar extensión zip en php.ini.
+    |
+    */
+
+    'backup' => [
+        'enabled' => env('WAYNA_BACKUP_ENABLED', true),
+        'cleanup_at' => env('WAYNA_BACKUP_CLEANUP_AT', '01:00'),
+        'run_at' => env('WAYNA_BACKUP_RUN_AT', '01:30'),
+    ],
+
     'rate_limit' => [
         'login' => [
             'max_attempts' => (int) env('WAYNA_RATE_LIMIT_LOGIN_MAX', 10),

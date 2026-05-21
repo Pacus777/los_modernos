@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -49,6 +50,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         //
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        if (! config('wayna.backup.enabled', true)) {
+            return;
+        }
+
+        $horaLimpieza = config('wayna.backup.cleanup_at', '01:00');
+        $horaRespaldo = config('wayna.backup.run_at', '01:30');
+
+        $schedule->command('backup:clean')->dailyAt($horaLimpieza);
+        $schedule->command('backup:run')->dailyAt($horaRespaldo);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
