@@ -154,9 +154,9 @@ class EmprendedorCuentaService
             return false;
         }
 
-        if (! $this->smtpConfigurado()) {
+        if (! $this->mailerConfigurado()) {
             report(new RuntimeException(
-                'SMTP no configurado: completá MAIL_USERNAME y MAIL_PASSWORD en .env',
+                'Correo no configurado: revisá MAIL_MAILER, MAIL_HOST, MAIL_PORT o credenciales SMTP en .env.',
             ));
 
             return false;
@@ -209,9 +209,19 @@ class EmprendedorCuentaService
             ->value('id');
     }
 
-    private function smtpConfigurado(): bool
+    private function mailerConfigurado(): bool
     {
-        return filled(config('mail.mailers.smtp.username'))
-            && filled(config('mail.mailers.smtp.password'));
+        $mailer = config('mail.default');
+
+        if (in_array($mailer, ['log', 'array'], true)) {
+            return true;
+        }
+
+        if ($mailer === 'smtp') {
+            return filled(config('mail.mailers.smtp.host'))
+                && filled(config('mail.mailers.smtp.port'));
+        }
+
+        return filled($mailer);
     }
 }
