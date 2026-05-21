@@ -47,6 +47,18 @@ class AppServiceProvider extends ServiceProvider
 
         $this->registerRedSocialEmailListeners();
         $this->registerBackupTelegramListeners();
+        $this->registerDonacionConfirmadaListeners();
+    }
+
+    /**
+     * S2-10: Notificaciones de donación validada.
+     */
+    protected function registerDonacionConfirmadaListeners(): void
+    {
+        Event::listen(
+            \App\Events\DonacionConfirmada::class,
+            \App\Listeners\SendDonationNotification::class
+        );
     }
 
     /**

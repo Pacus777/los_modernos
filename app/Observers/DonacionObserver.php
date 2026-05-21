@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use App\Models\Campana;
 use App\Models\Donacion;
-use App\Services\EmprendedorDonacionNotificacionService;
+
 
 /**
  * Único responsable de actualizar campanas.monto_recaudado (T-A19).
@@ -18,7 +18,7 @@ class DonacionObserver
     {
         if ($donacion->estado_pago === Donacion::ESTADO_VALIDADO) {
             $this->incrementarRecaudacionCampana($donacion);
-            $this->notificarEmprendedor($donacion);
+            \App\Events\DonacionConfirmada::dispatch($donacion);
         }
     }
 
@@ -35,13 +35,8 @@ class DonacionObserver
             $this->decrementarRecaudacionCampana($donacion);
         } elseif ($anterior !== Donacion::ESTADO_VALIDADO && $actual === Donacion::ESTADO_VALIDADO) {
             $this->incrementarRecaudacionCampana($donacion);
-            $this->notificarEmprendedor($donacion);
+            \App\Events\DonacionConfirmada::dispatch($donacion);
         }
-    }
-
-    private function notificarEmprendedor(Donacion $donacion): void
-    {
-        app(EmprendedorDonacionNotificacionService::class)->notificarDonacionValidada($donacion);
     }
 
     private function incrementarRecaudacionCampana(Donacion $donacion): void
