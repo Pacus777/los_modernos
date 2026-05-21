@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Turista;
 
 use App\Services\TipoCambioService;
 use App\Services\LibreTranslationService;
+use App\Services\SeguirEmprendedorService;
 use App\Services\VisitanteService;
 use App\Support\RedesSocialesEmprendedor;
 use App\Support\TipoPagoTurista;
@@ -36,6 +37,7 @@ class EmprendedorPublicoController extends Controller
         LibreTranslationService $translator,
         TipoCambioService $tipoCambioService,
         VisitanteService $visitanteService,
+        SeguirEmprendedorService $seguirService,
     ): Response {
         $locale = $this->obtenerLocaleTurista($request);
 
@@ -166,6 +168,8 @@ class EmprendedorPublicoController extends Controller
                 ->all(),
 
             'visitanteNombrePrefill' => $visitanteService->nombreEnSesion($request),
+
+            'seguimiento' => $seguirService->estadoEnPerfil($request, $emprendedor->id),
 
             'esPerfilPropio' => $request->user()?->emprendedor?->id === $emprendedor->id,
         ]);

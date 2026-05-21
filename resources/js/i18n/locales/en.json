@@ -126,6 +126,24 @@
       "videoTitle": "Video",
       "videoUnsupported": "Your browser cannot play this video."
     },
+    "follow": {
+      "title": "Follow without an account",
+      "subtitle": "Leave your email and we will notify you about updates. Confirm the link we send you.",
+      "emailLabel": "Your email address",
+      "submit": "Send confirmation",
+      "sending": "Sending…",
+      "pendingTitle": "Check your inbox",
+      "pendingBody": "We sent a confirmation link to {{email}}.",
+      "confirmedTitle": "You are following!",
+      "confirmedBody": "You will receive updates at {{email}}.",
+      "pageConfirmedTitle": "Follow confirmed",
+      "pageConfirmedBody": "You are now following {{name}} on WAYNA.",
+      "pageUnsubTitle": "Unsubscribed",
+      "pageUnsubBody": "You will no longer receive emails from {{name}}.",
+      "pageErrorTitle": "Invalid link",
+      "pageErrorBody": "This link expired or was already used. Request a new one from the entrepreneur profile.",
+      "backToProfile": "Back to profile"
+    },
     "barraProgreso": {
       "ariaLabel": "Progress toward the goal: {{pct}} percent"
     },
