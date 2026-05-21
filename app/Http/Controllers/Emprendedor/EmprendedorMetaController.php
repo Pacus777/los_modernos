@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Jobs\NuevaMetaEmail;
 
 class EmprendedorMetaController extends Controller
 {
@@ -106,6 +107,8 @@ class EmprendedorMetaController extends Controller
             ],
             request: $request,
         );
+
+        NuevaMetaEmail::dispatch($campana);
 
         return redirect()
             ->route('emprendedor.mis-metas.index')
