@@ -27,6 +27,14 @@ class StoreEmprendedorRequest extends FormRequest
         if (! $this->filled('descripcion')) {
             $this->merge(['descripcion' => null]);
         }
+
+        if ($this->has('whatsapp')) {
+            $this->merge([
+                'whatsapp' => \App\Support\RedesSocialesEmprendedor::normalizarWhatsAppGuardado(
+                    is_string($this->input('whatsapp')) ? $this->input('whatsapp') : null,
+                ),
+            ]);
+        }
     }
     /**
      * Autoriza esta solicitud.

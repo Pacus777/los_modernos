@@ -28,4 +28,16 @@ return [
 
     'timeout_seconds' => (int) env('LIBELULA_TIMEOUT_SECONDS', 30),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Webhook Libélula
+    |--------------------------------------------------------------------------
+    |
+    | Si Libélula entrega una firma HMAC, se valida con este secreto.
+    | En desarrollo local puede quedar null para permitir pruebas con curl/Postman.
+    |
+    */
+
+    'webhook_secret' => env('LIBELULA_WEBHOOK_SECRET'),
+
 ];

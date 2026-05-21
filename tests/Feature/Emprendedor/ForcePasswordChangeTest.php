@@ -131,6 +131,7 @@ class ForcePasswordChangeTest extends TestCase
             'departamento' => 'la_paz',
             'estado' => 'activo',
             'meta_monto' => 500,
+            'fotografia' => 'fotografias/test.jpg',
         ]);
     }
 
@@ -165,6 +166,7 @@ class ForcePasswordChangeTest extends TestCase
             'departamento' => 'la_paz',
             'estado' => 'activo',
             'meta_monto' => 500,
+            'fotografia' => 'fotografias/test.jpg',
         ]);
 
         return $user->fresh();

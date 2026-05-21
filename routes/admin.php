@@ -113,6 +113,9 @@ Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'adm
         Route::patch('donaciones/{donacion}/validar', [DonacionController::class, 'validar'])
             ->name('donaciones.validar');
 
+        Route::patch('donaciones/{donacion}/confirmar', [DonacionController::class, 'validar'])
+            ->name('donaciones.confirmar');
+
         Route::patch('donaciones/{donacion}/rechazar', [DonacionController::class, 'rechazar'])
             ->name('donaciones.rechazar');
 

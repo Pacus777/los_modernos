@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Backup\Events\BackupHasFailed;
 use Spatie\Backup\Events\BackupWasSuccessful;
+use App\Events\CampanaMetaAlcanzada;
+use App\Events\EmprendedorPostPublicado;
+use App\Jobs\MetaCumplidaEmail;
+use App\Jobs\NuevoPostEmail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,7 +45,34 @@ class AppServiceProvider extends ServiceProvider
         EmprendedorPost::observe(EmprendedorPostObserver::class);
         Campana::observe(MetaObserver::class);
 
+        $this->registerRedSocialEmailListeners();
         $this->registerBackupTelegramListeners();
+        $this->registerDonacionConfirmadaListeners();
+    }
+
+    /**
+     * S2-10: Notificaciones de donación validada.
+     */
+    protected function registerDonacionConfirmadaListeners(): void
+    {
+        Event::listen(
+            \App\Events\DonacionConfirmada::class,
+            \App\Listeners\SendDonationNotification::class
+        );
+    }
+
+    /**
+     * S4-08: jobs de email para eventos de red social.
+     */
+    protected function registerRedSocialEmailListeners(): void
+    {
+        Event::listen(EmprendedorPostPublicado::class, function (EmprendedorPostPublicado $event): void {
+            NuevoPostEmail::dispatch($event->post);
+        });
+
+        Event::listen(CampanaMetaAlcanzada::class, function (CampanaMetaAlcanzada $event): void {
+            MetaCumplidaEmail::dispatch($event->campana);
+        });
     }
 
     /**

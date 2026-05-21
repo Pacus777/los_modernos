@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\EmprendedorNotificacionService;
+use App\Services\TuristaNotificacionService;
 use App\Support\TipoCambioTurista;
 use App\Support\WaynaBcpQr;
 use Closure;
@@ -73,7 +74,7 @@ class HandleInertiaRequests extends Middleware
 
             return [
                 'id' => $emprendedor->id,
-                'perfil_publico_url' => route('turista.emprendedor.show', $emprendedor),
+                'perfil_publico_url' => $emprendedor->rutaPublica(),
             ];
         },
 
@@ -91,6 +92,36 @@ class HandleInertiaRequests extends Middleware
             }
 
             return app(EmprendedorNotificacionService::class)->resumenParaNavbar($emprendedor);
+        },
+
+        'emprendedorOnboarding' => function () use ($request) {
+            $user = $request->user();
+
+            if (! $user?->esEmprendedor()) {
+                return null;
+            }
+
+            $emprendedor = $user->emprendedor;
+
+            if (! $emprendedor) {
+                return null;
+            }
+
+            return app(\App\Services\EmprendedorOnboardingService::class)->checklist($emprendedor);
+        },
+
+        'turistaNotificaciones' => function () use ($request) {
+            $user = $request->user();
+
+            if (! $user) {
+                return null;
+            }
+
+            if ($user->tieneAlgunoDeEstosRoles(['admin', 'cajero', 'emprendedor'])) {
+                return null;
+            }
+
+            return app(TuristaNotificacionService::class)->resumenParaNavbar($user);
         },
 
         'adminSession' => fn () => $request->user()?->esAdmin()

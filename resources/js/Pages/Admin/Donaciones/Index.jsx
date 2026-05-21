@@ -8,6 +8,7 @@ import {
     adminTableRowHover,
 } from '@/Components/Admin/adminUi';
 import AdminLayout from '@/Layouts/AdminLayout';
+import Modal from '@/Components/Modal';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { etiquetaRangoMonto } from '@/utils/rangoMonto';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
@@ -76,6 +77,65 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                 onFinish: () => setAccionEnDonacionId(null),
             },
         );
+    };
+
+    const [donacionARechazar, setDonacionARechazar] = useState(null);
+    const [motivoRechazo, setMotivoRechazo] = useState('');
+    const [procesandoRechazo, setProcesandoRechazo] = useState(false);
+
+    const iniciarRechazo = (row) => {
+        setDonacionARechazar(row);
+        setMotivoRechazo('');
+    };
+
+    const cancelarRechazo = () => {
+        setDonacionARechazar(null);
+        setMotivoRechazo('');
+    };
+
+    const ejecutarRechazo = (e) => {
+        e.preventDefault();
+        if (!donacionARechazar) return;
+
+        setProcesandoRechazo(true);
+        router.patch(
+            route('admin.donaciones.rechazar', donacionARechazar.id),
+            { motivo: motivoRechazo },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    cancelarRechazo();
+                },
+                onFinish: () => {
+                    setProcesandoRechazo(false);
+                },
+            }
+        );
+    };
+
+    const confirmarDonacion = (row) => {
+        requestConfirm({
+            title: 'Confirmar donación',
+            message: `¿Estás seguro de que deseas confirmar la donación #${row.id} por Bs ${Number(row.monto).toFixed(2)}?`,
+            confirmLabel: 'Confirmar',
+            variant: 'success',
+            onConfirm: ({ close, setProcessing }) => {
+                setProcessing(true);
+                router.patch(
+                    route('admin.donaciones.confirmar', row.id),
+                    {},
+                    {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            close();
+                        },
+                        onFinish: () => {
+                            setProcessing(false);
+                        },
+                    }
+                );
+            },
+        });
     };
 
     const filterForm = useForm({
@@ -600,12 +660,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                                             accionEnDonacionId ===
                                                             row.id
                                                         }
-                                                        onClick={() =>
-                                                            patchAccion(
-                                                                'admin.donaciones.validar',
-                                                                row.id,
-                                                            )
-                                                        }
+                                                        onClick={() => confirmarDonacion(row)}
                                                         className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
                                                     >
                                                         Validar
@@ -616,12 +671,7 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                                                             accionEnDonacionId ===
                                                             row.id
                                                         }
-                                                        onClick={() =>
-                                                            patchAccion(
-                                                                'admin.donaciones.rechazar',
-                                                                row.id,
-                                                            )
-                                                        }
+                                                        onClick={() => iniciarRechazo(row)}
                                                         className="rounded-lg border border-red-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-red-800 hover:bg-red-50 disabled:opacity-50"
                                                     >
                                                         Rechazar
@@ -648,6 +698,45 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                 onClose={cerrarDetalle}
                 donacion={detalle.donacion}
             />
+
+            <Modal show={!!donacionARechazar} onClose={cancelarRechazo} maxWidth="md">
+                <form onSubmit={ejecutarRechazo} className="p-6">
+                    <h3 className="text-lg font-bold text-stone-900">
+                        Rechazar Donación #{donacionARechazar?.id}
+                    </h3>
+                    <p className="mt-2 text-sm text-stone-600">
+                        Por favor, ingresa el motivo del rechazo para mantener la trazabilidad (máx. 500 caracteres).
+                    </p>
+                    <div className="mt-4">
+                        <textarea
+                            value={motivoRechazo}
+                            onChange={(e) => setMotivoRechazo(e.target.value)}
+                            maxLength={500}
+                            placeholder="Ej. Comprobante no coincide, referencia inválida, etc."
+                            className="w-full rounded-lg border-stone-300 shadow-sm focus:border-wayna-500 focus:ring-wayna-500 text-sm"
+                            rows={4}
+                            required
+                        />
+                    </div>
+                    <div className="mt-6 flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onClick={cancelarRechazo}
+                            className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-50"
+                            disabled={procesandoRechazo}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                            disabled={procesandoRechazo}
+                        >
+                            {procesandoRechazo ? 'Rechazando...' : 'Rechazar Pago'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
 
             <ConfirmDialogPortal />
         </AdminLayout>

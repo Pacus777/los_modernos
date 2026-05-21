@@ -106,7 +106,7 @@ class LibelulaService
             'identificador' => $identificador,
             'descripcion' => Str::limit($descripcion, 200, ''),
             'callback_url' => route('webhooks.libelula'),
-            'url_retorno' => route('turista.donaciones.confirmacion', $donacion),
+            'url_retorno' => route('turista.donaciones.exitosa', $donacion),
             'nombre_cliente' => $nombre,
             'apellido_cliente' => $apellido,
             'moneda' => Donacion::MONEDA_BOB,
@@ -180,7 +180,7 @@ class LibelulaService
 
         return new LibelulaDeudaRespuesta(
             idTransaccion: $id,
-            urlPasarela: route('turista.donaciones.confirmacion', $donacion).'?libelula_simulada=1',
+            urlPasarela: route('turista.donaciones.exitosa', $donacion).'?libelula_simulada=1',
             qrSimpleUrl: null,
             mensaje: 'Deuda simulada (sin LIBELULA_APP_KEY).',
             simulada: true,

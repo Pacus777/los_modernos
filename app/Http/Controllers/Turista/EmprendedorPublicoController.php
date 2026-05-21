@@ -40,29 +40,77 @@ class EmprendedorPublicoController extends Controller
         VisitanteService $visitanteService,
         SeguirEmprendedorService $seguirService,
         PostReaccionService $postReaccionService,
+    ): mixed {
+        $emprendedor = Emprendedor::query()
+            ->where('estado', 'activo')
+            ->findOrFail($id);
+
+        if (!empty($emprendedor->slug)) {
+            return redirect()->route('turista.emprendedores.show', $emprendedor->slug);
+        }
+
+        return $this->renderPerfil(
+            $request,
+            $emprendedor,
+            $translator,
+            $tipoCambioService,
+            $visitanteService,
+            $seguirService,
+            $postReaccionService
+        );
+    }
+
+    public function showBySlug(
+        Request $request,
+        string $slug,
+        LibreTranslationService $translator,
+        TipoCambioService $tipoCambioService,
+        VisitanteService $visitanteService,
+        SeguirEmprendedorService $seguirService,
+        PostReaccionService $postReaccionService,
+    ): Response {
+        $emprendedor = Emprendedor::query()
+            ->where('estado', 'activo')
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        return $this->renderPerfil(
+            $request,
+            $emprendedor,
+            $translator,
+            $tipoCambioService,
+            $visitanteService,
+            $seguirService,
+            $postReaccionService
+        );
+    }
+
+    private function renderPerfil(
+        Request $request,
+        Emprendedor $emprendedor,
+        LibreTranslationService $translator,
+        TipoCambioService $tipoCambioService,
+        VisitanteService $visitanteService,
+        SeguirEmprendedorService $seguirService,
+        PostReaccionService $postReaccionService,
     ): Response {
         $locale = $this->obtenerLocaleTurista($request);
 
-        $emprendedor = Emprendedor::query()
-            ->where('estado', 'activo')
-            ->with([
-                'campanas' => function ($query) {
-                    $query
-                        ->visibleEnPerfilTurista()
-                        ->withSum([
-                            'donaciones as monto_validado' => function ($query) {
-                                $query->where('estado_pago', Donacion::ESTADO_VALIDADO);
-                            },
-                        ], 'monto')
-                        ->orderByDesc('fecha_inicio');
-                },
-            ])
-            ->findOrFail($id);
+        $emprendedor->loadMissing([
+            'campanas' => function ($query) {
+                $query
+                    ->visibleEnPerfilTurista()
+                    ->withSum([
+                        'donaciones as monto_validado' => function ($query) {
+                            $query->where('estado_pago', Donacion::ESTADO_VALIDADO);
+                        },
+                    ], 'monto')
+                    ->orderByDesc('fecha_inicio');
+            },
+        ]);
 
         $campanasActivas = $emprendedor->campanas;
-
         $campanaActiva = $campanasActivas->first();
-
         $progreso = $this->calcularProgresoCampanaActiva($campanaActiva, $emprendedor);
 
         $descripcionEmprendedor = $translator->traducirCampo(
@@ -102,6 +150,7 @@ class EmprendedorPublicoController extends Controller
         return Inertia::render('Turista/Perfil', [
             'emprendedor' => [
                 'id' => $emprendedor->id,
+                'slug' => $emprendedor->slug,
                 'nombre' => $emprendedor->nombre,
                 'apellidos' => $emprendedor->apellidos,
                 'descripcion' => $descripcionEmprendedor,
@@ -114,6 +163,7 @@ class EmprendedorPublicoController extends Controller
                 'qr_url' => $emprendedor->qr_url,
                 'estado' => $emprendedor->estado,
                 'tipoCambio' => $tipoCambioService->obtenerUsdBobReferencial(),
+                'perfil_publico_url' => $emprendedor->rutaPublica(),
             ],
 
             'medios' => [

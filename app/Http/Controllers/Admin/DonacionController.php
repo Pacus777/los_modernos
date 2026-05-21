@@ -11,6 +11,7 @@ use App\Models\Emprendedor;
 use App\Services\AuditLogService;
 use App\Services\DonacionRevisionMasivaService;
 use App\Services\TraceabilityService;
+use App\Services\AdminDonacionRevisionService;
 use App\Support\WaynaDonacionesCsvExport;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +28,7 @@ class DonacionController extends Controller
         protected TraceabilityService $traceabilityService,
         protected DonacionRevisionMasivaService $revisionMasivaService,
         protected AuditLogService $auditLogService,
+        protected AdminDonacionRevisionService $revisionService,
     ) {
     }
 
@@ -194,35 +196,13 @@ class DonacionController extends Controller
      */
     public function validar(Request $request, Donacion $donacion): RedirectResponse
     {
-        if ($donacion->estado_pago !== Donacion::ESTADO_PENDIENTE) {
+        try {
+            $this->revisionService->confirmar($donacion, $request->user());
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Solo se pueden validar donaciones en estado pendiente.');
+                ->with('error', $e->getMessage());
         }
-
-        DB::transaction(function () use ($request, $donacion): void {
-            $anterior = $donacion->estado_pago;
-            $donacion->update(['estado_pago' => Donacion::ESTADO_VALIDADO]);
-            $donacion = $donacion->fresh();
-
-            $this->traceabilityService->registrarRevisionDonacionPorAdmin(
-                $donacion,
-                $anterior,
-                Donacion::ESTADO_VALIDADO,
-                $request->user()?->id,
-            );
-
-            $this->auditLogService->registrar(
-                AuditAction::AdminDonationValidated,
-                subject: $donacion,
-                actor: $request->user(),
-                metadata: [
-                    'estado_anterior' => $anterior,
-                    'monto' => (float) $donacion->monto,
-                ],
-                request: $request,
-            );
-        });
 
         return redirect()
             ->back()
@@ -234,35 +214,21 @@ class DonacionController extends Controller
      */
     public function rechazar(Request $request, Donacion $donacion): RedirectResponse
     {
-        if ($donacion->estado_pago !== Donacion::ESTADO_PENDIENTE) {
+        $validated = $request->validate([
+            'motivo' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        try {
+            $this->revisionService->rechazar(
+                $donacion,
+                $request->user(),
+                $validated['motivo'] ?? null
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Solo se pueden rechazar donaciones en estado pendiente.');
+                ->with('error', $e->getMessage());
         }
-
-        DB::transaction(function () use ($request, $donacion): void {
-            $anterior = $donacion->estado_pago;
-            $donacion->update(['estado_pago' => Donacion::ESTADO_RECHAZADO]);
-            $donacion = $donacion->fresh();
-
-            $this->traceabilityService->registrarRevisionDonacionPorAdmin(
-                $donacion,
-                $anterior,
-                Donacion::ESTADO_RECHAZADO,
-                $request->user()?->id,
-            );
-
-            $this->auditLogService->registrar(
-                AuditAction::AdminDonationRejected,
-                subject: $donacion,
-                actor: $request->user(),
-                metadata: [
-                    'estado_anterior' => $anterior,
-                    'monto' => (float) $donacion->monto,
-                ],
-                request: $request,
-            );
-        });
 
         return redirect()
             ->back()

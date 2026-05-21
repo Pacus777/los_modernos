@@ -25,7 +25,7 @@ class PerfilPublicoNavegacionTest extends TestCase
         $emprendedor = $this->vincularEmprendedor($user);
 
         $this->actingAs($user)
-            ->get(route('turista.emprendedor.show', $emprendedor))
+            ->get(route('turista.emprendedores.show', $emprendedor->slug))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Turista/Perfil')
@@ -55,6 +55,7 @@ class PerfilPublicoNavegacionTest extends TestCase
             'departamento' => 'santa_cruz',
             'estado' => 'activo',
             'meta_monto' => 6000,
+            'fotografia' => 'fotografias/test.jpg',
         ]);
     }
 }

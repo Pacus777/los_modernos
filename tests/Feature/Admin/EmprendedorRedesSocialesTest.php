@@ -118,7 +118,7 @@ class EmprendedorRedesSocialesTest extends TestCase
             'sitio_web' => 'https://luciavega.bo',
         ]);
 
-        $response = $this->get(route('turista.emprendedor.show', $emprendedor));
+        $response = $this->get(route('turista.emprendedores.show', $emprendedor->slug));
 
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page

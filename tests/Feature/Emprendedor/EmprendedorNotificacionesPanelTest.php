@@ -116,6 +116,7 @@ class EmprendedorNotificacionesPanelTest extends TestCase
             'estado' => 'activo',
             'meta_monto' => 500,
             'notificar_donaciones_panel' => true,
+            'fotografia' => 'fotografias/test.jpg',
         ]);
 
         $campana = Campana::query()->create([

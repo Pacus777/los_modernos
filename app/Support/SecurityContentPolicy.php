@@ -26,6 +26,17 @@ class SecurityContentPolicy
             }
         }
 
+        // Permitir conexiones a Laravel Reverb en desarrollo/local
+        $reverbHost = config('broadcasting.connections.reverb.options.host') ?? env('REVERB_HOST');
+        if ($reverbHost) {
+            $reverbPort = config('broadcasting.connections.reverb.options.port') ?? env('REVERB_PORT', '8090');
+            $reverbScheme = config('broadcasting.connections.reverb.options.scheme') ?? env('REVERB_SCHEME', 'http');
+            $wsScheme = $reverbScheme === 'https' ? 'wss' : 'ws';
+
+            $connectSrc[] = "{$reverbScheme}://{$reverbHost}:{$reverbPort}";
+            $connectSrc[] = "{$wsScheme}://{$reverbHost}:{$reverbPort}";
+        }
+
         $directives = [
             "default-src 'self'",
             "base-uri 'self'",

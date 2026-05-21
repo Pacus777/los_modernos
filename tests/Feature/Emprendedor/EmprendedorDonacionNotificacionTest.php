@@ -156,6 +156,7 @@ class EmprendedorDonacionNotificacionTest extends TestCase
             'meta_monto' => 500,
             'notificar_donaciones_email' => $notificarEmail,
             'notificar_donaciones_panel' => $notificarPanel,
+            'fotografia' => 'fotografias/test.jpg',
         ]);
 
         $campana = Campana::query()->create([

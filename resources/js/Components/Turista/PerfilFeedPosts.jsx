@@ -39,6 +39,19 @@ export default function PerfilFeedPosts({ posts = [] }) {
                             />
                         ) : null}
 
+                        {post.enlace_externo ? (
+                            <div className="mt-3">
+                                <a
+                                    href={post.enlace_externo}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-wayna-600 hover:text-wayna-800 hover:underline"
+                                >
+                                    🔗 {post.enlace_externo}
+                                </a>
+                            </div>
+                        ) : null}
+
                         <PostReacciones
                             postId={post.id}
                             totalesIniciales={post.totales}

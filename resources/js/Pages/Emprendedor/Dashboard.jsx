@@ -2,6 +2,8 @@ import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import LogoutButton from '@/Components/LogoutButton';
 import EmprendedorLayout from '@/Layouts/EmprendedorLayout';
+import EmprendedorDashboardGraficas from '@/Components/Emprendedor/EmprendedorDashboardGraficas';
+import OnboardingChecklist from '@/Components/Emprendedor/OnboardingChecklist';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
@@ -56,11 +58,12 @@ function formatearFecha(iso) {
  * E-05 — Panel principal del emprendedor (/emprendedor/dashboard).
  */
 export default function Dashboard({ panel, usuario }) {
-    const { flash } = usePage().props;
+    const { flash, emprendedorOnboarding } = usePage().props;
     const { requestConfirm, ConfirmDialogPortal } = useConfirmDialog();
     const perfil = panel?.perfil;
     const progreso = panel?.progreso;
     const stats = panel?.estadisticas;
+    const graficas = panel?.graficas;
     const campana = panel?.campana_activa;
 
     return (
@@ -78,7 +81,7 @@ export default function Dashboard({ panel, usuario }) {
         >
             <Head title="Mi panel — WAYNA" />
 
-            <div className="mx-auto max-w-4xl space-y-8">
+            <div className="mx-auto max-w-6xl space-y-8">
                 <AdminFlashSuccess message={flash?.success} />
                 {flash?.error ? (
                     <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900">
@@ -86,6 +89,10 @@ export default function Dashboard({ panel, usuario }) {
                     </p>
                 ) : null}
                 <ConfirmDialogPortal />
+
+                {emprendedorOnboarding && !emprendedorOnboarding.completo ? (
+                    <OnboardingChecklist />
+                ) : null}
 
                 {panel && perfil ? (
                     <>
@@ -180,16 +187,14 @@ export default function Dashboard({ panel, usuario }) {
                                 detalle="Visitantes que te siguen"
                             />
                             <TarjetaResumen
-                                titulo="Puntos en el mapa"
-                                valor={stats?.puntos ?? 0}
-                                detalle={
-                                    (stats?.publicaciones ?? 0) > 0
-                                        ? `${stats.publicaciones} publicación(es)`
-                                        : 'Visibilidad en explorar'
-                                }
+                                titulo="Publicaciones"
+                                valor={stats?.publicaciones ?? 0}
+                                detalle={`${stats?.reacciones ?? 0} reacción(es) en tus posts`}
                                 acento="stone"
                             />
                         </section>
+
+                        <EmprendedorDashboardGraficas graficas={graficas} />
 
                         {campana ? (
                             <section className="space-y-4">
@@ -315,7 +320,7 @@ export default function Dashboard({ panel, usuario }) {
                             >
                                 Editar perfil público
                             </Link>
-                            . Las publicaciones del muro llegan en E-07.
+                            . Gestioná tus publicaciones desde la sección Mis publicaciones.
                         </p>
                     </>
                 ) : (

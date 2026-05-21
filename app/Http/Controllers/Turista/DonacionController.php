@@ -31,7 +31,7 @@ class DonacionController extends Controller
         $resultado = $donacionService->registrar($validated);
 
         return redirect()
-            ->route('turista.donaciones.confirmacion', [
+            ->route('turista.donaciones.exitosa', [
                 'donacion' => $resultado['donacion']->id,
             ])
             ->with('success', __('donacion.registered_success'));
