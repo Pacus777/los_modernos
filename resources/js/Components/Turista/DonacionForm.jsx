@@ -1,3 +1,4 @@
+import WaynaQrBcpEstatico from '@/Components/Turista/WaynaQrBcpEstatico';
 import { etiquetaTipoPagoT } from '@/utils/catalogosI18n';
 import { clasificarMetodoPago } from '@/utils/clasificarMetodoPago';
 import { bolivianosAUsd, formatearUsd } from '@/utils/tipoCambioTurista';
@@ -26,6 +27,7 @@ export default function DonacionForm({
         activo: false,
         usd_por_bs: 0,
     };
+    const waynaBcpQr = usePage().props.waynaBcpQr ?? { habilitado: false };
 
     const montosRapidos = [5, 10, 20, 50];
 
@@ -370,6 +372,16 @@ export default function DonacionForm({
                             aria-live="polite"
                         >
                             {instruccionMetodoPago}
+                        </div>
+                    )}
+
+                    {claseMetodoPago === 'qr' && waynaBcpQr?.habilitado && (
+                        <div className="mt-4">
+                            <WaynaQrBcpEstatico
+                                config={waynaBcpQr}
+                                monto={data.monto}
+                                variant="preview"
+                            />
                         </div>
                     )}
 

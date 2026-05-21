@@ -29,6 +29,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | QR BCP estático WAYNA (S2-07)
+    |--------------------------------------------------------------------------
+    |
+    | Imagen única del proyecto para pagos QR / billetera (tipo banco).
+    | Reemplazar WAYNA_BCP_QR_IMAGE por el PNG oficial que entregue BCP.
+    |
+    */
+
+    'bcp_qr' => [
+        'enabled' => env('WAYNA_BCP_QR_ENABLED', true),
+        'image_path' => env('WAYNA_BCP_QR_IMAGE', '/images/wayna-qr-bcp.svg'),
+        'titular' => env('WAYNA_BCP_QR_TITULAR', 'WAYNA Conecta'),
+        'banco' => env('WAYNA_BCP_QR_BANCO', 'BCP'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Candado anti pago duplicado (S3-01)
     |--------------------------------------------------------------------------
     |

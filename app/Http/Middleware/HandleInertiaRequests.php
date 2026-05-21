@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Services\EmprendedorNotificacionService;
 use App\Support\TipoCambioTurista;
+use App\Support\WaynaBcpQr;
 use Closure;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -108,6 +109,8 @@ class HandleInertiaRequests extends Middleware
         ],
 
         'tipoCambio' => fn () => TipoCambioTurista::paraFrontend(),
+
+        'waynaBcpQr' => fn () => WaynaBcpQr::paraFrontend(),
 
         'flash' => [
             'success' => fn () => $request->session()->get('success'),
