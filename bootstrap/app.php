@@ -25,12 +25,17 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        /*
+         * CSRF (S3-07): rutas web protegidas por defecto.
+         * Excepción única: webhooks de pasarela (sin sesión, firma HMAC).
+         */
         $middleware->validateCsrfTokens(except: [
             'webhooks/*',
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
         $middleware->alias([
