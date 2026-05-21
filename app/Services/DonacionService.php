@@ -56,6 +56,7 @@ class DonacionService
                 'metodo' => $data['metodo'],
                 'estado_pago' => Donacion::ESTADO_PENDIENTE,
                 'referencia_pago' => $referenciaPago,
+                'payment_uuid' => strtolower((string) $data['payment_uuid']),
             ]);
 
             $trazabilidad = $this->traceabilityService->registrarDonacionCreada($donacion);
@@ -162,6 +163,60 @@ class DonacionService
                 $estadoAnterior,
                 Donacion::ESTADO_VALIDADO,
                 $usuarioId,
+            );
+
+            return $donacion->refresh();
+        });
+    }
+
+    /**
+     * Confirma una donación tras webhook de pasarela (S3-02).
+     *
+     * Solo aplica si la donación sigue pendiente; si ya está validada es idempotente.
+     */
+    public function confirmarPagoDesdeWebhook(
+        Donacion $donacion,
+        string $proveedor,
+        ?string $transactionId = null,
+        ?string $estadoProveedor = null,
+        ?array $metadataPago = null,
+    ): Donacion {
+        return DB::transaction(function () use (
+            $donacion,
+            $proveedor,
+            $transactionId,
+            $estadoProveedor,
+            $metadataPago,
+        ) {
+            $donacion = Donacion::query()
+                ->lockForUpdate()
+                ->findOrFail($donacion->id);
+
+            if ($donacion->estado_pago === Donacion::ESTADO_VALIDADO) {
+                return $donacion;
+            }
+
+            if ($donacion->estado_pago !== Donacion::ESTADO_PENDIENTE) {
+                throw ValidationException::withMessages([
+                    'donacion' => 'La donación no puede confirmarse desde webhook en su estado actual.',
+                ]);
+            }
+
+            $estadoAnterior = $donacion->estado_pago;
+
+            $donacion->update([
+                'estado_pago' => Donacion::ESTADO_VALIDADO,
+                'proveedor_pago' => $proveedor,
+                'estado_proveedor' => $estadoProveedor,
+                'transaction_id' => $transactionId ?? $donacion->transaction_id,
+                'pagado_en' => now(),
+                'metadata_pago' => $metadataPago ?? $donacion->metadata_pago,
+            ]);
+
+            $this->traceabilityService->registrarConfirmacionWebhook(
+                $donacion->fresh(),
+                $estadoAnterior,
+                $proveedor,
             );
 
             return $donacion->refresh();

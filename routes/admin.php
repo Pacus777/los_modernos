@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TwoFactorSettingsController;
 use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\DonacionController;
 use App\Http\Controllers\Admin\EmprendedorController;
@@ -19,10 +20,30 @@ use Inertia\Inertia;
 |
 */
 
-Route::middleware(['auth', 'verified', 'check.role:admin', 'nocache'])
+Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'nocache'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::get('seguridad/2fa', [TwoFactorSettingsController::class, 'edit'])
+            ->name('two-factor.edit');
+        Route::post('seguridad/2fa/preparar', [TwoFactorSettingsController::class, 'preparar'])
+            ->name('two-factor.preparar');
+        Route::post('seguridad/2fa/activar', [TwoFactorSettingsController::class, 'activar'])
+            ->name('two-factor.activar');
+        Route::delete('seguridad/2fa', [TwoFactorSettingsController::class, 'desactivar'])
+            ->name('two-factor.desactivar');
+    });
+
+Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'admin.two_factor', 'nocache'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::post('sesion/tocar', function () {
+            session(['admin_last_activity' => time()]);
+
+            return back();
+        })->name('session.touch');
+
         Route::redirect('/', '/admin/dashboard');
 
         Route::get('/dashboard', [ReporteController::class, 'impacto'])

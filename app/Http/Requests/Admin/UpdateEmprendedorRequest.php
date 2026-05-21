@@ -6,13 +6,20 @@ use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Http\Requests\Admin\Concerns\ValidaMediosEmprendedor;
 use App\Http\Requests\Admin\Concerns\ValidaRedesSocialesEmprendedor;
+use App\Http\Requests\Concerns\SanitizesTextInput;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateEmprendedorRequest extends FormRequest
 {
+    use SanitizesTextInput;
     use ValidaMediosEmprendedor;
     use ValidaRedesSocialesEmprendedor;
+
+    protected function prepareForValidation(): void
+    {
+        $this->sanitizeFields(['nombre', 'apellidos', 'descripcion']);
+    }
     /**
      * Autoriza esta solicitud.
      *

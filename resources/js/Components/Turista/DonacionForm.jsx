@@ -388,7 +388,10 @@ export default function DonacionForm({
             )}
 
             {errors.payment_uuid && (
-                <p className="mt-3 text-sm text-red-600">
+                <p
+                    className="mt-3 text-sm font-medium text-red-600"
+                    role="alert"
+                >
                     {errors.payment_uuid}
                 </p>
             )}

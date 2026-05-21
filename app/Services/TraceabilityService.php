@@ -91,6 +91,31 @@ class TraceabilityService
     }
 
     /**
+     * Registra confirmación automática vía webhook de pasarela (S3-02).
+     */
+    public function registrarConfirmacionWebhook(
+        Donacion $donacion,
+        string $estadoAnterior,
+        string $proveedor,
+    ): Transaccion {
+        return Transaccion::create([
+            'origen' => 'webhook',
+            'destino' => 'donacion:'.$donacion->id,
+            'estado' => $donacion->estado_pago,
+            'metadatos' => [
+                'evento' => 'donacion_confirmada_webhook',
+                'donacion_id' => $donacion->id,
+                'campana_id' => $donacion->campana_id,
+                'estado_anterior' => $estadoAnterior,
+                'estado_nuevo' => $donacion->estado_pago,
+                'proveedor' => $proveedor,
+                'transaction_id' => $donacion->transaction_id,
+                'locale' => App::getLocale(),
+            ],
+        ]);
+    }
+
+    /**
      * Texto de la última revisión (admin o cajero) por donación, para el detalle en panel (T-A17).
      *
      * @param  list<int>  $donacionIds

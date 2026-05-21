@@ -39,7 +39,13 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        $request->session()->forget('two_factor_passed');
+
         $rol = $user->rol?->nombre;
+
+        if ($rol === 'admin' && $user->tieneDosFactoresActivo()) {
+            return redirect()->route('two-factor.challenge');
+        }
 
         return match ($rol) {
             'admin', 'cajero' => AuthRedirect::redirectAfterLogin($request),

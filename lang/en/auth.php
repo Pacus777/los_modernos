@@ -10,4 +10,6 @@ return [
 
     'logged_out' => 'You have been signed out successfully.',
 
+    'two_factor_invalid' => 'The code is invalid or has expired. Please try again.',
+
 ];

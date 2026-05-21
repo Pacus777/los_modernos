@@ -8,6 +8,7 @@ use App\Models\Emprendedor;
 use App\Models\TipoPago;
 use App\Models\Visitante;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class DonacionVisitanteNombreTest extends TestCase
@@ -49,6 +50,7 @@ class DonacionVisitanteNombreTest extends TestCase
             'visitante_nombre' => 'María Turista',
             'monto' => 25,
             'metodo' => 'efectivo_vis',
+            'payment_uuid' => (string) Str::uuid(),
         ]);
 
         $response->assertRedirect();
@@ -100,6 +102,7 @@ class DonacionVisitanteNombreTest extends TestCase
             'visitante_nombre' => '',
             'monto' => 10,
             'metodo' => 'qr_vis',
+            'payment_uuid' => (string) Str::uuid(),
         ])->assertRedirect();
 
         $donacion = Donacion::query()->latest('id')->first();

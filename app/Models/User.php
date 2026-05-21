@@ -14,8 +14,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'email', 'password', 'google2fa_secret', 'google2fa_confirmed_at'])]
+#[Hidden(['password', 'remember_token', 'google2fa_secret'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -30,6 +30,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'google2fa_confirmed_at' => 'datetime',
+            'google2fa_secret' => 'encrypted',
             'password' => 'hashed',
         ];
     }
@@ -125,5 +127,14 @@ class User extends Authenticatable
     public function esAdmin(): bool
     {
         return $this->tieneRol('admin');
+    }
+
+    /**
+     * 2FA TOTP activo (solo aplica flujo admin, S3-04).
+     */
+    public function tieneDosFactoresActivo(): bool
+    {
+        return filled($this->google2fa_secret)
+            && $this->google2fa_confirmed_at !== null;
     }
 }
