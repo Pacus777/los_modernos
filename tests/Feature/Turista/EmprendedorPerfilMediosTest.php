@@ -31,7 +31,7 @@ class EmprendedorPerfilMediosTest extends TestCase
             'meta_monto' => 1000,
         ]);
 
-        $response = $this->get(route('turista.emprendedor.show', $emprendedor->id));
+        $response = $this->get(route('turista.emprendedores.show', $emprendedor->slug));
 
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page

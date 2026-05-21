@@ -183,6 +183,7 @@ class EmprendedorMetaTest extends TestCase
             'departamento' => 'la_paz',
             'estado' => 'activo',
             'meta_monto' => 500,
+            'fotografia' => 'fotografias/test.jpg',
         ]);
 
         return [$user, $emprendedor];

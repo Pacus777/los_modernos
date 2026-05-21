@@ -15,7 +15,7 @@ export default function OnboardingChecklist() {
     const { completo, porcentaje, items } = emprendedorOnboarding;
 
     return (
-        <article className="overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50/70 via-white to-white p-5 shadow-md shadow-amber-500/[0.03] ring-1 ring-amber-100/50">
+        <article data-testid="emprendedor-onboarding-checklist" className="overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50/70 via-white to-white p-5 shadow-md shadow-amber-500/[0.03] ring-1 ring-amber-100/50">
             <header className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                     <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800 tracking-wide">
@@ -60,7 +60,7 @@ export default function OnboardingChecklist() {
             {mostrarDetalles && (
                 <ul className="mt-6 divide-y divide-stone-100 border-t border-stone-100">
                     {items.map((item) => (
-                        <li key={item.id} className="flex items-start justify-between gap-4 py-4.5">
+                        <li key={item.id} data-testid={item.id === 'datos_basicos' ? 'onboarding-item-datos-principales' : `onboarding-item-${item.id}`} className="flex items-start justify-between gap-4 py-4.5">
                             <div className="flex items-start gap-3 min-w-0">
                                 {/* Icono de estado */}
                                 <div className="mt-0.5 shrink-0">
