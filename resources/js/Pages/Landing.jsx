@@ -11,8 +11,9 @@ import LandingTestimonialsCarousel from '@/Components/Landing/LandingTestimonial
 import ExplorarEmprendedores from '@/Components/Turista/ExplorarEmprendedores';
 import ChatWidget, { ChatWidgetProvider } from '@/Components/Turista/ChatWidget';
 import LanguageSelector from '@/Components/LanguageSelector';
+import LogoutButton from '@/Components/LogoutButton';
 import WaynaNavBar from '@/Components/WaynaNavBar';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
 const NAV_SECTIONS = [
@@ -91,6 +92,7 @@ export default function Landing({
     catalogos = {},
 }) {
     const { t } = useTranslation();
+    const authUser = usePage().props.auth?.user;
     const year = new Date().getFullYear();
     const externalMarket = marketUrl || 'https://www.waynamercados.com/';
     const staffHref = panelUrl || (canLogin ? route('login') : '#');
@@ -118,6 +120,12 @@ export default function Landing({
                             {panelUrl ? t('landing.nav.adminPanel') : t('landing.nav.adminLogin')}
                         </Link>
                     )}
+
+                    {authUser ? (
+                        <LogoutButton className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-wayna-700 shadow-sm transition hover:bg-wayna-50 sm:px-4 sm:text-sm">
+                            {t('landing.nav.logout')}
+                        </LogoutButton>
+                    ) : null}
 
                     <LanguageSelector variant="on-brand" compact />
                 </WaynaNavBar>

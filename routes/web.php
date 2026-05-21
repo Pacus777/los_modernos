@@ -46,5 +46,6 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
 require __DIR__.'/admin.php';
 require __DIR__.'/cajero.php';
+require __DIR__.'/emprendedor.php';
 
 require __DIR__.'/auth.php';

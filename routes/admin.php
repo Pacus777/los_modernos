@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\TwoFactorSettingsController;
 use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\DonacionController;
+use App\Http\Controllers\Admin\EmprendedorCuentaController;
 use App\Http\Controllers\Admin\EmprendedorController;
 use App\Http\Controllers\Admin\ReporteController;
 use App\Http\Controllers\Admin\PuntoController;
@@ -66,6 +67,12 @@ Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'adm
         |
         */
 
+        Route::get('emprendedores/{emprendedor}/finalizar', [EmprendedorController::class, 'finalizar'])
+            ->name('emprendedores.finalizar');
+
+        Route::post('emprendedores/{emprendedor}/completar-registro', [EmprendedorController::class, 'completarRegistro'])
+            ->name('emprendedores.completar-registro');
+
         Route::resource('emprendedores', EmprendedorController::class)
             ->parameters([
                 'emprendedores' => 'emprendedor',
@@ -73,6 +80,12 @@ Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'adm
 
         Route::post('emprendedores/{emprendedor}/generar-qr', [EmprendedorController::class, 'generarQr'])
             ->name('emprendedores.generar-qr');
+
+        Route::post('emprendedores/{emprendedor}/cuenta', [EmprendedorCuentaController::class, 'store'])
+            ->name('emprendedores.cuenta.store');
+
+        Route::post('emprendedores/{emprendedor}/cuenta/reenviar', [EmprendedorCuentaController::class, 'reenviar'])
+            ->name('emprendedores.cuenta.reenviar');
 
         Route::resource('campanas', CampanaController::class)
             ->parameters([

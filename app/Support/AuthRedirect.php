@@ -14,6 +14,7 @@ class AuthRedirect
         return match ($rol) {
             'admin' => route('admin.dashboard'),
             'cajero' => route('cajero.efectivo'),
+            'emprendedor' => route('emprendedor.dashboard'),
             default => route('turista.explorar'),
         };
     }

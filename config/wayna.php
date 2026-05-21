@@ -110,6 +110,17 @@ return [
         'enabled' => env('WAYNA_AUDIT_LOG_ENABLED', true),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cuenta emprendedor creada por admin (E-03)
+    |--------------------------------------------------------------------------
+    */
+
+    'emprendedor_cuenta' => [
+        'enviar_correo' => env('WAYNA_EMPRENDEDOR_CUENTA_ENVIAR_CORREO', true),
+        'exigir_email_gmail' => env('WAYNA_EMPRENDEDOR_CUENTA_EXIGIR_GMAIL', true),
+    ],
+
     'rate_limit' => [
         'login' => [
             'max_attempts' => (int) env('WAYNA_RATE_LIMIT_LOGIN_MAX', 10),

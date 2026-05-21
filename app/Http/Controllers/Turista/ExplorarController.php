@@ -20,6 +20,7 @@ class ExplorarController extends Controller
             $panelUrl = match ($user->rol?->nombre) {
                 'admin' => route('admin.dashboard'),
                 'cajero' => route('cajero.efectivo'),
+                'emprendedor' => route('emprendedor.dashboard'),
                 default => null,
             };
         }

@@ -24,4 +24,6 @@ enum AuditAction: string
     case AdminEntrepreneurCreated = 'admin.entrepreneur.created';
     case AdminEntrepreneurUpdated = 'admin.entrepreneur.updated';
     case AdminEntrepreneurDeactivated = 'admin.entrepreneur.deactivated';
+    case AdminEntrepreneurAccountCreated = 'admin.entrepreneur.account_created';
+    case AdminEntrepreneurCredentialsResent = 'admin.entrepreneur.credentials_resent';
 }

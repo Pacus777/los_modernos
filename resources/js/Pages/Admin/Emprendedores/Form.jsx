@@ -262,6 +262,14 @@ export default function Form({
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                     <AdminBackLink href={route('admin.emprendedores.index')} />
                     <AdminFlashSuccess message={flash?.success} />
+                    {flash?.error ? (
+                        <div
+                            className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900"
+                            role="alert"
+                        >
+                            {flash.error}
+                        </div>
+                    ) : null}
 
                     <div className="overflow-hidden rounded-3xl border border-wayna-200/90 bg-white shadow-2xl shadow-wayna-900/[0.08] ring-1 ring-black/[0.03]">
                         <div className="header-wayna-gradient px-6 py-5 sm:px-8">
@@ -284,7 +292,8 @@ export default function Form({
                                 processing={processing}
                                 onAnterior={irAnterior}
                                 onSiguiente={irSiguiente}
-                                guardarLabel="Guardar"
+                                guardarLabel={esEdicion ? 'Guardar cambios' : 'Continuar al acceso'}
+                                guardandoLabel={esEdicion ? 'Guardando…' : 'Guardando perfil…'}
                             />
                             <div className="min-h-[280px] bg-gradient-to-b from-white to-wayna-50/40 p-6 sm:p-8">
                                 {paso >= 2 && paso <= 3 && nombreCompleto ? (
@@ -630,8 +639,9 @@ export default function Form({
 
                                         {!esEdicion && (
                                             <p className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-900">
-                                                Al guardar se creará el emprendedor y se generará
-                                                automáticamente su código QR de perfil.
+                                                Al continuar se guardará el perfil y el código QR. En el
+                                                siguiente paso configurás el acceso al sistema antes de
+                                                cerrar el registro.
                                             </p>
                                         )}
                                     </div>
@@ -645,10 +655,12 @@ export default function Form({
                                 processing={processing}
                                 onAnterior={irAnterior}
                                 onSiguiente={irSiguiente}
-                                guardarLabel="Guardar"
+                                guardarLabel={esEdicion ? 'Guardar cambios' : 'Continuar al acceso'}
+                                guardandoLabel={esEdicion ? 'Guardando…' : 'Guardando perfil…'}
                             />
                         </form>
                     </div>
+
                 </div>
             </div>
 

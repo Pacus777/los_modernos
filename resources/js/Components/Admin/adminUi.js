@@ -55,6 +55,9 @@ export const adminTableActionEdit =
 export const adminTableActionDanger =
     'rounded-xl border border-red-200 bg-surface-card px-3 py-1.5 text-xs font-bold text-red-700 shadow-sm transition hover:bg-red-50 sm:text-sm';
 
+export const adminTableActionCredenciales =
+    'rounded-xl border border-amber-200 bg-amber-50/80 px-3 py-1.5 text-xs font-bold text-amber-950 shadow-sm transition hover:border-amber-300 hover:bg-amber-100 sm:text-sm';
+
 export const adminPaginationBtnActive =
     'rounded-xl px-3 py-1.5 text-sm font-semibold bg-wayna-500 text-white shadow-md shadow-wayna-600/25';
 

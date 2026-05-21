@@ -205,7 +205,8 @@
       "market": "Wayna Mercados",
       "staffLogin": "Acceso equipo",
       "adminLogin": "Iniciar sesión",
-      "adminPanel": "Área administrativa"
+      "adminPanel": "Mi panel",
+      "logout": "Cerrar sesión"
     },
     "hero": {
       "kicker": "Red de emprendedores Wayna",
