@@ -35,7 +35,7 @@ export default function NotificacionesIndex({ notificaciones, no_leidas = 0 }) {
             }
         >
             <Head title="Mis avisos — WAYNA" />
-            <AdminFlashSuccess flash={flash} />
+            <AdminFlashSuccess message={flash?.success} />
 
             <p className="mb-4 text-base text-stone-800">
                 Aquí ves los aportes validados que suman a tu recaudación. Podés cambiar cómo te

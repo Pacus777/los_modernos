@@ -32,7 +32,11 @@ class EmprendedorNotificacionController extends Controller
         int $notificacion,
         EmprendedorNotificacionService $service,
     ): RedirectResponse {
-        $emprendedor = $request->user()->emprendedor;
+        $emprendedor = $request->user()?->emprendedor;
+
+        if (! $emprendedor) {
+            return back()->with('error', 'Tu cuenta no está vinculada a un perfil de emprendedor.');
+        }
 
         $service->marcarLeida($emprendedor, $notificacion);
 
@@ -43,7 +47,11 @@ class EmprendedorNotificacionController extends Controller
         Request $request,
         EmprendedorNotificacionService $service,
     ): RedirectResponse {
-        $emprendedor = $request->user()->emprendedor;
+        $emprendedor = $request->user()?->emprendedor;
+
+        if (! $emprendedor) {
+            return back()->with('error', 'Tu cuenta no está vinculada a un perfil de emprendedor.');
+        }
 
         $service->marcarTodasLeidas($emprendedor);
 
