@@ -11,12 +11,15 @@ use App\Models\Emprendedor;
 use App\Services\AuditLogService;
 use App\Services\DonacionRevisionMasivaService;
 use App\Services\TraceabilityService;
+use App\Support\WaynaDonacionesCsvExport;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class DonacionController extends Controller
 {
@@ -34,6 +37,70 @@ class DonacionController extends Controller
      * La paginación usa withQueryString() para conservar filtros al cambiar de página.
      */
     public function index(Request $request): Response
+    {
+        $filtrosInternos = $this->filtrosDonacionesDesdeRequest($request);
+        $filters = [
+            'emprendedor_id' => $filtrosInternos['emprendedor_id'],
+            'estado_pago' => $filtrosInternos['estado_pago'],
+            'fecha_desde' => $filtrosInternos['fecha_desde'],
+            'fecha_hasta' => $filtrosInternos['fecha_hasta'],
+            'rango_monto' => $filtrosInternos['rango_monto'],
+        ];
+
+        $donaciones = $this->consultaDonacionesAdmin($filtrosInternos)
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        $observaciones = $this->traceabilityService->observacionesValidacionPorDonaciones(
+            collect($donaciones->items())->pluck('id')->map(fn ($id) => (int) $id)->all(),
+        );
+
+        $donaciones->through(function (Donacion $donacion) use ($observaciones) {
+            $donacion->observacion_validacion = $observaciones[$donacion->id] ?? null;
+
+            return $donacion;
+        });
+
+        return Inertia::render('Admin/Donaciones/Index', [
+            'donaciones' => $donaciones,
+            'filters' => $filters,
+            'emprendedores' => $this->listaEmprendedoresParaFiltro(),
+            'rangosMonto' => RangoMonto::opcionesFiltro(),
+        ]);
+    }
+
+    /**
+     * Exportación CSV para liquidación admin (S2-11), respeta filtros del listado.
+     */
+    public function exportarCsv(Request $request): HttpFoundationResponse
+    {
+        $filters = $this->filtrosDonacionesDesdeRequest($request);
+
+        $donaciones = $this->consultaDonacionesAdmin($filters)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $csv = (new WaynaDonacionesCsvExport)->render($donaciones);
+        $nombre = 'wayna-liquidacion-donaciones-'.now()->format('Y-m-d_His').'.csv';
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$nombre.'"',
+        ]);
+    }
+
+    /**
+     * @return array{
+     *     emprendedor_id: string,
+     *     estado_pago: string,
+     *     fecha_desde: string,
+     *     fecha_hasta: string,
+     *     rango_monto: string,
+     *     _emprendedor_id: int|null
+     * }
+     */
+    private function filtrosDonacionesDesdeRequest(Request $request): array
     {
         $validated = $request->validate([
             'emprendedor_id' => ['nullable', 'integer', 'exists:emprendedores,id'],
@@ -60,15 +127,25 @@ class DonacionController extends Controller
             ? (int) $validated['emprendedor_id']
             : null;
 
-        $filters = [
+        return [
             'emprendedor_id' => $emprendedorId ? (string) $emprendedorId : '',
             'estado_pago' => $estadoPago,
             'fecha_desde' => $validated['fecha_desde'] ?? '',
             'fecha_hasta' => $validated['fecha_hasta'] ?? '',
             'rango_monto' => $rangoMonto,
+            '_emprendedor_id' => $emprendedorId,
         ];
+    }
 
-        $donaciones = Donacion::query()
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function consultaDonacionesAdmin(array $filters): Builder
+    {
+        $emprendedorId = $filters['_emprendedor_id'] ?? null;
+        $rangoMonto = $filters['rango_monto'] ?? '';
+
+        return Donacion::query()
             ->with(['campana.emprendedor', 'tipoPago', 'visitante'])
             ->when(
                 $emprendedorId,
@@ -78,41 +155,21 @@ class DonacionController extends Controller
                 ),
             )
             ->when(
-                filled($filters['estado_pago']),
-                fn ($q) => $q->where('estado_pago', $filters['estado_pago'])
+                filled($filters['estado_pago'] ?? ''),
+                fn ($q) => $q->where('estado_pago', $filters['estado_pago']),
             )
             ->when(
-                filled($filters['fecha_desde']),
-                fn ($q) => $q->whereDate('created_at', '>=', $filters['fecha_desde'])
+                filled($filters['fecha_desde'] ?? ''),
+                fn ($q) => $q->whereDate('created_at', '>=', $filters['fecha_desde']),
             )
             ->when(
-                filled($filters['fecha_hasta']),
-                fn ($q) => $q->whereDate('created_at', '<=', $filters['fecha_hasta'])
+                filled($filters['fecha_hasta'] ?? ''),
+                fn ($q) => $q->whereDate('created_at', '<=', $filters['fecha_hasta']),
             )
             ->when(
                 $rango = RangoMonto::desdeFiltro($rangoMonto),
                 fn ($q) => $rango->aplicarFiltro($q, 'monto'),
-            )
-            ->orderByDesc('created_at')
-            ->paginate(12)
-            ->withQueryString();
-
-        $observaciones = $this->traceabilityService->observacionesValidacionPorDonaciones(
-            collect($donaciones->items())->pluck('id')->map(fn ($id) => (int) $id)->all(),
-        );
-
-        $donaciones->through(function (Donacion $donacion) use ($observaciones) {
-            $donacion->observacion_validacion = $observaciones[$donacion->id] ?? null;
-
-            return $donacion;
-        });
-
-        return Inertia::render('Admin/Donaciones/Index', [
-            'donaciones' => $donaciones,
-            'filters' => $filters,
-            'emprendedores' => $this->listaEmprendedoresParaFiltro(),
-            'rangosMonto' => RangoMonto::opcionesFiltro(),
-        ]);
+            );
     }
 
     /**

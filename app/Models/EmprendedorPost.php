@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EmprendedorPostEstado;
 use App\Enums\EmprendedorPostTipo;
 use App\Services\EmprendedorMediosService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -47,6 +48,18 @@ class EmprendedorPost extends Model
     public function estaPublicado(): bool
     {
         return $this->estado === EmprendedorPostEstado::Publicado;
+    }
+
+    /**
+     * Posts visibles en el feed turista (S4-02).
+     */
+    public function scopePublicados(Builder $query): Builder
+    {
+        return $query
+            ->where('estado', EmprendedorPostEstado::Publicado)
+            ->whereNotNull('publicado_en')
+            ->orderByDesc('publicado_en')
+            ->orderByDesc('id');
     }
 
     public function urlMediaPublica(): ?string

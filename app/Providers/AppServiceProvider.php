@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Campana;
 use App\Models\Donacion;
+use App\Models\EmprendedorPost;
 use App\Observers\DonacionObserver;
+use App\Observers\EmprendedorPostObserver;
+use App\Observers\MetaObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use App\Listeners\NotifyTelegramOnBackupResult;
@@ -34,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
 
         Donacion::observe(DonacionObserver::class);
+        EmprendedorPost::observe(EmprendedorPostObserver::class);
+        Campana::observe(MetaObserver::class);
 
         $this->registerBackupTelegramListeners();
     }

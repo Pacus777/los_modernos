@@ -18,7 +18,8 @@ import { useMemo, useState } from 'react';
 function EmprendedorNavLink({ item, expanded, onNavigate }) {
     let active = false;
     try {
-        active = route().current(item.match);
+        const patterns = Array.isArray(item.match) ? item.match : [item.match];
+        active = patterns.some((pattern) => route().current(pattern));
     } catch {
         active = false;
     }
@@ -85,9 +86,9 @@ export default function EmprendedorLayout({
                 Icon: IconEditarPerfil,
             },
             {
-                label: 'Mi meta de apoyo',
-                routeName: 'emprendedor.meta.edit',
-                match: 'emprendedor.meta.*',
+                label: 'Mis metas',
+                routeName: 'emprendedor.mis-metas.index',
+                match: ['emprendedor.mis-metas.*', 'emprendedor.meta.*'],
                 Icon: IconMeta,
             },
             {

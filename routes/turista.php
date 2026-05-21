@@ -5,6 +5,8 @@ use App\Http\Controllers\Turista\EmprendedorPublicoController;
 use App\Http\Controllers\Turista\DonacionController;
 use App\Http\Controllers\Turista\PuntoController;
 use App\Http\Controllers\Turista\ChatController;
+use App\Http\Controllers\Turista\PostReaccionController;
+use App\Http\Controllers\Turista\SeguirEmprendedorController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,6 +24,20 @@ use Inertia\Inertia;
 
 Route::get('/emprendedor/{id}', [EmprendedorPublicoController::class, 'show'])
     ->name('turista.emprendedor.show');
+
+Route::post('/emprendedor/{emprendedor}/seguir', [SeguirEmprendedorController::class, 'store'])
+    ->middleware('throttle:wayna-donaciones')
+    ->name('turista.seguir.store');
+
+Route::get('/seguir/confirmar/{token}', [SeguirEmprendedorController::class, 'confirmar'])
+    ->name('turista.seguir.confirmar');
+
+Route::get('/seguir/baja/{token}', [SeguirEmprendedorController::class, 'baja'])
+    ->name('turista.seguir.baja');
+
+Route::post('/posts/{post}/reaccion', [PostReaccionController::class, 'store'])
+    ->middleware('throttle:wayna-donaciones')
+    ->name('turista.posts.reaccion.store');
 
 Route::post('/donaciones', [DonacionController::class, 'store'])
     ->middleware(['throttle:wayna-donaciones', 'prevent.duplicate.payment'])

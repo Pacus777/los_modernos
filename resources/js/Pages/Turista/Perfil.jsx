@@ -5,6 +5,8 @@ import DonacionForm from '@/Components/Turista/DonacionForm';
 import BarraProgreso from '@/Components/Turista/BarraProgreso';
 import PerfilCabeceraInsta from '@/Components/Turista/PerfilCabeceraInsta';
 import PerfilGaleriaGrid from '@/Components/Turista/PerfilGaleriaGrid';
+import PerfilFeedPosts from '@/Components/Turista/PerfilFeedPosts';
+import SeguirEmprendedorCard from '@/Components/Turista/SeguirEmprendedorCard';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +23,10 @@ function ContenidoPerfil({
     progreso,
     tipoPagos,
     visitanteNombrePrefill,
+    seguimiento,
+    posts = [],
     mostrarVolverExplorar,
+    esPerfilPropio,
     volverHref,
     volverTexto,
 }) {
@@ -71,6 +76,15 @@ function ContenidoPerfil({
                 <PerfilGaleriaGrid medios={medios} nombreEmprendimiento={nombreCompleto} />
             </article>
 
+            <PerfilFeedPosts posts={posts} />
+
+            {!esPerfilPropio ? (
+                <SeguirEmprendedorCard
+                    emprendedorId={emprendedor.id}
+                    seguimiento={seguimiento}
+                />
+            ) : null}
+
             <section
                 id="donar"
                 className="scroll-mt-24 mt-8 rounded-2xl border border-wayna-200 bg-white p-5 shadow-lg shadow-wayna-900/5 sm:p-6"
@@ -115,6 +129,9 @@ export default function Perfil({
     progreso,
     tipoPagos,
     visitanteNombrePrefill = '',
+    seguimiento = {},
+    posts = [],
+    esPerfilPropio = false,
 }) {
     const { t } = useTranslation();
     const { auth } = usePage().props;
@@ -132,6 +149,9 @@ export default function Perfil({
             progreso={progreso}
             tipoPagos={tipoPagos}
             visitanteNombrePrefill={visitanteNombrePrefill}
+            seguimiento={seguimiento}
+            posts={posts}
+            esPerfilPropio={esPerfilPropio}
             mostrarVolverExplorar={!esEmprendedor}
             volverHref="/"
             volverTexto={t('explore.backToExplore')}

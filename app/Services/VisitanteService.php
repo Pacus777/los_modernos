@@ -48,13 +48,46 @@ class VisitanteService
 
     public function nombreEnSesion(Request $request): ?string
     {
+        return $this->visitanteEnSesion($request)?->nombre;
+    }
+
+    public function visitanteEnSesion(Request $request): ?Visitante
+    {
         $visitanteId = $request->session()->get(self::SESSION_VISITANTE_ID);
 
         if (! $visitanteId) {
             return null;
         }
 
-        return Visitante::query()->find($visitanteId)?->nombre;
+        return Visitante::query()->find($visitanteId);
+    }
+
+    /**
+     * Visitante anónimo en sesión (reacciones, etc.) sin pedir nombre.
+     */
+    public function asegurarEnSesion(Request $request): Visitante
+    {
+        $visitanteId = $request->session()->get(self::SESSION_VISITANTE_ID);
+        $visitante = $visitanteId ? Visitante::query()->find($visitanteId) : null;
+
+        if ($visitante) {
+            $visitante->update([
+                'idioma' => $this->obtenerIdioma($request),
+                'session_id' => $request->session()->getId(),
+            ]);
+
+            return $visitante;
+        }
+
+        $visitante = Visitante::query()->create([
+            'codigo' => $this->generarCodigoUnico(),
+            'idioma' => $this->obtenerIdioma($request),
+            'session_id' => $request->session()->getId(),
+        ]);
+
+        $request->session()->put(self::SESSION_VISITANTE_ID, $visitante->id);
+
+        return $visitante;
     }
 
     private function generarCodigoUnico(): string

@@ -104,6 +104,9 @@ Route::middleware(['auth', 'verified', 'check.role:admin', 'admin.session', 'adm
         Route::get('donaciones', [DonacionController::class, 'index'])
             ->name('donaciones.index');
 
+        Route::get('donaciones/exportar-csv', [DonacionController::class, 'exportarCsv'])
+            ->name('donaciones.exportar-csv');
+
         Route::patch('donaciones/revision-masiva', [DonacionController::class, 'revisionMasiva'])
             ->name('donaciones.revision-masiva');
 

@@ -126,6 +126,35 @@
       "videoTitle": "Video",
       "videoUnsupported": "Tu navegador no puede reproducir este video."
     },
+    "reactions": {
+      "feedTitle": "Novedades",
+      "feedSubtitle": "Reaccioná con un toque; solo podés elegir una a la vez.",
+      "groupLabel": "Reacciones a la publicación",
+      "types": {
+        "me_gusta": "Me gusta, {{count}}",
+        "aplauso": "Aplauso, {{count}}",
+        "apoyo": "Apoyo, {{count}}",
+        "inspirado": "Inspirado, {{count}}"
+      }
+    },
+    "follow": {
+      "title": "Seguir sin crear cuenta",
+      "subtitle": "Dejá tu correo y te avisamos cuando haya novedades. Confirmá el enlace que te enviamos.",
+      "emailLabel": "Tu correo electrónico",
+      "submit": "Enviar confirmación",
+      "sending": "Enviando…",
+      "pendingTitle": "Revisá tu correo",
+      "pendingBody": "Enviamos un enlace de confirmación a {{email}}.",
+      "confirmedTitle": "¡Ya lo seguís!",
+      "confirmedBody": "Recibirás novedades en {{email}}.",
+      "pageConfirmedTitle": "Seguimiento confirmado",
+      "pageConfirmedBody": "Ahora seguís a {{name}} en WAYNA.",
+      "pageUnsubTitle": "Dejaste de seguir",
+      "pageUnsubBody": "Ya no recibirás correos de {{name}}.",
+      "pageErrorTitle": "Enlace no válido",
+      "pageErrorBody": "El enlace expiró o ya fue usado. Podés solicitar uno nuevo desde el perfil del emprendedor.",
+      "backToProfile": "Volver al perfil"
+    },
     "barraProgreso": {
       "ariaLabel": "Progreso hacia la meta: {{pct}} por ciento"
     },

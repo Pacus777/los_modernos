@@ -106,6 +106,16 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
         });
     };
 
+    const queryFiltros = {
+        emprendedor_id: filters.emprendedor_id || undefined,
+        estado_pago: filters.estado_pago || undefined,
+        fecha_desde: filters.fecha_desde || undefined,
+        fecha_hasta: filters.fecha_hasta || undefined,
+        rango_monto: filters.rango_monto || undefined,
+    };
+
+    const urlExportarCsv = route('admin.donaciones.exportar-csv', queryFiltros);
+
     const limpiarFiltros = () => {
         filterForm.reset({
             emprendedor_id: '',
@@ -363,6 +373,12 @@ export default function Index({ donaciones, filters, emprendedores = [], rangosM
                         >
                             Limpiar
                         </button>
+                        <a
+                            href={urlExportarCsv}
+                            className="rounded-lg border border-wayna-300 bg-white px-4 py-2 text-sm font-semibold text-wayna-800 hover:bg-wayna-50"
+                        >
+                            Exportar CSV
+                        </a>
                     </div>
                 </form>
 
