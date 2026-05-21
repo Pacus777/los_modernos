@@ -114,10 +114,9 @@ export default function AdminEmprendedorCuentaPanel({
                 <div className="flex gap-3 rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950">
                     <IconoCorreo className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
                     <p>
-                        Escribí el <strong className="text-amber-950">correo del emprendedor</strong> (cualquier
-                        dominio: <span className="whitespace-nowrap">@wayna.com</span>,{' '}
-                        <span className="whitespace-nowrap">@unifranz.edu.bo</span>, Gmail, etc.). Ahí le llegará el
-                        mail con su usuario y contraseña. Si no lo encuentra, que revise spam.
+                        Escribí el <strong className="text-amber-950">correo del emprendedor</strong>: el que use para
+                        revisar mensajes. Ahí le llegará el mail con su usuario y contraseña. Si no lo encuentra, que
+                        revise spam.
                     </p>
                 </div>
 

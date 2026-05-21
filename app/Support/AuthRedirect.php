@@ -21,7 +21,13 @@ class AuthRedirect
 
     public static function redirectAfterLogin(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $rol = $request->user()?->rol?->nombre;
+        $user = $request->user();
+        $rol = $user?->rol?->nombre;
+
+        if ($rol === 'emprendedor' && $user?->debeCambiarPassword()) {
+            return redirect()->route('emprendedor.password.force');
+        }
+
         $default = self::homeRouteForRole($rol);
 
         $intended = $request->session()->pull('url.intended');

@@ -1,8 +1,10 @@
+import AdminFlashSuccess from '@/Components/Admin/AdminFlashSuccess';
 import LogoutButton from '@/Components/LogoutButton';
 import EmprendedorLayout from '@/Layouts/EmprendedorLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 
 export default function Dashboard({ emprendedor, usuario }) {
+    const { flash } = usePage().props;
     return (
         <EmprendedorLayout
             header={
@@ -19,6 +21,7 @@ export default function Dashboard({ emprendedor, usuario }) {
             <Head title="Mi panel — WAYNA" />
 
             <div className="mx-auto max-w-2xl space-y-6">
+                <AdminFlashSuccess message={flash?.success} />
                 {emprendedor ? (
                     <>
                         <div className="overflow-hidden rounded-3xl border border-wayna-200 bg-white shadow-lg ring-1 ring-black/[0.03]">

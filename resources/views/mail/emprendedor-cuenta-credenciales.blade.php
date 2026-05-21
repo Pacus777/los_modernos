@@ -31,7 +31,7 @@
     </p>
 
     <p style="font-size: 0.875rem; color: #57534e;">
-        Por seguridad, cambiá la contraseña en cuanto ingreses (cuando esté disponible en tu panel).
+        Al ingresar por primera vez el sistema te pedirá <strong>elegir una contraseña nueva</strong>.
         No compartas este correo.
     </p>
 

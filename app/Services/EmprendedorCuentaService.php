@@ -42,6 +42,7 @@ class EmprendedorCuentaService
                 'name' => $nombre ?: $emprendedor->nombreCompleto(),
                 'email' => strtolower(trim($email)),
                 'password' => Hash::make($passwordPlano),
+                'must_change_password' => true,
                 'email_verified_at' => now(),
             ]);
 
@@ -97,6 +98,7 @@ class EmprendedorCuentaService
 
         $user->forceFill([
             'password' => Hash::make($passwordPlano),
+            'must_change_password' => true,
         ])->save();
 
         $correoEnviado = $this->enviarCredenciales($user, $emprendedor, $passwordPlano, esReenvio: true);

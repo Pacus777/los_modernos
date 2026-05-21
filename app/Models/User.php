@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'google2fa_secret', 'google2fa_confirmed_at'])]
+#[Fillable(['name', 'email', 'password', 'must_change_password', 'google2fa_secret', 'google2fa_confirmed_at'])]
 #[Hidden(['password', 'remember_token', 'google2fa_secret'])]
 class User extends Authenticatable
 {
@@ -33,7 +33,16 @@ class User extends Authenticatable
             'google2fa_confirmed_at' => 'datetime',
             'google2fa_secret' => 'encrypted',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
         ];
+    }
+
+    /**
+     * E-04: credencial temporal enviada por admin — debe elegir contraseña propia.
+     */
+    public function debeCambiarPassword(): bool
+    {
+        return (bool) $this->must_change_password;
     }
     public function emprendedor(): HasOne
     {
