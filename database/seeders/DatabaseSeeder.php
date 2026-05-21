@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RoleUserTestSeeder::class,
             EmprendedorSeeder::class,
             EmprendedorAccountSeeder::class,
+            TuristaTestSeeder::class,
         ]);
     }
 }

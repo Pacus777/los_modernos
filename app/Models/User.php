@@ -139,6 +139,14 @@ class User extends Authenticatable
     }
 
     /**
+     * S4-09: Verifica si el usuario es un turista con cuenta (autenticado sin rol de staff).
+     */
+    public function esTuristaCuenta(): bool
+    {
+        return ! $this->tieneAlgunoDeEstosRoles(['admin', 'cajero', 'emprendedor']);
+    }
+
+    /**
      * 2FA TOTP activo (solo aplica flujo admin, S3-04).
      */
     public function tieneDosFactoresActivo(): bool

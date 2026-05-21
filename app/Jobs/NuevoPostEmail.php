@@ -9,6 +9,7 @@ use App\Models\EmprendedorSeguidor;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Mail;
+use App\Services\TuristaNotificacionService;
 
 class NuevoPostEmail implements ShouldQueue
 {
@@ -39,6 +40,8 @@ class NuevoPostEmail implements ShouldQueue
         if (! $emprendedor) {
             return;
         }
+
+        app(TuristaNotificacionService::class)->registrarNuevoPostParaSeguidores($this->post);
 
         EmprendedorSeguidor::query()
             ->where('emprendedor_id', $emprendedor->id)

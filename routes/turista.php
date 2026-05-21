@@ -73,3 +73,19 @@ Route::get('/donaciones/confirmacion/{donacion}', [DonacionConfirmacionControlle
 
     Route::post('/chat', [ChatController::class, 'store'])
         ->name('chat.store');
+
+use App\Http\Controllers\Turista\TuristaNotificacionController;
+
+Route::middleware(['auth', 'verified', 'nocache'])
+    ->prefix('turista')
+    ->name('turista.')
+    ->group(function () {
+        Route::get('/notificaciones', [TuristaNotificacionController::class, 'index'])
+            ->name('notificaciones.index');
+
+        Route::patch('/notificaciones/{notificacion}/leer', [TuristaNotificacionController::class, 'marcarLeida'])
+            ->name('notificaciones.leer');
+
+        Route::post('/notificaciones/marcar-todas', [TuristaNotificacionController::class, 'marcarTodasLeidas'])
+            ->name('notificaciones.marcar-todas');
+    });

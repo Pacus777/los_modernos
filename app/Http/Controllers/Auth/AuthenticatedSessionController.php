@@ -57,7 +57,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return match ($rol) {
-            'admin', 'cajero', 'emprendedor' => AuthRedirect::redirectAfterLogin($request),
+            'admin', 'cajero', 'emprendedor', null => AuthRedirect::redirectAfterLogin($request),
             default => $this->logoutUserWithoutRole($request),
         };
     }

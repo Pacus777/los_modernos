@@ -8,6 +8,7 @@ use App\Models\EmprendedorSeguidor;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Mail;
+use App\Services\TuristaNotificacionService;
 
 class NuevaMetaEmail implements ShouldQueue
 {
@@ -34,6 +35,8 @@ class NuevaMetaEmail implements ShouldQueue
         if (! $this->campana->estaVisibleEnPerfilTurista()) {
             return;
         }
+
+        app(TuristaNotificacionService::class)->registrarNuevaMetaParaSeguidores($this->campana);
 
         EmprendedorSeguidor::query()
             ->where('emprendedor_id', $emprendedor->id)
