@@ -100,6 +100,16 @@ return [
         'run_at' => env('WAYNA_BACKUP_RUN_AT', '01:30'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Auditoría de acciones críticas (S3-09)
+    |--------------------------------------------------------------------------
+    */
+
+    'audit_log' => [
+        'enabled' => env('WAYNA_AUDIT_LOG_ENABLED', true),
+    ],
+
     'rate_limit' => [
         'login' => [
             'max_attempts' => (int) env('WAYNA_RATE_LIMIT_LOGIN_MAX', 10),

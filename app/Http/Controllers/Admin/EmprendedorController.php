@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Donacion;
 use Illuminate\Support\Facades\DB;
+use App\Enums\AuditAction;
 use App\Enums\Departamento;
 use App\Enums\TipoEmprendimiento;
 use App\Http\Controllers\Controller;
@@ -16,6 +17,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\Admin\StoreEmprendedorRequest;
 use App\Http\Requests\Admin\UpdateEmprendedorRequest;
+use App\Services\AuditLogService;
 use App\Services\EmprendedorMediosService;
 use App\Services\ImageStorageService;
 use App\Services\QrCodeService;
@@ -23,6 +25,11 @@ use Illuminate\Support\Facades\Storage;
 
 class EmprendedorController extends Controller
 {
+    public function __construct(
+        protected AuditLogService $auditLogService,
+    ) {
+    }
+
     /*
     |--------------------------------------------------------------------------
     | EmprendedorController
@@ -221,6 +228,14 @@ class EmprendedorController extends Controller
             'qr_url' => $rutaQr,
         ]);
 
+        $this->auditLogService->registrar(
+            AuditAction::AdminEntrepreneurCreated,
+            subject: $emprendedor->fresh(),
+            actor: $request->user(),
+            metadata: ['nombre' => $emprendedor->nombreCompleto()],
+            request: $request,
+        );
+
         return redirect()
             ->route('admin.emprendedores.index')
             ->with('success', 'Emprendedor creado correctamente.');
@@ -326,6 +341,14 @@ class EmprendedorController extends Controller
 
         $emprendedorMediosService->sincronizarDesdeRequest($emprendedor->fresh(), $request);
 
+        $this->auditLogService->registrar(
+            AuditAction::AdminEntrepreneurUpdated,
+            subject: $emprendedor->fresh(),
+            actor: $request->user(),
+            metadata: ['nombre' => $emprendedor->nombreCompleto()],
+            request: $request,
+        );
+
         return redirect()
             ->route('admin.emprendedores.index')
             ->with('success', 'Emprendedor actualizado correctamente.');
@@ -361,11 +384,19 @@ class EmprendedorController extends Controller
      * - No se rompen futuras relaciones con campañas o donaciones.
      * - El turista ya no lo ve porque estado = inactivo.
      */
-    public function destroy(Emprendedor $emprendedor): RedirectResponse
+    public function destroy(Emprendedor $emprendedor, Request $request): RedirectResponse
     {
         $emprendedor->update([
             'estado' => 'inactivo',
         ]);
+
+        $this->auditLogService->registrar(
+            AuditAction::AdminEntrepreneurDeactivated,
+            subject: $emprendedor->fresh(),
+            actor: $request->user(),
+            metadata: ['nombre' => $emprendedor->nombreCompleto()],
+            request: $request,
+        );
 
         return redirect()
             ->route('admin.emprendedores.index')

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Services\AdminTwoFactorService;
+use App\Services\AuditLogService;
 use App\Support\AuthRedirect;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,7 +31,11 @@ class TwoFactorChallengeController extends Controller
         ]);
     }
 
-    public function store(Request $request, AdminTwoFactorService $twoFactorService): RedirectResponse
+    public function store(
+        Request $request,
+        AdminTwoFactorService $twoFactorService,
+        AuditLogService $auditLogService,
+    ): RedirectResponse
     {
         $user = $request->user();
 
@@ -48,6 +54,12 @@ class TwoFactorChallengeController extends Controller
         }
 
         $request->session()->put('two_factor_passed', true);
+
+        $auditLogService->registrar(
+            AuditAction::AuthTwoFactorPassed,
+            actor: $user,
+            request: $request,
+        );
 
         return AuthRedirect::redirectAfterLogin($request);
     }

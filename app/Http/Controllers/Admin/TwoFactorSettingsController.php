@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Services\AdminTwoFactorService;
+use App\Services\AuditLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -45,7 +47,11 @@ class TwoFactorSettingsController extends Controller
         return redirect()->route('admin.two-factor.edit');
     }
 
-    public function activar(Request $request, AdminTwoFactorService $twoFactorService): RedirectResponse
+    public function activar(
+        Request $request,
+        AdminTwoFactorService $twoFactorService,
+        AuditLogService $auditLogService,
+    ): RedirectResponse
     {
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:16'],
@@ -67,6 +73,12 @@ class TwoFactorSettingsController extends Controller
 
         $twoFactorService->activar($request->user(), $secreto);
 
+        $auditLogService->registrar(
+            AuditAction::AdminTwoFactorEnabled,
+            actor: $request->user(),
+            request: $request,
+        );
+
         $request->session()->forget([
             'two_factor_setup_secret',
             'two_factor_setup_secret_display',
@@ -82,6 +94,7 @@ class TwoFactorSettingsController extends Controller
     public function desactivar(
         Request $request,
         AdminTwoFactorService $twoFactorService,
+        AuditLogService $auditLogService,
     ): RedirectResponse {
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:16'],
@@ -97,6 +110,13 @@ class TwoFactorSettingsController extends Controller
         }
 
         $twoFactorService->desactivar($user);
+
+        $auditLogService->registrar(
+            AuditAction::AdminTwoFactorDisabled,
+            actor: $user,
+            request: $request,
+        );
+
         $request->session()->forget('two_factor_passed');
 
         return redirect()

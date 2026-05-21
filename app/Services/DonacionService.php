@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Donacion;
+use App\Models\User;
 use App\Support\ReferenciaPagoWayna;
 use Illuminate\Support\Facades\DB;
 use App\Models\Campana;
@@ -16,6 +18,7 @@ class DonacionService
         protected QrCodeService $qrCodeService,
         protected TraceabilityService $traceabilityService,
         protected TelegramService $telegramService,
+        protected AuditLogService $auditLogService,
     ) {
     }
 
@@ -106,7 +109,7 @@ class DonacionService
      */
     public function confirmarPagoEfectivo(Donacion $donacion, ?int $usuarioId = null): Donacion
     {
-        return DB::transaction(function () use ($donacion, $usuarioId) {
+        $donacionConfirmada = DB::transaction(function () use ($donacion, $usuarioId) {
             /*
             |--------------------------------------------------------------------------
             | 1. Bloquear la donación
@@ -167,6 +170,17 @@ class DonacionService
 
             return $donacion->refresh();
         });
+
+        $actor = $usuarioId !== null ? User::query()->find($usuarioId) : null;
+
+        $this->auditLogService->registrar(
+            AuditAction::CajeroDonationCashConfirmed,
+            subject: $donacionConfirmada,
+            actor: $actor,
+            metadata: ['monto' => (float) $donacionConfirmada->monto],
+        );
+
+        return $donacionConfirmada;
     }
 
     /**

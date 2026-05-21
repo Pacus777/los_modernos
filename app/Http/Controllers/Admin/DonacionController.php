@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AuditAction;
 use App\Enums\RangoMonto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\RevisionMasivaDonacionesRequest;
 use App\Models\Donacion;
 use App\Models\Emprendedor;
+use App\Services\AuditLogService;
 use App\Services\DonacionRevisionMasivaService;
 use App\Services\TraceabilityService;
 use Illuminate\Http\RedirectResponse;
@@ -21,6 +23,7 @@ class DonacionController extends Controller
     public function __construct(
         protected TraceabilityService $traceabilityService,
         protected DonacionRevisionMasivaService $revisionMasivaService,
+        protected AuditLogService $auditLogService,
     ) {
     }
 
@@ -143,11 +146,24 @@ class DonacionController extends Controller
         DB::transaction(function () use ($request, $donacion): void {
             $anterior = $donacion->estado_pago;
             $donacion->update(['estado_pago' => Donacion::ESTADO_VALIDADO]);
+            $donacion = $donacion->fresh();
+
             $this->traceabilityService->registrarRevisionDonacionPorAdmin(
-                $donacion->fresh(),
+                $donacion,
                 $anterior,
                 Donacion::ESTADO_VALIDADO,
                 $request->user()?->id,
+            );
+
+            $this->auditLogService->registrar(
+                AuditAction::AdminDonationValidated,
+                subject: $donacion,
+                actor: $request->user(),
+                metadata: [
+                    'estado_anterior' => $anterior,
+                    'monto' => (float) $donacion->monto,
+                ],
+                request: $request,
             );
         });
 
@@ -170,11 +186,24 @@ class DonacionController extends Controller
         DB::transaction(function () use ($request, $donacion): void {
             $anterior = $donacion->estado_pago;
             $donacion->update(['estado_pago' => Donacion::ESTADO_RECHAZADO]);
+            $donacion = $donacion->fresh();
+
             $this->traceabilityService->registrarRevisionDonacionPorAdmin(
-                $donacion->fresh(),
+                $donacion,
                 $anterior,
                 Donacion::ESTADO_RECHAZADO,
                 $request->user()?->id,
+            );
+
+            $this->auditLogService->registrar(
+                AuditAction::AdminDonationRejected,
+                subject: $donacion,
+                actor: $request->user(),
+                metadata: [
+                    'estado_anterior' => $anterior,
+                    'monto' => (float) $donacion->monto,
+                ],
+                request: $request,
             );
         });
 
@@ -209,6 +238,20 @@ class DonacionController extends Controller
                     'Ninguna donación pendiente pudo procesarse. Es posible que ya hayan sido revisadas.',
                 );
         }
+
+        $this->auditLogService->registrar(
+            AuditAction::AdminDonationMassReview,
+            actor: $request->user(),
+            metadata: [
+                'accion' => $accion,
+                'estado_nuevo' => $estadoNuevo,
+                'procesadas' => $resultado['procesadas'],
+                'omitidas' => $resultado['omitidas'],
+                'monto_total' => $resultado['monto_total'],
+                'ids_solicitados' => $validated['ids'],
+            ],
+            request: $request,
+        );
 
         $etiquetaAccion = $accion === 'validar' ? 'validadas' : 'rechazadas';
         $monto = number_format($resultado['monto_total'], 2, '.', ',');
