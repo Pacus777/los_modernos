@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Turista;
 
 use App\Http\Controllers\Controller;
-use App\Models\Campana;
+use App\Http\Requests\Turista\StoreDonacionRequest;
 use App\Services\DonacionService;
 use App\Services\VisitanteService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class DonacionController extends Controller
 {
@@ -17,30 +15,11 @@ class DonacionController extends Controller
      * La lógica principal queda en DonacionService.
      */
     public function store(
-        Request $request,
+        StoreDonacionRequest $request,
         DonacionService $donacionService,
         VisitanteService $visitanteService,
     ): RedirectResponse {
-        $validated = $request->validate(
-            [
-                'campana_id' => [
-                    'required',
-                    Rule::exists('campanas', 'id')->where(
-                        fn ($query) => Campana::applyVisibilidadPerfilTurista($query),
-                    ),
-                ],
-                'tipo_pago_id' => ['required', 'exists:tipos_pago,id'],
-                'visitante_id' => ['nullable', 'exists:visitantes,id'],
-                'visitante_nombre' => ['nullable', 'string', 'max:120'],
-                'monto' => ['required', 'numeric', 'min:1', 'max:999999.99'],
-                'metodo' => ['required', 'string', 'max:50'],
-                'referencia_pago' => ['nullable', 'string', 'max:150'],
-                'payment_uuid' => ['required', 'uuid'],
-            ],
-            [
-                'campana_id.exists' => __('donacion.campaign_unavailable'),
-            ],
-        );
+        $validated = $request->validated();
 
         $validated['visitante_id'] = $visitanteService->resolverParaDonacion(
             $request,

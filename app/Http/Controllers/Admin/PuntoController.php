@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StorePuntoRequest;
+use App\Http\Requests\Admin\UpdatePuntoRequest;
 use App\Models\Emprendedor;
 use App\Models\Punto;
 use App\Services\QrCodeService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -45,16 +46,9 @@ class PuntoController extends Controller
     /**
      * Guarda un punto físico y genera su QR.
      */
-    public function store(Request $request, QrCodeService $qrCodeService): RedirectResponse
+    public function store(StorePuntoRequest $request, QrCodeService $qrCodeService): RedirectResponse
     {
-        $data = $request->validate([
-            'nombre' => ['required', 'string', 'max:120'],
-            'descripcion' => ['nullable', 'string'],
-            'ubicacion' => ['nullable', 'string', 'max:150'],
-            'estado' => ['required', 'string', 'in:activo,inactivo'],
-            'emprendedores' => ['nullable', 'array'],
-            'emprendedores.*' => ['integer', 'exists:emprendedores,id'],
-        ]);
+        $data = $request->validated();
 
         $emprendedorIds = $data['emprendedores'] ?? [];
         unset($data['emprendedores']);
@@ -107,16 +101,9 @@ class PuntoController extends Controller
      *
      * No regeneramos slug automáticamente para no romper QR físicos impresos.
      */
-    public function update(Request $request, Punto $punto): RedirectResponse
+    public function update(UpdatePuntoRequest $request, Punto $punto): RedirectResponse
     {
-        $data = $request->validate([
-            'nombre' => ['required', 'string', 'max:120'],
-            'descripcion' => ['nullable', 'string'],
-            'ubicacion' => ['nullable', 'string', 'max:150'],
-            'estado' => ['required', 'string', 'in:activo,inactivo'],
-            'emprendedores' => ['nullable', 'array'],
-            'emprendedores.*' => ['integer', 'exists:emprendedores,id'],
-        ]);
+        $data = $request->validated();
 
         $emprendedorIds = $data['emprendedores'] ?? [];
         unset($data['emprendedores']);

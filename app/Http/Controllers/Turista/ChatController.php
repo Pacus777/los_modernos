@@ -3,20 +3,16 @@
 namespace App\Http\Controllers\Turista;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Turista\StoreChatRequest;
 use App\Services\RagService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
-    public function store(Request $request, RagService $ragService): JsonResponse|RedirectResponse
+    public function store(StoreChatRequest $request, RagService $ragService): JsonResponse|RedirectResponse
     {
-        $data = $request->validate([
-            'pregunta' => ['required', 'string', 'min:2', 'max:300'],
-            'idioma' => ['nullable', 'string', 'in:es,en'],
-            'context_emprendedor_id' => ['nullable', 'integer', 'exists:emprendedores,id'],
-        ]);
+        $data = $request->validated();
 
         $idioma = $data['idioma']
             ?? session('locale')
